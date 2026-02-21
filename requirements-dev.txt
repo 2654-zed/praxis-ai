@@ -1,0 +1,3 @@
+pytest
+coverage
+# Add other dev tools here (flake8, black) as needed

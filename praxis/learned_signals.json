@@ -1,0 +1,45 @@
+{
+  "computed_at": "2026-02-21T02:50:51.124026Z",
+  "tool_quality": {
+    "ChatGPT": {
+      "avg_rating": 9.33,
+      "total_feedback": 4,
+      "accept_rate": 1.0,
+      "recent_trend": "stable"
+    },
+    "Canva AI": {
+      "avg_rating": 8.5,
+      "total_feedback": 2,
+      "accept_rate": 1.0,
+      "recent_trend": "stable"
+    },
+    "Notion AI": {
+      "avg_rating": 0,
+      "total_feedback": 1,
+      "accept_rate": 1.0,
+      "recent_trend": "stable"
+    },
+    "Segment": {
+      "avg_rating": 8.0,
+      "total_feedback": 1,
+      "accept_rate": 1.0,
+      "recent_trend": "stable"
+    }
+  },
+  "pair_affinities": [
+    {
+      "tool_a": "ChatGPT",
+      "tool_b": "Notion AI",
+      "affinity": 1.0
+    }
+  ],
+  "intent_tool_map": {
+    "writing": [
+      {
+        "tool": "ChatGPT",
+        "score": 10.0,
+        "samples": 1
+      }
+    ]
+  }
+}

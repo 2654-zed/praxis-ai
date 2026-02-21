@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Praxis — Assessment Methodology</title>
+  <style>
+    :root {
+      --bg-primary: #06060e;
+      --bg-glass: rgba(255,255,255,0.06);
+      --bg-glass-hover: rgba(255,255,255,0.10);
+      --border-glass: rgba(255,255,255,0.08);
+      --border-glass-hover: rgba(255,255,255,0.18);
+      --text-primary: #e8eaf6;
+      --text-secondary: rgba(255,255,255,0.55);
+      --text-dim: rgba(255,255,255,0.35);
+      --accent: #7c6aef;
+      --accent-glow: rgba(124,106,239,0.35);
+      --accent-secondary: #50e3c2;
+      --accent-warm: #f5a623;
+      --radius-card: 20px;
+      --radius-sm: 12px;
+      --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.75;
+    }
+
+    /* Aurora */
+    .aurora {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .aurora::before, .aurora::after {
+      content: ''; position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.25;
+      animation: auroraFloat 20s ease-in-out infinite alternate;
+    }
+    .aurora::before {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #7c6aef 0%, transparent 70%);
+      top: -10%; left: -5%;
+    }
+    .aurora::after {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #50e3c2 0%, transparent 70%);
+      bottom: -15%; right: -5%;
+      animation-delay: -8s;
+    }
+    @keyframes auroraFloat {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(30px,-20px) scale(1.08); }
+      100% { transform: translate(-20px,10px) scale(0.95); }
+    }
+
+    .noise {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 256px;
+    }
+
+    /* Nav */
+    .nav-bar {
+      position: sticky; top: 0; z-index: 100;
+      padding: 0.65rem 1.5rem;
+      display: flex; align-items: center; justify-content: center; gap: 2rem;
+      background: rgba(6,6,14,0.70);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid var(--border-glass);
+    }
+    .nav-bar a {
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.3px;
+      transition: color var(--transition-fast);
+    }
+    .nav-bar a:hover { color: var(--text-primary); }
+    .nav-bar a.active { color: var(--accent); }
+    .nav-logo { font-weight: 700; font-size: 0.95rem; color: var(--text-primary) !important; letter-spacing: -0.5px; }
+
+    /* Content */
+    .methodology {
+      position: relative; z-index: 2;
+      max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem 4rem;
+    }
+
+    .methodology h1 {
+      font-size: 2.2rem; font-weight: 700; letter-spacing: -1.5px;
+      background: linear-gradient(135deg, #e8eaf6 0%, #7c6aef 50%, #50e3c2 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 0.3rem;
+    }
+    .subtitle { font-size: 1rem; color: var(--text-dim); margin-bottom: 2.5rem; }
+
+    .methodology h2 {
+      font-size: 1.15rem; color: var(--text-primary); font-weight: 600;
+      margin-top: 2.5rem; margin-bottom: 0.6rem; padding-bottom: 0.4rem;
+      border-bottom: 1px solid rgba(124,106,239,0.2); letter-spacing: -0.3px;
+    }
+    .methodology h2:first-of-type { margin-top: 0; }
+
+    .methodology p {
+      margin-bottom: 1.1rem; font-size: 0.95rem; color: var(--text-secondary);
+    }
+    .methodology strong { color: var(--text-primary); }
+
+    .methodology ul {
+      list-style: none; margin-bottom: 1.25rem; padding-left: 0;
+    }
+    .methodology ul li {
+      padding: 0.35rem 0 0.35rem 1.5rem; position: relative;
+      font-size: 0.95rem; color: var(--text-secondary);
+    }
+    .methodology ul li::before {
+      content: "→"; position: absolute; left: 0;
+      color: var(--accent); font-weight: 600;
+    }
+
+    .metric-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-left: 3px solid var(--accent);
+      padding: 1.25rem 1.5rem; margin: 1.25rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .metric-card h3 { font-size: 1rem; color: var(--accent); margin-bottom: 0.3rem; }
+    .metric-card p { margin-bottom: 0.5rem; }
+    .metric-card p:last-child { margin-bottom: 0; }
+
+    .grade-table {
+      width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem;
+    }
+    .grade-table th {
+      background: rgba(124,106,239,0.2); color: var(--text-primary);
+      padding: 0.55rem 0.75rem; text-align: left; font-weight: 600;
+      border-bottom: 1px solid rgba(124,106,239,0.3);
+    }
+    .grade-table td {
+      padding: 0.55rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-secondary);
+    }
+    .grade-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .grade-table td strong { color: var(--text-primary); }
+
+    .principles {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem; margin: 1.25rem 0;
+    }
+    .principle-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-sm); padding: 1.1rem;
+      transition: all var(--transition-fast);
+      position: relative; overflow: hidden;
+    }
+    .principle-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    }
+    .principle-card:hover {
+      background: var(--bg-glass-hover);
+      border-color: var(--border-glass-hover);
+      transform: translateY(-2px);
+    }
+    .principle-card h4 { font-size: 0.9rem; color: var(--accent); margin-bottom: 0.3rem; }
+    .principle-card p { font-size: 0.85rem; margin-bottom: 0; color: var(--text-dim); }
+
+    .footer-note {
+      margin-top: 3rem; padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+    }
+    .footer-note p { color: var(--text-dim); font-size: 0.82rem; }
+
+    @media (max-width: 768px) {
+      .methodology h1 { font-size: 1.8rem; }
+      .principles { grid-template-columns: 1fr; }
+      .nav-bar { gap: 1rem; font-size: 0.75rem; overflow-x: auto; justify-content: flex-start; padding-left: 1rem; }
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    ::selection { background: rgba(124,106,239,0.3); color: white; }
+  </style>
+</head>
+<body>
+
+  <div class="aurora"></div>
+  <div class="noise"></div>
+
+  <nav class="nav-bar">
+    <a href="/" class="nav-logo">Praxis</a>
+    <a href="/">Search</a>
+    <a href="/static/journey.html">Journey</a>
+    <a href="/static/tools.html">All Tools</a>
+    <a href="/static/manifesto.html" class="active">Methodology</a>
+  </nav>
+
+  <div class="methodology">
+
+    <h1>Assessment Methodology</h1>
+    <p class="subtitle">How Praxis evaluates AI tools for enterprise procurement</p>
+
+    <h2>Overview</h2>
+
+    <p>Praxis provides automated vendor intelligence for AI tool procurement. Every tool in our database is assessed across two proprietary indices — <strong>Transparency</strong> and <strong>Strategic Flexibility</strong> — alongside risk indicators, dependency profiling, and data exposure mapping.</p>
+
+    <p>Our methodology is designed to surface the information that procurement teams, CTOs, and technology leaders need but vendor marketing rarely provides.</p>
+
+    <h2>Assessment Framework</h2>
+
+    <p>For every tool evaluated, Praxis generates a Vendor Intelligence Report covering five dimensions:</p>
+
+    <ul>
+      <li><strong>Ownership & Funding</strong> — Corporate structure, investor alignment, revenue incentives</li>
+      <li><strong>Data Exposure Map</strong> — What organizational data is processed, stored, and potentially leveraged</li>
+      <li><strong>Dependency Risk</strong> — Lock-in level, switching costs, exit strategy viability</li>
+      <li><strong>Compliance Posture</strong> — Certifications, audit history, regulatory alignment</li>
+      <li><strong>Strategic Flexibility</strong> — Portability, self-hosting options, multi-vendor compatibility</li>
+    </ul>
+
+    <h2>Transparency Score</h2>
+
+    <div class="metric-card">
+      <h3>What It Measures</h3>
+      <p>The Transparency Score (0–100) evaluates how clearly a vendor discloses its practices around data handling, revenue model, ownership, and compliance. Higher scores indicate greater visibility for procurement decision-making.</p>
+    </div>
+
+    <p><strong>Scoring factors:</strong></p>
+    <ul>
+      <li><strong>Open Source (+25)</strong> — Code-level auditability provides maximum transparency</li>
+      <li><strong>SOC2 Attestation (+8)</strong> — Independent third-party security audit</li>
+      <li><strong>GDPR Compliance (+7)</strong> — European data protection standards adherence</li>
+      <li><strong>HIPAA Compliance (+10)</strong> — Healthcare-grade data protection</li>
+      <li><strong>Revenue Model Clarity (+5/−5)</strong> — Direct subscription vs. unclear monetization</li>
+      <li><strong>Data Practice Documentation (+5/−5)</strong> — Specific vs. vague data handling disclosure</li>
+      <li><strong>Confirmed Ownership (+5/−5)</strong> — Known vendor vs. unverified entity</li>
+    </ul>
+
+    <h2>Strategic Flexibility Score</h2>
+
+    <div class="metric-card">
+      <h3>What It Measures</h3>
+      <p>The Flexibility Score (0–100) assesses how much operational independence a tool provides. It evaluates portability, lock-in risk, switching costs, and whether the tool enhances organizational capability or creates vendor dependency.</p>
+    </div>
+
+    <p><strong>Scoring factors:</strong></p>
+    <ul>
+      <li><strong>Open Source (+20)</strong> — Self-hosting, forking, and migration options available</li>
+      <li><strong>Lock-in Level (−5 to −20)</strong> — Based on vendor dependency assessment</li>
+      <li><strong>Data Portability (+10/−10)</strong> — Export capabilities and format standardization</li>
+      <li><strong>Integration Surface (+5/−3)</strong> — Multi-vendor compatibility (balanced against ecosystem lock-in)</li>
+      <li><strong>Evaluation Access (+5/−3)</strong> — Free tier availability for low-risk assessment</li>
+    </ul>
+
+    <h2>Grading Scale</h2>
+
+    <table class="grade-table">
+      <tr><th>Grade</th><th>Score Range</th><th>Procurement Guidance</th></tr>
+      <tr><td><strong>A</strong></td><td>80–100</td><td>Strong vendor profile. Standard review sufficient.</td></tr>
+      <tr><td><strong>B</strong></td><td>65–79</td><td>Good profile. Minor areas for vendor clarification.</td></tr>
+      <tr><td><strong>C</strong></td><td>50–64</td><td>Adequate. Request additional documentation on flagged areas.</td></tr>
+      <tr><td><strong>D</strong></td><td>35–49</td><td>Below standard. Enhanced due diligence required.</td></tr>
+      <tr><td><strong>F</strong></td><td>0–34</td><td>Significant gaps. Escalate to security/legal review.</td></tr>
+    </table>
+
+    <h2>Risk Indicators</h2>
+
+    <p>Praxis automatically flags areas where vendor positioning may not fully align with observable practices. These aren't disqualifiers — they're items for your procurement checklist:</p>
+
+    <ul>
+      <li><strong>Free tier without open source</strong> — Revenue model may involve data monetization</li>
+      <li><strong>AI positioning with high lock-in</strong> — Innovation claims should be weighed against dependency cost</li>
+      <li><strong>Custom enterprise pricing</strong> — Request detailed pricing schedules and limit clauses</li>
+      <li><strong>Compliance as differentiator</strong> — Verify certifications are current and scope-appropriate</li>
+      <li><strong>Disproportionate data exposure</strong> — Ensure vendor data access is proportionate to value</li>
+    </ul>
+
+    <h2>Vendor Intelligence Database</h2>
+
+    <p>Praxis maintains curated intelligence profiles for 25+ major AI vendors including ownership structure, revenue models, data handling documentation, lock-in assessments, and portability analysis. For tools outside our curated database, we apply heuristic analysis based on observable attributes: pricing structure, compliance claims, category, and integration surface.</p>
+
+    <p>All intelligence is derived from public filings, published documentation, and published policies. No vendor has paid for assessment or placement.</p>
+
+    <h2>Our Principles</h2>
+
+    <div class="principles">
+      <div class="principle-card">
+        <h4>No Pay-for-Play</h4>
+        <p>No paid placements, no sponsored rankings, no affiliate-influenced recommendations.</p>
+      </div>
+      <div class="principle-card">
+        <h4>Transparent Methodology</h4>
+        <p>Every score is derived from documented factors. No opaque algorithms or hidden weights.</p>
+      </div>
+      <div class="principle-card">
+        <h4>Vendor-Neutral</h4>
+        <p>We evaluate open source and proprietary tools using the same framework and criteria.</p>
+      </div>
+      <div class="principle-card">
+        <h4>Continuous Update</h4>
+        <p>Assessments are updated as vendors change practices, pricing, or ownership.</p>
+      </div>
+      <div class="principle-card">
+        <h4>Self-Assessment</h4>
+        <p>We apply the same methodology to ourselves. Our practices and limitations are disclosed.</p>
+      </div>
+      <div class="principle-card">
+        <h4>Actionable Output</h4>
+        <p>Every report includes specific due diligence questions and procurement checkpoints.</p>
+      </div>
+    </div>
+
+    <h2>About Praxis</h2>
+
+    <p>Praxis is an AI decision engine that helps organizations select the right AI tools through intelligent search, automated vendor risk assessment, and procurement-ready intelligence reports. We believe technology decisions should be as informed as financial decisions.</p>
+
+    <p>We don't sell to the vendors we evaluate. Our scoring is independent. Our data is transparent. Our methodology is documented here.</p>
+
+    <div class="footer-note">
+      <p>Praxis Vendor Intelligence Framework v2.0 · Methodology last updated 2026</p>
+      <p>Questions about our methodology? We welcome review and feedback.</p>
+    </div>
+
+  </div>
+
+</body>
+</html>

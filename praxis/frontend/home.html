@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Praxis — AI Decision Engine</title>
+  <style>
+    /* ══════════════════════════════════════════════
+       PRAXIS 2026 — Liquid Glass Search Engine UI
+       ══════════════════════════════════════════════ */
+
+    :root {
+      --bg-primary: #06060e;
+      --bg-card: rgba(255,255,255,0.04);
+      --bg-glass: rgba(255,255,255,0.06);
+      --bg-glass-hover: rgba(255,255,255,0.10);
+      --bg-glass-strong: rgba(255,255,255,0.12);
+      --border-glass: rgba(255,255,255,0.08);
+      --border-glass-hover: rgba(255,255,255,0.18);
+      --text-primary: #e8eaf6;
+      --text-secondary: rgba(255,255,255,0.55);
+      --text-dim: rgba(255,255,255,0.35);
+      --accent: #7c6aef;
+      --accent-glow: rgba(124,106,239,0.35);
+      --accent-secondary: #50e3c2;
+      --accent-warm: #f5a623;
+      --accent-danger: #ff6b6b;
+      --glass-blur: 24px;
+      --radius-pill: 999px;
+      --radius-card: 20px;
+      --radius-sm: 12px;
+      --transition-fast: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-spring: 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* ── Aurora Background ── */
+    .aurora {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .aurora::before,
+    .aurora::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.35;
+      animation: auroraFloat 18s ease-in-out infinite alternate;
+    }
+    .aurora::before {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, #7c6aef 0%, transparent 70%);
+      top: -15%; left: -10%;
+    }
+    .aurora::after {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #50e3c2 0%, transparent 70%);
+      bottom: -20%; right: -10%;
+      animation-delay: -8s;
+      animation-duration: 22s;
+    }
+    .aurora-third {
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.2;
+      background: radial-gradient(circle, #f5a623 0%, transparent 70%);
+      top: 40%; left: 50%;
+      transform: translateX(-50%);
+      animation: auroraFloat 25s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes auroraFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(40px, -30px) scale(1.1); }
+      66% { transform: translate(-30px, 20px) scale(0.95); }
+      100% { transform: translate(20px, -10px) scale(1.05); }
+    }
+
+    /* ── Noise Texture Overlay ── */
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 256px 256px;
+    }
+
+    /* ══════════════════════════════════════════════
+       STICKY NAV — Glass bar (visible after search)
+       ══════════════════════════════════════════════ */
+    .nav-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      background: rgba(6,6,14,0.70);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid var(--border-glass);
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: transform var(--transition-smooth), opacity var(--transition-smooth);
+    }
+    .nav-bar.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .nav-bar a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: color var(--transition-fast);
+    }
+    .nav-bar a:hover { color: var(--text-primary); }
+    .nav-bar a.active { color: var(--accent); }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary) !important;
+      letter-spacing: -0.5px;
+    }
+
+    /* ══════════════════════════════════════════════
+       HERO — Immersive Entry Point
+       ══════════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      text-align: center;
+      transition: min-height var(--transition-smooth), padding var(--transition-smooth);
+    }
+    body.has-results .hero {
+      min-height: auto;
+      padding: 6rem 1rem 1.5rem;
+    }
+
+    .hero-brand {
+      margin-bottom: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 700;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #e8eaf6 0%, #7c6aef 50%, #50e3c2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      transition: font-size var(--transition-smooth);
+    }
+    body.has-results .hero-title { font-size: 1.8rem; }
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 500px;
+      margin: 0.5rem auto 0;
+      transition: opacity var(--transition-smooth), max-height var(--transition-smooth);
+      overflow: hidden;
+    }
+    body.has-results .hero-subtitle { opacity: 0; max-height: 0; margin: 0; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════════════════════════════════════
+       LIQUID GLASS SEARCH BAR
+       ══════════════════════════════════════════════ */
+    .search-container {
+      width: 100%;
+      max-width: 720px;
+      margin: 2rem auto 0;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+      transition: margin var(--transition-smooth);
+    }
+    body.has-results .search-container { margin-top: 1rem; }
+
+    .search-glass {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: var(--radius-pill);
+      padding: 0.35rem;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+      box-shadow: 0 0 0 0 var(--accent-glow), 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .search-glass:focus-within {
+      border-color: rgba(124,106,239,0.5);
+      box-shadow: 0 0 30px 0 var(--accent-glow), 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.08);
+    }
+    .search-glass::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, rgba(124,106,239,0.2), transparent 40%, rgba(80,227,194,0.15));
+      z-index: -1;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+    .search-glass:focus-within::before { opacity: 1; }
+
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      background: transparent;
+      border: none;
+      outline: none;
+      caret-color: var(--accent);
+      letter-spacing: -0.2px;
+    }
+    .search-input::placeholder { color: transparent; }
+
+    /* Kinetic placeholder */
+    .kinetic-placeholder {
+      position: absolute;
+      top: 50%; left: 1.5rem;
+      transform: translateY(-50%);
+      pointer-events: none;
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      font-weight: 400;
+      letter-spacing: -0.2px;
+      transition: opacity 0.3s ease;
+    }
+    .kinetic-placeholder.hidden { opacity: 0; }
+
+    .search-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding-right: 0.25rem;
+    }
+
+    .search-micro-btn {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .search-micro-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+      transform: scale(1.08);
+    }
+
+    .search-submit {
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: white;
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .search-submit:hover {
+      background: #6b5ce7;
+      transform: scale(1.06);
+      box-shadow: 0 6px 24px var(--accent-glow);
+    }
+    .search-submit:active { transform: scale(0.96); }
+
+    /* ── Autocomplete Dropdown (Glass) ── */
+    .ac-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: -0.35rem; right: -0.35rem;
+      background: rgba(16,16,28,0.92);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--border-glass-hover);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 16px 64px rgba(0,0,0,0.5);
+      max-height: 360px;
+      overflow-y: auto;
+      z-index: 200;
+      display: none;
+      animation: acReveal 0.2s ease;
+    }
+    .ac-dropdown.open { display: block; }
+    @keyframes acReveal {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .ac-dropdown::-webkit-scrollbar { width: 6px; }
+    .ac-dropdown::-webkit-scrollbar-track { background: transparent; }
+    .ac-dropdown::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+    .ac-section {
+      padding: 0.6rem 1rem 0.25rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .ac-item {
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transition: all var(--transition-fast);
+      border-radius: 8px;
+      margin: 2px 6px;
+    }
+    .ac-item:hover, .ac-item.active {
+      background: rgba(124,106,239,0.12);
+      color: var(--text-primary);
+    }
+    .ac-icon { font-size: 0.8rem; width: 20px; text-align: center; opacity: 0.6; }
+    .ac-label { flex: 1; }
+    .ac-hint { font-size: 0.72rem; color: var(--text-dim); }
+
+    /* ══════════════════════════════════════════════
+       FILTER CHIPS — Glass pills
+       ══════════════════════════════════════════════ */
+    .filter-strip {
+      max-width: 720px;
+      margin: 1.25rem auto 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: center;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.6s;
+    }
+    body.has-results .filter-strip { margin-top: 0.75rem; }
+
+    .chip {
+      padding: 0.4rem 0.9rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-pill);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      user-select: none;
+    }
+    .chip:hover {
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.15);
+      color: var(--text-primary);
+    }
+    .chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    /* ── Journey CTA ── */
+    .journey-cta {
+      margin: 1.5rem auto 0;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.7s;
+    }
+    body.has-results .journey-cta { display: none; }
+    .journey-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-pill);
+      transition: all var(--transition-fast);
+    }
+    .journey-cta a:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-secondary);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    /* ── Ambient footer (homepage only) ── */
+    .ambient-footer {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 2rem;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 1s;
+      transition: opacity var(--transition-smooth);
+    }
+    body.has-results .ambient-footer { opacity: 0 !important; pointer-events: none; }
+    .ambient-tag {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+      animation: slowDrift 8s ease-in-out infinite alternate;
+    }
+    @keyframes slowDrift {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-4px); }
+    }
+
+    /* ══════════════════════════════════════════════
+       INTELLIGENCE BANNER — Fluid glass pills
+       ══════════════════════════════════════════════ */
+    .intel-banner {
+      position: relative;
+      z-index: 2;
+      max-width: 1080px;
+      margin: 0.5rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .intel-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition-fast);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-family: inherit;
+    }
+    .intel-correction {
+      background: rgba(245,166,35,0.12);
+      color: #f5a623;
+      border: 1px solid rgba(245,166,35,0.2);
+    }
+    .intel-correction:hover { background: rgba(245,166,35,0.2); }
+    .intel-expansion {
+      background: rgba(124,106,239,0.12);
+      color: #a99bf5;
+      border: 1px solid rgba(124,106,239,0.2);
+    }
+    .intel-negative {
+      background: rgba(255,107,107,0.12);
+      color: #ff6b6b;
+      border: 1px solid rgba(255,107,107,0.2);
+    }
+    .intel-multi {
+      background: rgba(80,227,194,0.12);
+      color: #50e3c2;
+      border: 1px solid rgba(80,227,194,0.2);
+    }
+
+    /* ══════════════════════════════════════════════
+       RESULTS SECTION — Bento Glass Grid
+       ══════════════════════════════════════════════ */
+    .results-section {
+      position: relative;
+      z-index: 2;
+      max-width: 1080px;
+      margin: 1rem auto 4rem;
+      padding: 0 1rem;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    .results-header h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+    .results-count {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+
+    /* ══════════════════════════════════════════════
+       TOOL CARD — Liquid Glass Bento Tile
+       ══════════════════════════════════════════════ */
+    .tool-card {
+      background: var(--bg-glass);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-card);
+      padding: 1.4rem;
+      transition: all var(--transition-smooth);
+      opacity: 0;
+      animation: cardBreathe 0.5s ease forwards;
+      position: relative;
+      overflow: hidden;
+    }
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    }
+    .tool-card:hover {
+      background: var(--bg-glass-hover);
+      border-color: var(--border-glass-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3), 0 0 0 1px rgba(124,106,239,0.1);
+    }
+
+    @keyframes cardBreathe {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tool-top {
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      margin-bottom: 0.7rem;
+    }
+    .tool-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--accent) 0%, #50e3c2 100%);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+    .tool-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+    .tool-meta {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.18rem 0.55rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .badge-fit {
+      background: rgba(80,227,194,0.12);
+      color: #50e3c2;
+      border: 1px solid rgba(80,227,194,0.2);
+    }
+    .badge-price {
+      background: rgba(124,106,239,0.12);
+      color: #a99bf5;
+      border: 1px solid rgba(124,106,239,0.2);
+    }
+    .badge-skill {
+      background: rgba(255,107,107,0.12);
+      color: #ff6b6b;
+      border: 1px solid rgba(255,107,107,0.2);
+    }
+
+    /* Vendor Intelligence Badges */
+    .seeing-badges {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.7rem;
+    }
+    .badge-transparency, .badge-freedom {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .badge-transparency {
+      background: rgba(124,106,239,0.10);
+      color: #a99bf5;
+    }
+    .badge-freedom {
+      background: rgba(80,227,194,0.10);
+      color: #50e3c2;
+    }
+    .grade-A { border: 1px solid rgba(80,227,194,0.5); }
+    .grade-B { border: 1px solid rgba(139,195,74,0.5); }
+    .grade-C { border: 1px solid rgba(245,166,35,0.5); }
+    .grade-D { border: 1px solid rgba(255,107,107,0.5); }
+    .grade-F { border: 1px solid rgba(183,28,28,0.5); }
+
+    .tool-desc {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 0.7rem;
+    }
+
+    .tool-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-bottom: 0.8rem;
+    }
+    .tool-tag {
+      padding: 0.2rem 0.55rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+    }
+
+    .tool-reasons {
+      background: rgba(124,106,239,0.06);
+      border-left: 2px solid var(--accent);
+      padding: 0.6rem 0.8rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 0.8rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+    .tool-reasons strong { color: var(--text-primary); }
+
+    /* Caveats / Advisory */
+    .tool-advisory {
+      background: rgba(245,166,35,0.06);
+      border-left: 2px solid rgba(245,166,35,0.5);
+      padding: 0.5rem 0.8rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 0.8rem;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+    .tool-advisory strong { color: var(--accent-warm); }
+
+    /* ── Vendor Intelligence Panel ── */
+    .seeing-toggle {
+      width: 100%;
+      text-align: left;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.85rem;
+      font-size: 0.78rem;
+      color: var(--accent);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-family: inherit;
+    }
+    .seeing-toggle:hover {
+      background: rgba(124,106,239,0.08);
+      border-color: rgba(124,106,239,0.25);
+    }
+
+    .seeing-panel {
+      display: none;
+      background: rgba(124,106,239,0.04);
+      border: 1px solid rgba(124,106,239,0.12);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      animation: panelSlide 0.3s ease;
+    }
+    .seeing-panel.open { display: block; }
+    @keyframes panelSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .seeing-panel h4 {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin: 0.75rem 0 0.35rem;
+      font-weight: 600;
+    }
+    .seeing-panel h4:first-child { margin-top: 0; }
+    .seeing-summary {
+      color: var(--text-primary);
+      font-weight: 500;
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .seeing-item { color: var(--text-secondary); padding: 0.15rem 0; }
+    .seeing-item-bad { color: var(--accent-danger); padding: 0.15rem 0; }
+    .seeing-question { color: var(--accent); font-weight: 500; padding: 0.2rem 0; }
+    .mask-item { color: var(--accent-warm); font-size: 0.8rem; padding: 0.15rem 0; }
+
+    /* ── Card Actions ── */
+    .tool-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .tool-actions a, .tool-actions button {
+      flex: 1;
+      text-align: center;
+      padding: 0.55rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: #6b5ce7;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+    .btn-ghost {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-secondary);
+      border: 1px solid rgba(255,255,255,0.08) !important;
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.15) !important;
+      color: var(--text-primary);
+    }
+
+    .feedback-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.7rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .feedback-row span { font-size: 0.72rem; color: var(--text-dim); }
+    .feedback-row button {
+      background: none; border: none;
+      font-size: 1rem; cursor: pointer;
+      transition: all var(--transition-fast);
+      filter: grayscale(0.5);
+      opacity: 0.6;
+    }
+    .feedback-row button:hover { transform: scale(1.25); filter: none; opacity: 1; }
+
+    /* ── Empty / Loading ── */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-dim);
+    }
+    .empty-state .emoji { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .empty-state p { margin-bottom: 0.5rem; }
+    .empty-state a { color: var(--accent); text-decoration: none; }
+    .empty-state a:hover { text-decoration: underline; }
+    .empty-state em { color: var(--text-secondary); }
+
+    .pulse { animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ══════════════════════════════════════════════
+       RESPONSIVE
+       ══════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.2rem; }
+      body.has-results .hero-title { font-size: 1.5rem; }
+      .search-input { font-size: 1rem; padding: 0.85rem 1.1rem; }
+      .kinetic-placeholder { font-size: 1rem; left: 1.1rem; }
+      .results-grid { grid-template-columns: 1fr; }
+      .nav-bar {
+        gap: 1rem; font-size: 0.75rem;
+        overflow-x: auto; justify-content: flex-start;
+        padding-left: 1rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      .aurora::before { width: 400px; height: 400px; }
+      .aurora::after { width: 350px; height: 350px; }
+      .ambient-footer { gap: 1rem; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title { font-size: 1.8rem; }
+      .filter-strip { gap: 0.3rem; }
+      .chip { font-size: 0.72rem; padding: 0.35rem 0.7rem; }
+      .tool-card { padding: 1.1rem; border-radius: 16px; }
+    }
+
+    /* ── Custom Scrollbar ── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+    /* ── Selection ── */
+    ::selection { background: rgba(124,106,239,0.3); color: white; }
+  </style>
+</head>
+<body>
+
+  <!-- Aurora Background -->
+  <div class="aurora">
+    <div class="aurora-third"></div>
+  </div>
+  <div class="noise"></div>
+
+  <!-- Sticky Glass Nav (appears on results) -->
+  <nav class="nav-bar" id="nav-bar">
+    <a href="/" class="nav-logo">Praxis</a>
+    <a href="/" class="active">Search</a>
+    <a href="/static/journey.html">Journey</a>
+    <a href="/static/tools.html">All Tools</a>
+    <a href="/static/manifesto.html">Methodology</a>
+  </nav>
+
+  <!-- Hero + Search -->
+  <section class="hero" id="hero">
+    <div class="hero-brand">
+      <h1 class="hero-title">Praxis</h1>
+      <p class="hero-subtitle">Find the right AI tools. Understand the real cost.</p>
+    </div>
+
+    <div class="search-container">
+      <div class="search-glass" id="search-glass">
+        <div class="search-input-wrap">
+          <input
+            id="query"
+            class="search-input"
+            type="text"
+            autocomplete="off"
+            autofocus
+          />
+          <div class="kinetic-placeholder" id="kinetic-placeholder">
+            <span id="kinetic-word">Ask anything...</span>
+          </div>
+          <div class="ac-dropdown" id="ac-dropdown"></div>
+        </div>
+        <div class="search-actions">
+          <button class="search-micro-btn" title="Voice search">🎤</button>
+          <button class="search-submit" id="searchBtn" onclick="doSearch()">→</button>
+        </div>
+      </div>
+
+      <div class="filter-strip" id="filter-bar"></div>
+    </div>
+
+    <div class="journey-cta">
+      <a href="/static/journey.html">Not sure what you need? Take the guided quiz →</a>
+    </div>
+  </section>
+
+  <!-- Intelligence Banners -->
+  <div class="intel-banner" id="intel-banner"></div>
+
+  <!-- Results -->
+  <div class="results-section">
+    <div class="results-header" id="results-header" style="display:none;">
+      <h2 id="results-title">Results</h2>
+      <span class="results-count" id="results-count"></span>
+    </div>
+    <div class="results-grid" id="results"></div>
+
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <div class="emoji">✦</div>
+      <p>Search for any task, role, or tool name</p>
+      <p style="font-size:0.82rem;">Try: <em>"write marketing copy"</em> · <em>"data visualization"</em> · <em>"automate workflows"</em></p>
+    </div>
+  </div>
+
+  <!-- Ambient footer (homepage only) -->
+  <div class="ambient-footer" id="ambient-footer">
+    <span class="ambient-tag">96 tools indexed</span>
+    <span class="ambient-tag" style="animation-delay:-3s;">82 categories</span>
+    <span class="ambient-tag" style="animation-delay:-6s;">Updated 2026</span>
+  </div>
+
+  <script>
+    /* ══════════════════════════════════════════════
+       PRAXIS — Core Application Logic
+       ══════════════════════════════════════════════ */
+
+    /* ── State ── */
+    let activeFilters = [];
+    let lastQuery = '';
+    let acTimer = null;
+    let acIndex = -1;
+
+    const queryInput = document.getElementById('query');
+    const acDropdown = document.getElementById('ac-dropdown');
+    const navBar = document.getElementById('nav-bar');
+    const kineticEl = document.getElementById('kinetic-placeholder');
+    const kineticWord = document.getElementById('kinetic-word');
+
+    /* ── Kinetic Placeholder ── */
+    const placeholderPhrases = [
+      'Ask anything...',
+      'Find the right AI tool...',
+      'Automate your workflow...',
+      'Research deeper...',
+      'Compare vendors...',
+      'Discover alternatives...',
+    ];
+    let phraseIndex = 0;
+
+    function cyclePlaceholder() {
+      kineticWord.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      kineticWord.style.opacity = '0';
+      kineticWord.style.transform = 'translateY(-6px)';
+      setTimeout(() => {
+        phraseIndex = (phraseIndex + 1) % placeholderPhrases.length;
+        kineticWord.textContent = placeholderPhrases[phraseIndex];
+        kineticWord.style.transform = 'translateY(6px)';
+        requestAnimationFrame(() => {
+          kineticWord.style.opacity = '1';
+          kineticWord.style.transform = 'translateY(0)';
+        });
+      }, 400);
+    }
+    setInterval(cyclePlaceholder, 3500);
+
+    queryInput.addEventListener('input', () => {
+      kineticEl.classList.toggle('hidden', queryInput.value.length > 0);
+    });
+    queryInput.addEventListener('focus', () => {
+      if (queryInput.value.length > 0) kineticEl.classList.add('hidden');
+    });
+    queryInput.addEventListener('blur', () => {
+      if (queryInput.value.length === 0) kineticEl.classList.remove('hidden');
+    });
+
+    /* ── Nav visibility ── */
+    function updateNav() {
+      if (document.body.classList.contains('has-results')) {
+        navBar.classList.add('visible');
+      } else {
+        navBar.classList.remove('visible');
+      }
+    }
+
+    /* ── Load category chips ── */
+    (async function loadChips() {
+      try {
+        const res = await fetch('/categories');
+        if (!res.ok) return;
+        const cats = await res.json();
+        const bar = document.getElementById('filter-bar');
+        const featured = ['coding','writing','design','marketing','automation','analytics','sales','support','productivity','no-code','video','audio'];
+        const show = featured.filter(f => cats.includes(f));
+        show.forEach(cat => {
+          const c = document.createElement('span');
+          c.className = 'chip';
+          c.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+          c.dataset.cat = cat;
+          c.addEventListener('click', () => {
+            c.classList.toggle('active');
+            if (activeFilters.includes(cat)) {
+              activeFilters = activeFilters.filter(x => x !== cat);
+            } else {
+              activeFilters.push(cat);
+            }
+            if (lastQuery || activeFilters.length) doSearch();
+          });
+          bar.appendChild(c);
+        });
+      } catch (e) { console.warn('chips', e); }
+    })();
+
+    /* ── Autocomplete ── */
+    queryInput.addEventListener('input', () => {
+      clearTimeout(acTimer);
+      const q = queryInput.value.trim();
+      if (q.length < 2) { closeAC(); return; }
+      acTimer = setTimeout(() => fetchSuggestions(q), 200);
+    });
+
+    queryInput.addEventListener('keydown', e => {
+      const items = acDropdown.querySelectorAll('.ac-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        acIndex = Math.min(acIndex + 1, items.length - 1);
+        highlightAC(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        acIndex = Math.max(acIndex - 1, -1);
+        highlightAC(items);
+      } else if (e.key === 'Enter') {
+        if (acIndex >= 0 && items[acIndex]) {
+          queryInput.value = items[acIndex].dataset.value;
+          closeAC();
+        }
+        doSearch();
+      } else if (e.key === 'Escape') {
+        closeAC();
+      }
+    });
+
+    queryInput.addEventListener('focus', () => {
+      if (acDropdown.children.length > 0) acDropdown.classList.add('open');
+    });
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.search-input-wrap')) closeAC();
+    });
+
+    async function fetchSuggestions(q) {
+      try {
+        const res = await fetch('/suggest?q=' + encodeURIComponent(q));
+        if (!res.ok) return;
+        const data = await res.json();
+        renderAC(data);
+      } catch (e) { console.warn('suggest', e); }
+    }
+
+    function renderAC(data) {
+      acDropdown.innerHTML = '';
+      acIndex = -1;
+      let hasContent = false;
+
+      if (data.did_you_mean && data.did_you_mean.length) {
+        hasContent = true;
+        acDropdown.innerHTML += '<div class="ac-section">Did you mean</div>';
+        data.did_you_mean.forEach(w => {
+          acDropdown.innerHTML += `<div class="ac-item" data-value="${w}" onclick="pickAC(this)">
+            <span class="ac-icon">✦</span><span class="ac-label">${w}</span></div>`;
+        });
+      }
+
+      if (data.tool_matches && data.tool_matches.length) {
+        hasContent = true;
+        acDropdown.innerHTML += '<div class="ac-section">Tools</div>';
+        data.tool_matches.slice(0, 5).forEach(t => {
+          acDropdown.innerHTML += `<div class="ac-item" data-value="${t}" onclick="pickAC(this)">
+            <span class="ac-icon">◆</span><span class="ac-label">${t}</span><span class="ac-hint">tool</span></div>`;
+        });
+      }
+
+      if (data.category_matches && data.category_matches.length) {
+        hasContent = true;
+        acDropdown.innerHTML += '<div class="ac-section">Categories</div>';
+        data.category_matches.slice(0, 4).forEach(c => {
+          acDropdown.innerHTML += `<div class="ac-item" data-value="${c} tools" onclick="pickAC(this)">
+            <span class="ac-icon">▣</span><span class="ac-label">${c}</span><span class="ac-hint">category</span></div>`;
+        });
+      }
+
+      if (data.popular_queries && data.popular_queries.length) {
+        hasContent = true;
+        acDropdown.innerHTML += '<div class="ac-section">Trending</div>';
+        data.popular_queries.slice(0, 3).forEach(p => {
+          acDropdown.innerHTML += `<div class="ac-item" data-value="${p}" onclick="pickAC(this)">
+            <span class="ac-icon">↗</span><span class="ac-label">${p}</span></div>`;
+        });
+      }
+
+      if (hasContent) acDropdown.classList.add('open');
+      else closeAC();
+    }
+
+    function pickAC(el) {
+      queryInput.value = el.dataset.value;
+      kineticEl.classList.add('hidden');
+      closeAC();
+      doSearch();
+    }
+
+    function highlightAC(items) {
+      items.forEach((it, i) => it.classList.toggle('active', i === acIndex));
+    }
+
+    function closeAC() {
+      acDropdown.classList.remove('open');
+      acIndex = -1;
+    }
+
+    /* ══════════════════════════════════════════════
+       SEARCH
+       ══════════════════════════════════════════════ */
+    async function doSearch() {
+      closeAC();
+      const q = document.getElementById('query').value.trim();
+      if (!q && activeFilters.length === 0) return;
+      lastQuery = q || activeFilters.join(' ');
+
+      // Transition to results state
+      document.body.classList.add('has-results');
+      updateNav();
+
+      // Loading state
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('intel-banner').innerHTML = '';
+      document.getElementById('results-header').style.display = 'flex';
+      document.getElementById('results-title').textContent = 'Searching…';
+      document.getElementById('results-count').textContent = '';
+      document.getElementById('results').innerHTML = '<div class="empty-state pulse" style="padding:2rem;"><div class="emoji">◌</div><p>Finding the best tools…</p></div>';
+
+      const body = { query: q || activeFilters.join(' '), profile_id: 'journey' };
+      if (activeFilters.length) body.filters = activeFilters;
+
+      try {
+        const res = await fetch('/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+
+        const tools = Array.isArray(data) ? data : (data.results || []);
+        const meta = Array.isArray(data) ? {} : (data.meta || {});
+
+        renderIntelBanner(meta, q);
+        renderResults(tools, q);
+      } catch (e) {
+        console.error('search error', e);
+        document.getElementById('results').innerHTML = '<div class="empty-state"><div class="emoji">⚠</div><p>Something went wrong. Make sure the API is running.</p></div>';
+      }
+    }
+
+    /* ── Intelligence Banner ── */
+    function renderIntelBanner(meta, query) {
+      const banner = document.getElementById('intel-banner');
+      banner.innerHTML = '';
+      if (!meta || Object.keys(meta).length === 0) return;
+
+      if (meta.corrections && Object.keys(meta.corrections).length > 0) {
+        for (const [typo, fix] of Object.entries(meta.corrections)) {
+          const pill = document.createElement('button');
+          pill.className = 'intel-pill intel-correction';
+          pill.innerHTML = `✦ Did you mean <strong>${fix}</strong>?`;
+          pill.onclick = () => {
+            document.getElementById('query').value = query.replace(typo, fix);
+            doSearch();
+          };
+          banner.appendChild(pill);
+        }
+      }
+
+      if (meta.expanded_keywords && meta.expanded_keywords.length > 0) {
+        const extra = meta.expanded_keywords.filter(k => !query.toLowerCase().includes(k.toLowerCase()));
+        if (extra.length > 0) {
+          const pill = document.createElement('span');
+          pill.className = 'intel-pill intel-expansion';
+          pill.innerHTML = `Also searching: ${extra.slice(0, 5).join(', ')}`;
+          banner.appendChild(pill);
+        }
+      }
+
+      if (meta.negatives && meta.negatives.length > 0) {
+        const pill = document.createElement('span');
+        pill.className = 'intel-pill intel-negative';
+        pill.innerHTML = `Excluding: ${meta.negatives.join(', ')}`;
+        banner.appendChild(pill);
+      }
+
+      if (meta.multi_intents && meta.multi_intents.length > 1) {
+        const pill = document.createElement('span');
+        pill.className = 'intel-pill intel-multi';
+        pill.innerHTML = `${meta.multi_intents.length} intents: ${meta.multi_intents.join(' + ')}`;
+        banner.appendChild(pill);
+      }
+    }
+
+    /* ══════════════════════════════════════════════
+       RENDER RESULTS — Bento Glass Cards
+       ══════════════════════════════════════════════ */
+    function renderResults(tools, query) {
+      const grid = document.getElementById('results');
+      const header = document.getElementById('results-header');
+      grid.innerHTML = '';
+
+      if (!tools || tools.length === 0) {
+        header.style.display = 'none';
+        document.body.classList.remove('has-results');
+        updateNav();
+        grid.innerHTML = '<div class="empty-state"><div class="emoji">✦</div><p>No tools matched. Try different keywords or <a href="/static/journey.html">take the guided quiz</a>.</p></div>';
+        return;
+      }
+
+      header.style.display = 'flex';
+      document.getElementById('results-title').textContent = 'Recommended Tools';
+      document.getElementById('results-count').textContent = tools.length + ' results';
+
+      tools.forEach((tool, idx) => {
+        const card = document.createElement('div');
+        card.className = 'tool-card';
+        card.style.animationDelay = `${0.06 * idx}s`;
+        const uid = 'seeing-' + idx;
+        const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+
+        let html = `<div class="tool-top">
+          <div class="tool-icon">${tool.name.charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="tool-name">${tool.name}</div>
+            <div class="tool-meta">`;
+        if (tool.fit_score) html += `<span class="badge badge-fit">${tool.fit_score}% fit</span>`;
+        const pricing = tool.pricing || {};
+        if (pricing.free_tier) html += `<span class="badge badge-price">Free tier</span>`;
+        else if (pricing.starter) html += `<span class="badge badge-price">From $${pricing.starter}/mo</span>`;
+        if (tool.skill_level) html += `<span class="badge badge-skill">${cap(tool.skill_level)}</span>`;
+        html += `</div></div></div>`;
+
+        if (tool.transparency_grade || tool.flexibility_grade) {
+          html += `<div class="seeing-badges">`;
+          if (tool.transparency_grade) {
+            html += `<span class="badge-transparency grade-${tool.transparency_grade}">Transparency ${tool.transparency_grade}</span>`;
+          }
+          if (tool.flexibility_grade) {
+            html += `<span class="badge-freedom grade-${tool.flexibility_grade}">Flexibility ${tool.flexibility_grade}</span>`;
+          }
+          html += `</div>`;
+        }
+
+        html += `<div class="tool-desc">${tool.description || 'A powerful AI tool for your workflow.'}</div>`;
+
+        const tags = [...(tool.categories || []), ...(tool.tags || [])].slice(0, 5);
+        if (tags.length) {
+          html += `<div class="tool-tags">`;
+          tags.forEach(t => { html += `<span class="tool-tag">${cap(t)}</span>`; });
+          html += `</div>`;
+        }
+
+        if (tool.match_reasons && tool.match_reasons.length) {
+          html += `<div class="tool-reasons"><strong>Why:</strong> ${tool.match_reasons.join(' · ')}</div>`;
+        }
+
+        if (tool.caveats && tool.caveats.length) {
+          html += `<div class="tool-advisory"><strong>⚠ Advisory:</strong> `;
+          html += tool.caveats.map(c => c.length > 120 ? c.slice(0,117)+'…' : c).join(' · ');
+          html += `</div>`;
+        }
+
+        html += `<button class="seeing-toggle" onclick="toggleSeeing('${uid}','${tool.name.replace(/'/g,"\\'")}',this)">◆ Vendor Intelligence Report</button>`;
+        html += `<div class="seeing-panel" id="${uid}"><div class="empty-state pulse" style="padding:0.5rem;font-size:0.8rem;"><p>Loading…</p></div></div>`;
+
+        html += `<div class="tool-actions">`;
+        if (tool.url) html += `<a class="btn-primary" href="${tool.url}" target="_blank">Try ${tool.name}</a>`;
+        html += `<button class="btn-ghost" onclick="saveTool('${tool.name.replace(/'/g,"\\'")}')">☆ Save</button>`;
+        html += `</div>`;
+
+        html += `<div class="feedback-row">
+          <span>Helpful?</span>
+          <div>
+            <button onclick="sendFeedback('${tool.name.replace(/'/g,"\\'")}',true,this)">👍</button>
+            <button onclick="sendFeedback('${tool.name.replace(/'/g,"\\'")}',false,this)">👎</button>
+          </div>
+        </div>`;
+
+        card.innerHTML = html;
+        grid.appendChild(card);
+      });
+    }
+
+    /* ── Vendor Intelligence Panel ── */
+    const seeingCache = {};
+    async function toggleSeeing(uid, toolName, btn) {
+      const panel = document.getElementById(uid);
+      if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        btn.textContent = '◆ Vendor Intelligence Report';
+        return;
+      }
+      panel.classList.add('open');
+      btn.textContent = '◆ Hide Report';
+
+      if (seeingCache[toolName]) {
+        renderSeeingPanel(panel, seeingCache[toolName]);
+        return;
+      }
+
+      try {
+        const res = await fetch('/intelligence/' + encodeURIComponent(toolName));
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        seeingCache[toolName] = data;
+        renderSeeingPanel(panel, data);
+      } catch (e) {
+        panel.innerHTML = '<p style="font-size:0.82rem;color:var(--text-dim);">Could not load vendor intelligence data.</p>';
+      }
+    }
+
+    function renderSeeingPanel(panel, data) {
+      let html = '';
+
+      if (data.executive_summary) {
+        html += `<div class="seeing-summary">${data.executive_summary}</div>`;
+      }
+
+      if (data.dependency_profile) {
+        const d = data.dependency_profile;
+        html += `<h4>Dependency Profile</h4>`;
+        html += `<div class="seeing-item"><strong>Vendor:</strong> ${d.who_benefits}</div>`;
+        html += `<div class="seeing-item"><strong>Data Exposure:</strong> ${d.data_exposure}</div>`;
+        html += `<div class="seeing-item"><strong>Vendor Value Capture:</strong> ${d.vendor_value_capture}</div>`;
+        html += `<div class="seeing-item"><strong>Dependency Level:</strong> ${d.dependency_level}</div>`;
+      }
+
+      if (data.transparency) {
+        const t = data.transparency;
+        html += `<h4>Transparency Assessment · ${t.grade} — ${t.score}/100</h4>`;
+        t.signals.forEach(s => { html += `<div class="seeing-item">✓ ${s}</div>`; });
+        t.concerns.forEach(c => { html += `<div class="seeing-item-bad">✗ ${c}</div>`; });
+      }
+
+      if (data.flexibility) {
+        const f = data.flexibility;
+        html += `<h4>Strategic Flexibility · ${f.grade} — ${f.score}/100</h4>`;
+        (f.advantages || []).forEach(l => { html += `<div class="seeing-item">✓ ${l}</div>`; });
+        (f.risk_factors || []).forEach(b => { html += `<div class="seeing-item-bad">✗ ${b}</div>`; });
+      }
+
+      if (data.risk_indicators && data.risk_indicators.length > 0) {
+        html += `<h4>Due Diligence Flags</h4>`;
+        data.risk_indicators.forEach(m => { html += `<div class="mask-item">⚠ ${m}</div>`; });
+      }
+
+      if (data.key_question) {
+        html += `<h4>Key Procurement Question</h4>`;
+        html += `<div class="seeing-question">${data.key_question}</div>`;
+      }
+
+      if (data.dependency_profile && data.dependency_profile.diligence_questions && data.dependency_profile.diligence_questions.length > 0) {
+        html += `<h4>Recommended Due Diligence</h4>`;
+        data.dependency_profile.diligence_questions.forEach(q => { html += `<div class="seeing-question">→ ${q}</div>`; });
+      }
+
+      panel.innerHTML = html;
+    }
+
+    /* ── Save Tool ── */
+    function saveTool(name) {
+      let saved = JSON.parse(localStorage.getItem('praxis_saved_tools') || '[]');
+      const idx = saved.findIndex(t => t.name === name);
+      if (idx >= 0) { saved.splice(idx, 1); }
+      else { saved.push({ name, savedAt: new Date().toISOString() }); }
+      localStorage.setItem('praxis_saved_tools', JSON.stringify(saved));
+    }
+
+    /* ── Feedback ── */
+    function sendFeedback(toolName, helpful, btn) {
+      fetch('/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: lastQuery,
+          tool: toolName,
+          accepted: helpful,
+          rating: helpful ? 8 : 3,
+          details: { source: 'home_search', feedback_type: 'result' },
+        }),
+      }).catch(e => console.error('feedback error', e));
+
+      const orig = btn.textContent;
+      btn.textContent = '✓';
+      btn.disabled = true;
+      setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+    }
+
+    /* ── Subtle mouse parallax on aurora ── */
+    document.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 20;
+      const y = (e.clientY / window.innerHeight - 0.5) * 20;
+      document.querySelector('.aurora').style.transform = `translate(${x}px, ${y}px)`;
+    });
+  </script>
+</body>
+</html>
