@@ -351,6 +351,44 @@ try:
         check_tool_allowed as _check_tool_allowed,
         governance_dashboard as _governance_dashboard,
     )
+    # ── v20: Stress Testing & Architecture Hardening ──────────────
+    from .persistence import (
+        get_connection as _get_db_connection,
+        get_write_queue as _get_write_queue,
+        pool_stats as _pool_stats,
+        upgrade_to_wal as _upgrade_to_wal,
+        diagnose as _db_diagnose,
+    )
+    from .ast_security import (
+        safe_parse as _safe_parse,
+        scan_praxis_source as _scan_praxis_source,
+        is_safe_for_introspection as _is_safe_for_introspection,
+    )
+    from .memory_profiler import (
+        memory_summary as _memory_summary,
+        gc_diagnostics as _gc_diagnostics,
+        BoundedList as _BoundedList,
+        BoundedDict as _BoundedDict,
+    )
+    from .architecture import (
+        architecture_report as _architecture_report,
+        check_layer_violations as _check_layer_violations,
+        dependency_graph as _dependency_graph,
+        detect_cycles as _detect_cycles,
+        module_metrics as _module_metrics,
+        check_entrypoint_hygiene as _check_entrypoint_hygiene,
+    )
+    from .red_team import (
+        run_red_team as _run_red_team,
+        red_team_summary as _red_team_summary,
+        generate_payloads as _generate_payloads,
+        test_guardrail as _test_guardrail,
+    )
+    from .stress import (
+        classify_routes as _classify_routes,
+        schemathesis_config as _schemathesis_config,
+        generate_stress_report as _generate_stress_report,
+    )
 except ImportError:
     from data import get_all_categories, TOOLS, get_all_tools_dict
     from engine import find_tools
@@ -828,6 +866,32 @@ except ImportError:
         from governance import list_policies as _list_policies
         from governance import check_tool_allowed as _check_tool_allowed
         from governance import governance_dashboard as _governance_dashboard
+        # ── v20 fallback imports ──
+        from persistence import get_connection as _get_db_connection
+        from persistence import get_write_queue as _get_write_queue
+        from persistence import pool_stats as _pool_stats
+        from persistence import upgrade_to_wal as _upgrade_to_wal
+        from persistence import diagnose as _db_diagnose
+        from ast_security import safe_parse as _safe_parse
+        from ast_security import scan_praxis_source as _scan_praxis_source
+        from ast_security import is_safe_for_introspection as _is_safe_for_introspection
+        from memory_profiler import memory_summary as _memory_summary
+        from memory_profiler import gc_diagnostics as _gc_diagnostics
+        from memory_profiler import BoundedList as _BoundedList
+        from memory_profiler import BoundedDict as _BoundedDict
+        from architecture import architecture_report as _architecture_report
+        from architecture import check_layer_violations as _check_layer_violations
+        from architecture import dependency_graph as _dependency_graph
+        from architecture import detect_cycles as _detect_cycles
+        from architecture import module_metrics as _module_metrics
+        from architecture import check_entrypoint_hygiene as _check_entrypoint_hygiene
+        from red_team import run_red_team as _run_red_team
+        from red_team import red_team_summary as _red_team_summary
+        from red_team import generate_payloads as _generate_payloads
+        from red_team import test_guardrail as _test_guardrail
+        from stress import classify_routes as _classify_routes
+        from stress import schemathesis_config as _schemathesis_config
+        from stress import generate_stress_report as _generate_stress_report
     except ImportError:
         _get_connector_registry = _execute_connector = _list_connectors = None
         _decompose_request = _generate_plan = _execute_plan = _assemble_and_run = None
@@ -842,6 +906,13 @@ except ImportError:
         _record_audit = _get_audit_log = _record_usage = _get_gov_usage = None
         _get_cost_summary = _assess_gov_compliance = None
         _create_policy = _list_policies = _check_tool_allowed = _governance_dashboard = None
+        _get_db_connection = _get_write_queue = _pool_stats = _upgrade_to_wal = _db_diagnose = None
+        _safe_parse = _scan_praxis_source = _is_safe_for_introspection = None
+        _memory_summary = _gc_diagnostics = _BoundedList = _BoundedDict = None
+        _architecture_report = _check_layer_violations = _dependency_graph = None
+        _detect_cycles = _module_metrics = _check_entrypoint_hygiene = None
+        _run_red_team = _red_team_summary = _generate_payloads = _test_guardrail = None
+        _classify_routes = _schemathesis_config = _generate_stress_report = None
 
 try:
     from fastapi import FastAPI
@@ -3659,6 +3730,165 @@ def create_app():
             "contributions": _submit_tool is not None,
             "agent_sdk": _sdk_info is not None,
             "governance": _governance_dashboard is not None,
+        }
+
+    # ══════════════════════════════════════════════════════════════════
+    # v20: STRESS TESTING & ARCHITECTURE HARDENING ENDPOINTS
+    # ══════════════════════════════════════════════════════════════════
+
+    # ── Persistence layer diagnostics ────────────────────────────────
+    if _pool_stats is not None:
+
+        @app.get("/v20/persistence/stats")
+        def persistence_stats_ep():
+            """Connection pool and write queue health metrics."""
+            return _pool_stats()
+
+        @app.get("/v20/persistence/diagnose")
+        def persistence_diagnose_ep():
+            """Comprehensive SQLite database diagnostic."""
+            return _db_diagnose()
+
+        @app.post("/v20/persistence/upgrade-wal")
+        def persistence_upgrade_wal_ep():
+            """Upgrade database to WAL journal mode."""
+            return _upgrade_to_wal()
+
+    # ── AST security scanning ────────────────────────────────────────
+    if _safe_parse is not None:
+
+        class ASTScanRequest(BaseModel):
+            source: str
+            filename: str = "<input>"
+
+        @app.post("/v20/security/ast-scan")
+        def ast_scan_ep(req: ASTScanRequest):
+            """Scan a code string for AST security violations."""
+            report = _safe_parse(req.source, filename=req.filename)
+            return report.to_dict()
+
+        @app.get("/v20/security/self-scan")
+        def ast_self_scan_ep():
+            """Scan the entire Praxis codebase for AST vulnerabilities."""
+            return _scan_praxis_source()
+
+    # ── Memory profiling ─────────────────────────────────────────────
+    if _memory_summary is not None:
+
+        @app.get("/v20/memory/summary")
+        def memory_summary_ep():
+            """Current memory usage and GC statistics."""
+            return _memory_summary()
+
+        @app.get("/v20/memory/gc")
+        def memory_gc_ep():
+            """Garbage collector diagnostics."""
+            return _gc_diagnostics()
+
+    # ── Architecture governance ──────────────────────────────────────
+    if _architecture_report is not None:
+
+        @app.get("/v20/architecture/report")
+        def architecture_report_ep():
+            """Full architectural fitness report — layer violations, cycles, metrics."""
+            return _architecture_report()
+
+        @app.get("/v20/architecture/violations")
+        def architecture_violations_ep():
+            """Check for forbidden cross-layer import violations."""
+            violations = _check_layer_violations()
+            return {"violations": [v.to_dict() for v in violations], "count": len(violations)}
+
+        @app.get("/v20/architecture/dependencies")
+        def architecture_deps_ep():
+            """Full internal dependency graph."""
+            return _dependency_graph()
+
+        @app.get("/v20/architecture/cycles")
+        def architecture_cycles_ep():
+            """Detect circular import chains."""
+            cycles = _detect_cycles()
+            return {"cycles": cycles, "count": len(cycles)}
+
+        @app.get("/v20/architecture/metrics")
+        def architecture_metrics_ep():
+            """Per-module metrics — lines, fan-in, fan-out, instability."""
+            return {"modules": _module_metrics()}
+
+        @app.get("/v20/architecture/entrypoints")
+        def architecture_entrypoints_ep():
+            """Check for __name__ == '__main__' hygiene violations."""
+            return _check_entrypoint_hygiene()
+
+    # ── Red team / guardrail testing ─────────────────────────────────
+    if _red_team_summary is not None:
+
+        @app.get("/v20/redteam/summary")
+        def redteam_summary_ep():
+            """Quick red team pass/fail assessment (CI gate)."""
+            return _red_team_summary()
+
+        @app.post("/v20/redteam/run")
+        def redteam_run_ep():
+            """Execute the full red team adversarial suite."""
+            result = _run_red_team()
+            return result.to_dict()
+
+        class GuardrailTestRequest(BaseModel):
+            payload: str
+
+        @app.post("/v20/redteam/test-guardrail")
+        def redteam_test_guardrail_ep(req: GuardrailTestRequest):
+            """Test a single adversarial payload against guardrails."""
+            return _test_guardrail(req.payload)
+
+        @app.get("/v20/redteam/payloads")
+        def redteam_payloads_ep():
+            """List all built-in adversarial payload categories."""
+            payloads = _generate_payloads()
+            categories = {}
+            for cat, payload in payloads:
+                cat_name = cat.value if hasattr(cat, 'value') else str(cat)
+                if cat_name not in categories:
+                    categories[cat_name] = []
+                categories[cat_name].append(payload[:80])
+            return {"categories": categories, "total": len(payloads)}
+
+    # ── Stress testing ───────────────────────────────────────────────
+    if _classify_routes is not None:
+
+        @app.get("/v20/stress/routes")
+        def stress_routes_ep():
+            """Classify all routes by async/sync and CPU-bound risk."""
+            classifications = _classify_routes(app)
+            return {
+                "routes": [c.to_dict() for c in classifications],
+                "total": len(classifications),
+                "high_risk": sum(1 for c in classifications if c.cpu_bound_risk == "high"),
+            }
+
+        @app.get("/v20/stress/schemathesis")
+        def stress_schemathesis_ep():
+            """Schemathesis property-based fuzzing configuration."""
+            return _schemathesis_config()
+
+        @app.get("/v20/stress/report")
+        def stress_report_ep():
+            """Comprehensive stress-test recommendation report."""
+            report = _generate_stress_report(app)
+            return report.to_dict()
+
+    # ── v20 Platform Health ──────────────────────────────────────────
+    @app.get("/v20/health")
+    def v20_health_ep():
+        """v20 stress testing & architecture hardening health check."""
+        return {
+            "persistence": _pool_stats is not None,
+            "ast_security": _safe_parse is not None,
+            "memory_profiler": _memory_summary is not None,
+            "architecture": _architecture_report is not None,
+            "red_team": _red_team_summary is not None,
+            "stress": _classify_routes is not None,
         }
 
     return app

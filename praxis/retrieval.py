@@ -229,18 +229,33 @@ def reciprocal_rank_fusion(
     ``score(d) = Σ  1 / (k + rank_i(d))``
 
     RRF is score-magnitude-agnostic — it only uses rank position.
+
+    **Deterministic tie-breaking** (v20 hardening):
+    When two documents receive identical fused scores (highly probable
+    with fractional addition), ties are broken by:
+      1. Raw BM25 score from the first (sparse) list — higher is better
+      2. Tool name (lexicographic) — guarantees idempotent ordering
+
+    This ensures identical queries always return identical result
+    orderings, which is critical for agentic context-window stability.
     """
     fusion: Dict[str, float] = defaultdict(float)
     tool_map: Dict[str, Any] = {}
+    # Preserve raw sparse scores for deterministic tie-breaking
+    sparse_scores: Dict[str, float] = {}
 
-    for rlist in ranked_lists:
-        for rank, (tool, _score) in enumerate(rlist, start=1):
+    for list_idx, rlist in enumerate(ranked_lists):
+        for rank, (tool, raw_score) in enumerate(rlist, start=1):
             key = tool.name
             tool_map[key] = tool
             fusion[key] += 1.0 / (k + rank)
+            # First list is the sparse (BM25) scorer by convention
+            if list_idx == 0:
+                sparse_scores[key] = raw_score
 
     merged = [(tool_map[name], score) for name, score in fusion.items()]
-    merged.sort(key=lambda x: x[1], reverse=True)
+    # Deterministic sort: RRF desc → sparse score desc → name asc
+    merged.sort(key=lambda x: (-x[1], -sparse_scores.get(x[0].name, 0.0), x[0].name))
     return merged
 
 

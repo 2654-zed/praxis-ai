@@ -1,0 +1,60 @@
+[
+  {
+    "entry_id": "52d0dd3f9174",
+    "action": "tool_search",
+    "actor": "tester",
+    "team": "engineering",
+    "details": {
+      "query": "CRM"
+    },
+    "timestamp": 1771703108.5964842
+  },
+  {
+    "entry_id": "c1d59f2a9acd",
+    "action": "config_changed",
+    "actor": "admin",
+    "team": "default",
+    "details": {
+      "key": "test"
+    },
+    "timestamp": 1771703108.6001866
+  },
+  {
+    "entry_id": "7259759c7824",
+    "action": "config_changed",
+    "actor": "admin",
+    "team": "default",
+    "details": {
+      "policy_created": "4328b05ee9",
+      "name": "Block Risky Tool"
+    },
+    "timestamp": 1771703108.629273
+  },
+  {
+    "entry_id": "59e12dc7854f",
+    "action": "config_changed",
+    "actor": "admin",
+    "team": "default",
+    "details": {
+      "policy_created": "a0420faf98",
+      "name": "Block ForbiddenTool Test"
+    },
+    "timestamp": 1771703108.6496477
+  },
+  {
+    "entry_id": "64f10d7dca45",
+    "action": "policy_violation",
+    "actor": "system",
+    "team": "default",
+    "details": {
+      "tool": "ForbiddenToolTest",
+      "violations": [
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        }
+      ]
+    },
+    "timestamp": 1771703108.663791
+  }
+]

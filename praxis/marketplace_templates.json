@@ -1,0 +1,198 @@
+{
+  "5245398cfd89": {
+    "template_id": "5245398cfd89",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771703108.0538568,
+    "updated_at": 1771703108.0538573,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "b0aa76dcff9c": {
+    "template_id": "b0aa76dcff9c",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771703108.0856242,
+    "updated_at": 1771703108.0856247,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "f49130bc599f": {
+    "template_id": "f49130bc599f",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 1,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771703108.1018836,
+    "updated_at": 1771703108.101884,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "d11474da0324": {
+    "template_id": "d11474da0324",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 4.0,
+    "review_count": 1,
+    "created_at": 1771703108.1302176,
+    "updated_at": 1771703108.1302176,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "7c4d79d461b2": {
+    "template_id": "7c4d79d461b2",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": true,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771703108.1676626,
+    "updated_at": 1771703108.1676629,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "b035ee608f4f": {
+    "template_id": "b035ee608f4f",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": false,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771703108.206969,
+    "updated_at": 1771703108.206969,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "6b0420655ab6": {
+    "template_id": "6b0420655ab6",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771703108.2218332,
+    "updated_at": 1771703108.2218335,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  }
+}

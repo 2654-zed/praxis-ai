@@ -1,0 +1,30 @@
+{
+  "4328b05ee9": {
+    "policy_id": "4328b05ee9",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771703108.6281223
+  },
+  "a0420faf98": {
+    "policy_id": "a0420faf98",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771703108.6484296
+  }
+}
