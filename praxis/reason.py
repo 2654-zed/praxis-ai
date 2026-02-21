@@ -332,6 +332,31 @@ except Exception:
     except Exception:
         _CONDUIT_OK = False
 
+# ── v16 The Resonance: AGI as Continuous Human-Machine Relationship ──
+try:
+    from .resonance import (
+        assess_resonance as _assess_resonance,
+        score_temporal_substrate as _score_temporal,
+        score_code_agency as _score_code_agency,
+        score_latent_steering as _score_latent,
+        score_conductor_dashboard as _score_conductor,
+        score_meta_awareness as _score_meta_aware,
+    )
+    _RESONANCE_OK = True
+except Exception:
+    try:
+        from resonance import (
+            assess_resonance as _assess_resonance,
+            score_temporal_substrate as _score_temporal,
+            score_code_agency as _score_code_agency,
+            score_latent_steering as _score_latent,
+            score_conductor_dashboard as _score_conductor,
+            score_meta_awareness as _score_meta_aware,
+        )
+        _RESONANCE_OK = True
+    except Exception:
+        _RESONANCE_OK = False
+
 
 # ======================================================================
 # Data structures
@@ -1570,6 +1595,40 @@ def deep_reason_v2(
             ))
         except Exception as exc:
             log.debug("v2 conduit enrichment: %s", exc)
+
+    # ── PHASE 1k: Resonance — AGI Relational Architecture Assessment ──
+    resonance_ctx = None
+    if _RESONANCE_OK:
+        try:
+            t_res = time.time()
+            res_result = _assess_resonance(query)
+            resonance_ctx = {
+                "resonance": res_result["resonance_score"],
+                "grade": res_result["grade"],
+                "temporal_grade": res_result["temporal_substrate"]["grade"],
+                "code_agency_grade": res_result["code_agency"]["grade"],
+                "latent_steering_grade": res_result["latent_steering"]["grade"],
+                "conductor_grade": res_result["conductor_dashboard"]["grade"],
+                "meta_awareness_grade": res_result["meta_awareness"]["grade"],
+                "trap_grade": res_result["trap_grade"],
+                "dsrp_grade": res_result["dsrp_grade"],
+                "wisdom_agents": res_result["wisdom_agents_active"],
+                "resonance_detected": res_result["resonance_detected"],
+                "warnings": res_result["warnings"],
+            }
+            steps.append(ReasoningStep(
+                phase="resonance",
+                action=f"Resonance: {res_result['resonance_score']:.2f} "
+                       f"(grade {res_result['grade']}), "
+                       f"temporal={res_result['temporal_substrate']['grade']}, "
+                       f"conductor={res_result['conductor_dashboard']['grade']}, "
+                       f"TRAP={res_result['trap_grade']}, "
+                       f"resonance={'YES' if res_result['resonance_detected'] else 'no'}",
+                detail=resonance_ctx,
+                elapsed_ms=int((time.time() - t_res) * 1000),
+            ))
+        except Exception as exc:
+            log.debug("v2 resonance enrichment: %s", exc)
 
     # ── PHASE 2: PRISM Pipeline ───────────────────────────────────
     t_prism = time.time()

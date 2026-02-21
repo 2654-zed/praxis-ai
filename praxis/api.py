@@ -213,6 +213,36 @@ try:
         get_identity_protocol as _get_identity_protocol,
         get_codes_framework as _get_codes_framework,
     )
+    from .resonance import (
+        assess_resonance as _assess_resonance_v16,
+        score_temporal_substrate as _score_temporal,
+        score_code_agency as _score_code_agency,
+        score_latent_steering as _score_latent,
+        score_conductor_dashboard as _score_conductor,
+        score_meta_awareness as _score_meta_aware,
+        score_resonance_index as _score_res_index,
+        score_flow_state as _score_flow,
+        score_loop_coherence as _score_loop_coh,
+        score_hitl_responsiveness as _score_hitl,
+        score_steering_precision as _score_steer_prec,
+        score_wisdom_coverage as _score_wisdom_cov,
+        score_ontological_alignment as _score_onto_align,
+        score_trap as _score_trap,
+        score_dsrp as _score_dsrp,
+        detect_wisdom_agents as _detect_wisdom_agents,
+        get_pillars as _get_res_pillars,
+        get_pillar as _get_res_pillar,
+        get_trap_pillars as _get_trap_pillars,
+        get_trap_pillar as _get_trap_pillar,
+        get_dsrp_rules as _get_dsrp_rules,
+        get_dsrp_rule as _get_dsrp_rule,
+        get_wisdom_agents as _get_wisdom_agents,
+        get_wisdom_agent as _get_wisdom_agent,
+        get_telemetry_metrics as _get_res_telemetry,
+        get_telemetry_metric as _get_res_telem_metric,
+        get_reinterpretation_table as _get_res_reinterpret,
+        get_resonant_chamber as _get_resonant_chamber,
+    )
     from . import config as _cfg
 except Exception:
     from data import get_all_categories, TOOLS, get_all_tools_dict
@@ -523,6 +553,48 @@ except Exception:
         _get_telemetry_metrics = _get_telemetry_metric = None
         _get_gwt_components = _get_coala_memory = _get_reinterpret = None
         _get_identity_protocol = _get_codes_framework = None
+    try:
+        from resonance import (
+            assess_resonance as _assess_resonance_v16,
+            score_temporal_substrate as _score_temporal,
+            score_code_agency as _score_code_agency,
+            score_latent_steering as _score_latent,
+            score_conductor_dashboard as _score_conductor,
+            score_meta_awareness as _score_meta_aware,
+            score_resonance_index as _score_res_index,
+            score_flow_state as _score_flow,
+            score_loop_coherence as _score_loop_coh,
+            score_hitl_responsiveness as _score_hitl,
+            score_steering_precision as _score_steer_prec,
+            score_wisdom_coverage as _score_wisdom_cov,
+            score_ontological_alignment as _score_onto_align,
+            score_trap as _score_trap,
+            score_dsrp as _score_dsrp,
+            detect_wisdom_agents as _detect_wisdom_agents,
+            get_pillars as _get_res_pillars,
+            get_pillar as _get_res_pillar,
+            get_trap_pillars as _get_trap_pillars,
+            get_trap_pillar as _get_trap_pillar,
+            get_dsrp_rules as _get_dsrp_rules,
+            get_dsrp_rule as _get_dsrp_rule,
+            get_wisdom_agents as _get_wisdom_agents,
+            get_wisdom_agent as _get_wisdom_agent,
+            get_telemetry_metrics as _get_res_telemetry,
+            get_telemetry_metric as _get_res_telem_metric,
+            get_reinterpretation_table as _get_res_reinterpret,
+            get_resonant_chamber as _get_resonant_chamber,
+        )
+    except Exception:
+        _assess_resonance_v16 = _score_temporal = _score_code_agency = None
+        _score_latent = _score_conductor = _score_meta_aware = None
+        _score_res_index = _score_flow = _score_loop_coh = None
+        _score_hitl = _score_steer_prec = _score_wisdom_cov = None
+        _score_onto_align = _score_trap = _score_dsrp = None
+        _detect_wisdom_agents = _get_res_pillars = _get_res_pillar = None
+        _get_trap_pillars = _get_trap_pillar = _get_dsrp_rules = None
+        _get_dsrp_rule = _get_wisdom_agents = _get_wisdom_agent = None
+        _get_res_telemetry = _get_res_telem_metric = None
+        _get_res_reinterpret = _get_resonant_chamber = None
     try:
         import config as _cfg
     except Exception:
@@ -2442,6 +2514,171 @@ def create_app():
         def conduit_codes_ep():
             """Return CODES resonance intelligence framework specification."""
             return _get_codes_framework()
+
+    # ── v16  The Resonance: AGI as Continuous Human-Machine Relationship ──
+    if _assess_resonance_v16 is not None:
+
+        class ResonanceQuery(BaseModel):
+            query: str = Field(..., description="Query or system description to assess for resonance")
+
+        @app.post("/resonance/assess")
+        def resonance_assess_ep(body: ResonanceQuery):
+            """Master resonance assessment — 5 pillars + 7 telemetry + TRAP + DSRP + Wisdom agents."""
+            return _assess_resonance_v16(body.query)
+
+        # --- Pillar scoring endpoints ---
+        @app.post("/resonance/temporal-substrate")
+        def resonance_temporal_ep(body: ResonanceQuery):
+            """Score Pillar I — The Temporal Substrate."""
+            return _score_temporal(body.query)
+
+        @app.post("/resonance/code-agency")
+        def resonance_code_agency_ep(body: ResonanceQuery):
+            """Score Pillar II — Code Speaking Through the Model."""
+            return _score_code_agency(body.query)
+
+        @app.post("/resonance/latent-steering")
+        def resonance_latent_ep(body: ResonanceQuery):
+            """Score Pillar III — Latent Space Steering & Aesthetics."""
+            return _score_latent(body.query)
+
+        @app.post("/resonance/conductor-dashboard")
+        def resonance_conductor_ep(body: ResonanceQuery):
+            """Score Pillar IV — The Conductor Dashboard."""
+            return _score_conductor(body.query)
+
+        @app.post("/resonance/meta-awareness")
+        def resonance_meta_ep(body: ResonanceQuery):
+            """Score Pillar V — Systemic Meta-Awareness."""
+            return _score_meta_aware(body.query)
+
+        # --- Telemetry scoring endpoints ---
+        @app.post("/resonance/telemetry/resonance-index")
+        def resonance_telem_ri_ep(body: ResonanceQuery):
+            """Score telemetry: Resonance Index R_i."""
+            return _score_res_index(body.query)
+
+        @app.post("/resonance/telemetry/flow-state")
+        def resonance_telem_fs_ep(body: ResonanceQuery):
+            """Score telemetry: Flow State Duration F_s."""
+            return _score_flow(body.query)
+
+        @app.post("/resonance/telemetry/loop-coherence")
+        def resonance_telem_lc_ep(body: ResonanceQuery):
+            """Score telemetry: Loop Coherence L_c."""
+            return _score_loop_coh(body.query)
+
+        @app.post("/resonance/telemetry/hitl-responsiveness")
+        def resonance_telem_hr_ep(body: ResonanceQuery):
+            """Score telemetry: HITL Responsiveness H_r."""
+            return _score_hitl(body.query)
+
+        @app.post("/resonance/telemetry/steering-precision")
+        def resonance_telem_sp_ep(body: ResonanceQuery):
+            """Score telemetry: Steering Precision S_p."""
+            return _score_steer_prec(body.query)
+
+        @app.post("/resonance/telemetry/wisdom-coverage")
+        def resonance_telem_wc_ep(body: ResonanceQuery):
+            """Score telemetry: Wisdom Layer Coverage W_c."""
+            return _score_wisdom_cov(body.query)
+
+        @app.post("/resonance/telemetry/ontological-alignment")
+        def resonance_telem_oa_ep(body: ResonanceQuery):
+            """Score telemetry: Ontological Alignment O_a."""
+            return _score_onto_align(body.query)
+
+        # --- TRAP & DSRP scoring ---
+        @app.post("/resonance/trap")
+        def resonance_trap_ep(body: ResonanceQuery):
+            """Score TRAP framework — Transparency, Reasoning, Adaptation, Perception."""
+            return _score_trap(body.query)
+
+        @app.post("/resonance/dsrp")
+        def resonance_dsrp_ep(body: ResonanceQuery):
+            """Score DSRP theory — Distinctions, Systems, Relationships, Perspectives."""
+            return _score_dsrp(body.query)
+
+        @app.post("/resonance/wisdom-detect")
+        def resonance_wisdom_detect_ep(body: ResonanceQuery):
+            """Detect which Wisdom Layer agents would activate for a query."""
+            return {"agents": _detect_wisdom_agents(body.query)}
+
+        # --- Reference data GET endpoints ---
+        @app.get("/resonance/pillars")
+        def resonance_pillars_ep():
+            """Return all five resonant architecture pillars."""
+            return {"pillars": _get_res_pillars()}
+
+        @app.get("/resonance/pillars/{pillar_id}")
+        def resonance_pillar_ep(pillar_id: str):
+            """Return a single pillar by id."""
+            p = _get_res_pillar(pillar_id)
+            if p is None:
+                return {"error": f"Pillar '{pillar_id}' not found"}
+            return p
+
+        @app.get("/resonance/trap-pillars")
+        def resonance_trap_pillars_ep():
+            """Return all four TRAP framework pillars."""
+            return {"pillars": _get_trap_pillars()}
+
+        @app.get("/resonance/trap-pillars/{pillar_id}")
+        def resonance_trap_pillar_ep(pillar_id: str):
+            """Return a single TRAP pillar by id."""
+            p = _get_trap_pillar(pillar_id)
+            if p is None:
+                return {"error": f"TRAP pillar '{pillar_id}' not found"}
+            return p
+
+        @app.get("/resonance/dsrp-rules")
+        def resonance_dsrp_rules_ep():
+            """Return all four DSRP rules."""
+            return {"rules": _get_dsrp_rules()}
+
+        @app.get("/resonance/dsrp-rules/{rule_id}")
+        def resonance_dsrp_rule_ep(rule_id: str):
+            """Return a single DSRP rule by id."""
+            r = _get_dsrp_rule(rule_id)
+            if r is None:
+                return {"error": f"DSRP rule '{rule_id}' not found"}
+            return r
+
+        @app.get("/resonance/wisdom-agents")
+        def resonance_wisdom_agents_ep():
+            """Return all seven Wisdom Layer agents."""
+            return {"agents": _get_wisdom_agents()}
+
+        @app.get("/resonance/wisdom-agents/{agent_id}")
+        def resonance_wisdom_agent_ep(agent_id: str):
+            """Return a single Wisdom agent by id."""
+            a = _get_wisdom_agent(agent_id)
+            if a is None:
+                return {"error": f"Wisdom agent '{agent_id}' not found"}
+            return a
+
+        @app.get("/resonance/telemetry-metrics")
+        def resonance_telemetry_metrics_ep():
+            """Return all seven resonance telemetry metrics."""
+            return {"metrics": _get_res_telemetry()}
+
+        @app.get("/resonance/telemetry-metrics/{metric_id}")
+        def resonance_telemetry_metric_ep(metric_id: str):
+            """Return a single telemetry metric by id."""
+            m = _get_res_telem_metric(metric_id)
+            if m is None:
+                return {"error": f"Telemetry metric '{metric_id}' not found"}
+            return m
+
+        @app.get("/resonance/reinterpretation")
+        def resonance_reinterpretation_ep():
+            """Return Traditional vs Resonant paradigm reinterpretation table."""
+            return {"reinterpretation": _get_res_reinterpret()}
+
+        @app.get("/resonance/chamber")
+        def resonance_chamber_ep():
+            """Return the Resonant Chamber theory framework."""
+            return _get_resonant_chamber()
 
     # ── v11b  Real Self-Introspection endpoints ────────────────────
     if _self_diagnose is not None:
