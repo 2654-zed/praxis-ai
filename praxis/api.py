@@ -389,6 +389,48 @@ try:
         schemathesis_config as _schemathesis_config,
         generate_stress_report as _generate_stress_report,
     )
+    # ── v21: Enterprise Cognitive Interface ────────────────────────
+    from .cognitive import (
+        cognitive_summary as _cognitive_summary,
+        get_workspace as _get_cognitive_workspace,
+        compute_phi as _compute_phi,
+        compute_structural_entropy as _compute_cog_entropy,
+        entropy_reduction_plan as _entropy_reduction_plan,
+    )
+    from .observability import (
+        observability_report as _observability_report,
+        get_collector as _get_trace_collector,
+        parse_chain_of_thought as _parse_cot,
+        record_telemetry as _record_telemetry,
+        telemetry_summary as _telemetry_summary,
+    )
+    from .knowledge_graph import (
+        knowledge_graph_summary as _kg_summary,
+        build_graph_from_text as _build_kg,
+        get_graph as _get_kg,
+        extract_entities as _extract_entities_v21,
+        extract_relationships as _extract_relationships,
+    )
+    from .compliance import (
+        compliance_posture as _compliance_posture,
+        regulatory_map as _regulatory_map_v21,
+        get_audit_trail as _get_audit_trail_v21,
+        audit_log as _audit_log_v21,
+        mask_pii as _mask_pii,
+        detect_pii as _detect_pii,
+    )
+    from .ai_economics import (
+        economics_dashboard as _economics_dashboard,
+        token_cost as _token_cost,
+        calculate_roi as _calculate_roi,
+        get_ledger as _get_ledger,
+        MODEL_PRICING as _MODEL_PRICING,
+    )
+    from .vendor_risk import (
+        vendor_risk_dashboard as _vendor_risk_dashboard,
+        get_registry as _get_vendor_registry,
+        compute_risk_score as _compute_vendor_risk,
+    )
 except ImportError:
     from data import get_all_categories, TOOLS, get_all_tools_dict
     from engine import find_tools
@@ -892,6 +934,36 @@ except ImportError:
         from stress import classify_routes as _classify_routes
         from stress import schemathesis_config as _schemathesis_config
         from stress import generate_stress_report as _generate_stress_report
+        # ── v21 fallback imports ──
+        from cognitive import cognitive_summary as _cognitive_summary
+        from cognitive import get_workspace as _get_cognitive_workspace
+        from cognitive import compute_phi as _compute_phi
+        from cognitive import compute_structural_entropy as _compute_cog_entropy
+        from cognitive import entropy_reduction_plan as _entropy_reduction_plan
+        from observability import observability_report as _observability_report
+        from observability import get_collector as _get_trace_collector
+        from observability import parse_chain_of_thought as _parse_cot
+        from observability import record_telemetry as _record_telemetry
+        from observability import telemetry_summary as _telemetry_summary
+        from knowledge_graph import knowledge_graph_summary as _kg_summary
+        from knowledge_graph import build_graph_from_text as _build_kg
+        from knowledge_graph import get_graph as _get_kg
+        from knowledge_graph import extract_entities as _extract_entities_v21
+        from knowledge_graph import extract_relationships as _extract_relationships
+        from compliance import compliance_posture as _compliance_posture
+        from compliance import regulatory_map as _regulatory_map_v21
+        from compliance import get_audit_trail as _get_audit_trail_v21
+        from compliance import audit_log as _audit_log_v21
+        from compliance import mask_pii as _mask_pii
+        from compliance import detect_pii as _detect_pii
+        from ai_economics import economics_dashboard as _economics_dashboard
+        from ai_economics import token_cost as _token_cost
+        from ai_economics import calculate_roi as _calculate_roi
+        from ai_economics import get_ledger as _get_ledger
+        from ai_economics import MODEL_PRICING as _MODEL_PRICING
+        from vendor_risk import vendor_risk_dashboard as _vendor_risk_dashboard
+        from vendor_risk import get_registry as _get_vendor_registry
+        from vendor_risk import compute_risk_score as _compute_vendor_risk
     except ImportError:
         _get_connector_registry = _execute_connector = _list_connectors = None
         _decompose_request = _generate_plan = _execute_plan = _assemble_and_run = None
@@ -913,6 +985,17 @@ except ImportError:
         _detect_cycles = _module_metrics = _check_entrypoint_hygiene = None
         _run_red_team = _red_team_summary = _generate_payloads = _test_guardrail = None
         _classify_routes = _schemathesis_config = _generate_stress_report = None
+        _cognitive_summary = _get_cognitive_workspace = _compute_phi = None
+        _compute_cog_entropy = _entropy_reduction_plan = None
+        _observability_report = _get_trace_collector = _parse_cot = None
+        _record_telemetry = _telemetry_summary = None
+        _kg_summary = _build_kg = _get_kg = None
+        _extract_entities_v21 = _extract_relationships = None
+        _compliance_posture = _regulatory_map_v21 = None
+        _get_audit_trail_v21 = _audit_log_v21 = _mask_pii = _detect_pii = None
+        _economics_dashboard = _token_cost = _calculate_roi = _get_ledger = None
+        _MODEL_PRICING = None
+        _vendor_risk_dashboard = _get_vendor_registry = _compute_vendor_risk = None
 
 try:
     from fastapi import FastAPI
@@ -3889,6 +3972,231 @@ def create_app():
             "architecture": _architecture_report is not None,
             "red_team": _red_team_summary is not None,
             "stress": _classify_routes is not None,
+        }
+
+    # ==================================================================
+    # v21 — Enterprise Cognitive Interface
+    # ==================================================================
+
+    # ── Cognitive (GWT, Phi, Entropy) ────────────────────────────────
+    if _cognitive_summary is not None:
+
+        @app.get("/v21/cognitive/summary")
+        def cognitive_summary_ep():
+            """Full cognitive summary: workspace, Φ, entropy, reduction plan."""
+            return _cognitive_summary()
+
+        @app.post("/v21/cognitive/agent")
+        def cognitive_register_agent_ep(body: dict):
+            """Register a new agent in the Global Workspace."""
+            ws = _get_cognitive_workspace()
+            ws.register_agent(body.get("agent_id", "anon"), body.get("role", "general"))
+            return {"status": "registered", "agent_id": body.get("agent_id")}
+
+        @app.delete("/v21/cognitive/agent/{agent_id}")
+        def cognitive_unregister_agent_ep(agent_id: str):
+            """Remove an agent from the workspace."""
+            ws = _get_cognitive_workspace()
+            ws.unregister_agent(agent_id)
+            return {"status": "removed", "agent_id": agent_id}
+
+        @app.post("/v21/cognitive/heartbeat")
+        def cognitive_heartbeat_ep(body: dict):
+            """Send heartbeat for an agent."""
+            ws = _get_cognitive_workspace()
+            ws.heartbeat(body.get("agent_id", ""))
+            return {"status": "ok"}
+
+        @app.post("/v21/cognitive/broadcast")
+        def cognitive_broadcast_ep(body: dict):
+            """Submit a broadcast event to the workspace."""
+            ws = _get_cognitive_workspace()
+            ws.submit_broadcast(
+                agent_id=body.get("agent_id", "anon"),
+                event_type=body.get("event_type", "info"),
+                priority=float(body.get("priority", 0.5)),
+                payload=body.get("payload", {}),
+            )
+            return {"status": "submitted"}
+
+    # ── Observability (Tracing, CoT, Telemetry) ─────────────────────
+    if _observability_report is not None:
+
+        @app.get("/v21/observability/report")
+        def observability_report_ep():
+            """Full observability report: tracing, telemetry, recent traces."""
+            return _observability_report()
+
+        @app.post("/v21/observability/trace")
+        def observability_create_trace_ep(body: dict):
+            """Create a new trace with a root span."""
+            import time as _time
+            collector = _get_trace_collector()
+            trace = collector.create_trace(body.get("metadata", {}))
+            root = trace.root_span
+            root.operation = body.get("operation", "manual")
+            root.agent_id = body.get("agent_id", "")
+            root.attributes = body.get("attributes", {})
+            root.finish()
+            return trace.to_dict()
+
+        @app.post("/v21/observability/cot")
+        def observability_parse_cot_ep(body: dict):
+            """Parse chain-of-thought text into a reasoning tree."""
+            tree = _parse_cot(body.get("text", ""), body.get("query", ""))
+            return tree.to_dict()
+
+    # ── Knowledge Graph (GraphRAG) ───────────────────────────────────
+    if _kg_summary is not None:
+
+        @app.get("/v21/knowledge/summary")
+        def knowledge_summary_ep():
+            """Knowledge graph summary statistics."""
+            return _kg_summary()
+
+        @app.get("/v21/knowledge/graph")
+        def knowledge_graph_ep():
+            """Get the full knowledge graph as JSON."""
+            return _get_kg().to_dict()
+
+        @app.post("/v21/knowledge/build")
+        def knowledge_build_ep(body: dict):
+            """Build a knowledge graph from input text."""
+            text = body.get("text", "")
+            if not text:
+                return {"error": "text required"}
+            graph = _build_kg(text)
+            return graph.to_dict()
+
+        @app.post("/v21/knowledge/entities")
+        def knowledge_entities_ep(body: dict):
+            """Extract entities from text."""
+            return {"entities": _extract_entities_v21(body.get("text", ""))}
+
+    # ── Compliance (Regulatory, Audit, PII) ──────────────────────────
+    if _compliance_posture is not None:
+
+        @app.get("/v21/compliance/posture")
+        def compliance_posture_ep():
+            """Full compliance posture: grade, score, regulatory map, audit."""
+            return _compliance_posture()
+
+        @app.get("/v21/compliance/regulatory")
+        def compliance_regulatory_ep():
+            """Regulatory mapping across EU AI Act, HIPAA, GDPR."""
+            return _regulatory_map_v21()
+
+        @app.post("/v21/compliance/audit")
+        def compliance_audit_log_ep(body: dict):
+            """Log an audit event to the immutable trail."""
+            _audit_log_v21(
+                event_type=body.get("event_type", "generic"),
+                actor=body.get("actor", "system"),
+                resource=body.get("resource", ""),
+                action=body.get("action", ""),
+                details=body.get("details", {}),
+            )
+            return {"status": "logged"}
+
+        @app.get("/v21/compliance/audit/trail")
+        def compliance_audit_trail_ep():
+            """Retrieve the immutable audit trail."""
+            trail = _get_audit_trail_v21()
+            entries = trail.query()
+            return {"entries": [e.to_dict() for e in entries], "stats": trail.stats()}
+
+        @app.get("/v21/compliance/audit/verify")
+        def compliance_audit_verify_ep():
+            """Verify integrity of the audit hash chain."""
+            trail = _get_audit_trail_v21()
+            return {"valid": trail.verify_integrity()}
+
+        @app.post("/v21/compliance/mask")
+        def compliance_mask_pii_ep(body: dict):
+            """Mask PII in the provided text."""
+            result = _mask_pii(body.get("text", ""), body.get("categories"))
+            return result.to_dict()
+
+        @app.post("/v21/compliance/detect")
+        def compliance_detect_pii_ep(body: dict):
+            """Detect PII in the provided text without masking."""
+            return _detect_pii(body.get("text", ""))
+
+    # ── AI Economics (Cost, ROI, Budget) ─────────────────────────────
+    if _economics_dashboard is not None:
+
+        @app.get("/v21/economics/dashboard")
+        def economics_dashboard_ep():
+            """Full economics dashboard: usage, ROI, budget, waste, pricing."""
+            return _economics_dashboard()
+
+        @app.post("/v21/economics/cost")
+        def economics_cost_ep(body: dict):
+            """Calculate token cost for a given model and token counts."""
+            return _token_cost(
+                input_tokens=body.get("input_tokens", 0),
+                output_tokens=body.get("output_tokens", 0),
+                model=body.get("model", "gpt-4o"),
+            )
+
+        @app.post("/v21/economics/record")
+        def economics_record_ep(body: dict):
+            """Record a usage entry in the economics ledger."""
+            ledger = _get_ledger()
+            cost_info = _token_cost(
+                input_tokens=body.get("input_tokens", 0),
+                output_tokens=body.get("output_tokens", 0),
+                model=body.get("model", "gpt-4o"),
+            )
+            ledger.record(
+                user_id=body.get("user_id", "anonymous"),
+                department=body.get("department", ""),
+                model=body.get("model", "gpt-4o"),
+                input_tokens=body.get("input_tokens", 0),
+                output_tokens=body.get("output_tokens", 0),
+                cost=cost_info.get("total_cost", 0.0),
+                operation=body.get("operation", "query"),
+            )
+            return {"status": "recorded", "cost": cost_info}
+
+        @app.get("/v21/economics/usage")
+        def economics_usage_ep():
+            """Get usage ledger summary."""
+            return _get_ledger().summary()
+
+    # ── Vendor Risk (Registry, Scoring, Lineage) ─────────────────────
+    if _vendor_risk_dashboard is not None:
+
+        @app.get("/v21/vendor/dashboard")
+        def vendor_dashboard_ep():
+            """Full vendor risk management dashboard."""
+            return _vendor_risk_dashboard()
+
+        @app.get("/v21/vendor/registry")
+        def vendor_registry_ep():
+            """List all registered vendors with risk scores."""
+            reg = _get_vendor_registry()
+            vendors = reg.list_vendors()
+            result = []
+            for v in vendors:
+                d = v.to_dict()
+                risk = _compute_vendor_risk(v)
+                d["risk_score"] = risk.get("risk_score", 0)
+                d["risk_level"] = risk.get("risk_level", "unknown")
+                result.append(d)
+            return {"vendors": result}
+
+    # ── v21 Platform Health ──────────────────────────────────────────
+    @app.get("/v21/health")
+    def v21_health_ep():
+        """v21 enterprise cognitive interface health check."""
+        return {
+            "cognitive": _cognitive_summary is not None,
+            "observability": _observability_report is not None,
+            "knowledge_graph": _kg_summary is not None,
+            "compliance": _compliance_posture is not None,
+            "ai_economics": _economics_dashboard is not None,
+            "vendor_risk": _vendor_risk_dashboard is not None,
         }
 
     return app
