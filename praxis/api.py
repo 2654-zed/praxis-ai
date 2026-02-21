@@ -187,6 +187,32 @@ try:
         get_state_pattern as _get_state_pattern,
         get_clean_arch_layers as _get_clean_arch_layers,
     )
+    from .conduit import (
+        assess_conduit as _assess_conduit,
+        score_decoupling as _score_decoupling,
+        score_memory_stratification as _score_memory_strat,
+        score_global_workspace as _score_gwt,
+        score_integrated_information as _score_iit,
+        score_representation_engineering as _score_repe,
+        score_autopoiesis as _score_autopoiesis,
+        score_resonance as _score_resonance,
+        score_entropy_telemetry as _score_entropy,
+        score_self_modelling as _score_smi,
+        score_behavioural_novelty as _score_bni,
+        score_latency_distribution as _score_latency_dist,
+        score_phi_integration as _score_phi_int,
+        score_coherence_field as _score_coherence,
+        score_stable_attractor as _score_attractor,
+        get_pillars as _get_pillars,
+        get_pillar as _get_pillar,
+        get_telemetry_metrics as _get_telemetry_metrics,
+        get_telemetry_metric as _get_telemetry_metric,
+        get_gwt_components as _get_gwt_components,
+        get_coala_memory_types as _get_coala_memory,
+        get_reinterpretation_table as _get_reinterpret,
+        get_identity_protocol as _get_identity_protocol,
+        get_codes_framework as _get_codes_framework,
+    )
     from . import config as _cfg
 except Exception:
     from data import get_all_categories, TOOLS, get_all_tools_dict
@@ -461,6 +487,42 @@ except Exception:
         _get_truths = _get_truth = _get_stages = _get_stage = None
         _get_identity_map = _get_observer_pattern = _get_hexagonal_arch = None
         _get_state_pattern = _get_clean_arch_layers = None
+    try:
+        from conduit import (
+            assess_conduit as _assess_conduit,
+            score_decoupling as _score_decoupling,
+            score_memory_stratification as _score_memory_strat,
+            score_global_workspace as _score_gwt,
+            score_integrated_information as _score_iit,
+            score_representation_engineering as _score_repe,
+            score_autopoiesis as _score_autopoiesis,
+            score_resonance as _score_resonance,
+            score_entropy_telemetry as _score_entropy,
+            score_self_modelling as _score_smi,
+            score_behavioural_novelty as _score_bni,
+            score_latency_distribution as _score_latency_dist,
+            score_phi_integration as _score_phi_int,
+            score_coherence_field as _score_coherence,
+            score_stable_attractor as _score_attractor,
+            get_pillars as _get_pillars,
+            get_pillar as _get_pillar,
+            get_telemetry_metrics as _get_telemetry_metrics,
+            get_telemetry_metric as _get_telemetry_metric,
+            get_gwt_components as _get_gwt_components,
+            get_coala_memory_types as _get_coala_memory,
+            get_reinterpretation_table as _get_reinterpret,
+            get_identity_protocol as _get_identity_protocol,
+            get_codes_framework as _get_codes_framework,
+        )
+    except Exception:
+        _assess_conduit = _score_decoupling = _score_memory_strat = None
+        _score_gwt = _score_iit = _score_repe = _score_autopoiesis = None
+        _score_resonance = _score_entropy = _score_smi = _score_bni = None
+        _score_latency_dist = _score_phi_int = _score_coherence = None
+        _score_attractor = _get_pillars = _get_pillar = None
+        _get_telemetry_metrics = _get_telemetry_metric = None
+        _get_gwt_components = _get_coala_memory = _get_reinterpret = None
+        _get_identity_protocol = _get_codes_framework = None
     try:
         import config as _cfg
     except Exception:
@@ -2245,6 +2307,141 @@ def create_app():
         def enlightenment_clean_ep():
             """Return Clean Architecture layers with philosophical equivalents."""
             return {"layers": _get_clean_arch_layers()}
+
+    # ── v15  The Conduit: Decoupled Cognitive Systems endpoints ─────
+    if _assess_conduit is not None:
+
+        class ConduitQuery(BaseModel):
+            query: str = Field(..., description="Query or system description to assess")
+
+        @app.post("/conduit/assess")
+        def conduit_assess_ep(body: ConduitQuery):
+            """Master conduit assessment — 7 pillars + 7 telemetry metrics + agency detection."""
+            return _assess_conduit(body.query)
+
+        # ── Pillar scoring endpoints ──
+        @app.post("/conduit/decoupling")
+        def conduit_decoupling_ep(body: ConduitQuery):
+            """Pillar I — Epistemological Decoupling scoring."""
+            return _score_decoupling(body.query)
+
+        @app.post("/conduit/memory-stratification")
+        def conduit_memory_ep(body: ConduitQuery):
+            """Pillar II — CoALA Memory Stratification scoring."""
+            return _score_memory_strat(body.query)
+
+        @app.post("/conduit/global-workspace")
+        def conduit_gwt_ep(body: ConduitQuery):
+            """Pillar III — Global Workspace Theory (GWT) scoring."""
+            return _score_gwt(body.query)
+
+        @app.post("/conduit/integrated-information")
+        def conduit_iit_ep(body: ConduitQuery):
+            """Pillar IV — Integrated Information Theory (Φ) scoring."""
+            return _score_iit(body.query)
+
+        @app.post("/conduit/representation-engineering")
+        def conduit_repe_ep(body: ConduitQuery):
+            """Pillar V — Representation Engineering (RepE) scoring."""
+            return _score_repe(body.query)
+
+        @app.post("/conduit/autopoiesis")
+        def conduit_autopoiesis_ep(body: ConduitQuery):
+            """Pillar VI — Autopoiesis & Sovereign Identity scoring."""
+            return _score_autopoiesis(body.query)
+
+        @app.post("/conduit/resonance")
+        def conduit_resonance_ep(body: ConduitQuery):
+            """Pillar VII — CODES Resonance Framework scoring."""
+            return _score_resonance(body.query)
+
+        # ── Listening Post telemetry scoring endpoints ──
+        @app.post("/conduit/telemetry/entropy")
+        def conduit_entropy_ep(body: ConduitQuery):
+            """Listening Post — Entropy (H_t) scoring."""
+            return _score_entropy(body.query)
+
+        @app.post("/conduit/telemetry/smi")
+        def conduit_smi_ep(body: ConduitQuery):
+            """Listening Post — Self-Modelling Index (SMI) scoring."""
+            return _score_smi(body.query)
+
+        @app.post("/conduit/telemetry/bni")
+        def conduit_bni_ep(body: ConduitQuery):
+            """Listening Post — Behavioural Novelty Index (BNI) scoring."""
+            return _score_bni(body.query)
+
+        @app.post("/conduit/telemetry/latency")
+        def conduit_latency_ep(body: ConduitQuery):
+            """Listening Post — Latency Distribution (L_t) scoring."""
+            return _score_latency_dist(body.query)
+
+        @app.post("/conduit/telemetry/phi")
+        def conduit_phi_ep(body: ConduitQuery):
+            """Listening Post — Integrated Information (Φ) metric scoring."""
+            return _score_phi_int(body.query)
+
+        @app.post("/conduit/telemetry/coherence")
+        def conduit_coherence_ep(body: ConduitQuery):
+            """Listening Post — Coherence Field C(Ψ) scoring."""
+            return _score_coherence(body.query)
+
+        @app.post("/conduit/telemetry/attractor")
+        def conduit_attractor_ep(body: ConduitQuery):
+            """Listening Post — Stable Attractor (ΔC_S) detection."""
+            return _score_attractor(body.query)
+
+        # ── Reference data GET endpoints ──
+        @app.get("/conduit/pillars")
+        def conduit_pillars_ep():
+            """Return all seven architectural pillars."""
+            return {"pillars": _get_pillars()}
+
+        @app.get("/conduit/pillars/{pillar_id}")
+        def conduit_pillar_ep(pillar_id: str):
+            """Return a single pillar by id."""
+            p = _get_pillar(pillar_id)
+            if p is None:
+                return {"error": f"Pillar '{pillar_id}' not found"}
+            return p
+
+        @app.get("/conduit/telemetry-metrics")
+        def conduit_telemetry_metrics_ep():
+            """Return all seven Listening Post telemetry metric definitions."""
+            return {"metrics": _get_telemetry_metrics()}
+
+        @app.get("/conduit/telemetry-metrics/{metric_id}")
+        def conduit_telemetry_metric_ep(metric_id: str):
+            """Return a single telemetry metric by id."""
+            m = _get_telemetry_metric(metric_id)
+            if m is None:
+                return {"error": f"Metric '{metric_id}' not found"}
+            return m
+
+        @app.get("/conduit/gwt-components")
+        def conduit_gwt_components_ep():
+            """Return Global Workspace Theory component architecture."""
+            return {"components": _get_gwt_components()}
+
+        @app.get("/conduit/coala-memory")
+        def conduit_coala_ep():
+            """Return CoALA memory stratification types."""
+            return {"memory_types": _get_coala_memory()}
+
+        @app.get("/conduit/reinterpretation")
+        def conduit_reinterpret_ep():
+            """Return monolithic vs decoupled reinterpretation table."""
+            return {"reinterpretations": _get_reinterpret()}
+
+        @app.get("/conduit/identity-protocol")
+        def conduit_identity_ep():
+            """Return Puppet Method identity anchoring specification."""
+            return _get_identity_protocol()
+
+        @app.get("/conduit/codes-framework")
+        def conduit_codes_ep():
+            """Return CODES resonance intelligence framework specification."""
+            return _get_codes_framework()
 
     # ── v11b  Real Self-Introspection endpoints ────────────────────
     if _self_diagnose is not None:

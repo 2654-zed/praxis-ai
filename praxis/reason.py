@@ -311,6 +311,27 @@ except Exception:
     except Exception:
         _ENLIGHTENMENT_OK = False
 
+# ── v15 The Conduit: Decoupled Cognitive Systems ──
+try:
+    from .conduit import (
+        assess_conduit as _assess_conduit,
+        score_decoupling as _score_decoupling,
+        score_global_workspace as _score_gwt,
+        score_integrated_information as _score_phi,
+    )
+    _CONDUIT_OK = True
+except Exception:
+    try:
+        from conduit import (
+            assess_conduit as _assess_conduit,
+            score_decoupling as _score_decoupling,
+            score_global_workspace as _score_gwt,
+            score_integrated_information as _score_phi,
+        )
+        _CONDUIT_OK = True
+    except Exception:
+        _CONDUIT_OK = False
+
 
 # ======================================================================
 # Data structures
@@ -1516,6 +1537,39 @@ def deep_reason_v2(
             ))
         except Exception as exc:
             log.debug("v2 enlightenment enrichment: %s", exc)
+
+    # ── PHASE 1j: Conduit — Decoupled Cognitive Assessment ─────────
+    conduit_ctx = None
+    if _CONDUIT_OK:
+        try:
+            t_co = time.time()
+            co_result = _assess_conduit(query)
+            conduit_ctx = {
+                "conduit": co_result["conduit_score"],
+                "grade": co_result["grade"],
+                "decoupling_grade": co_result["decoupling"]["grade"],
+                "memory_grade": co_result["memory"]["grade"],
+                "gwt_grade": co_result["gwt"]["grade"],
+                "phi_grade": co_result["phi"]["grade"],
+                "repe_grade": co_result["repe"]["grade"],
+                "autopoiesis_grade": co_result["autopoiesis"]["grade"],
+                "resonance_grade": co_result["resonance"]["grade"],
+                "agency_detected": co_result["agency_detected"],
+                "warnings": co_result["warnings"],
+            }
+            steps.append(ReasoningStep(
+                phase="conduit",
+                action=f"Conduit: {co_result['conduit_score']:.2f} "
+                       f"(grade {co_result['grade']}), "
+                       f"decoupling={co_result['decoupling']['grade']}, "
+                       f"gwt={co_result['gwt']['grade']}, "
+                       f"phi={co_result['phi']['grade']}, "
+                       f"agency={'YES' if co_result['agency_detected'] else 'no'}",
+                detail=conduit_ctx,
+                elapsed_ms=int((time.time() - t_co) * 1000),
+            ))
+        except Exception as exc:
+            log.debug("v2 conduit enrichment: %s", exc)
 
     # ── PHASE 2: PRISM Pipeline ───────────────────────────────────
     t_prism = time.time()
