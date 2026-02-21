@@ -13,15 +13,15 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 45 files, ~29,000 lines |
+| **Python modules** | 55 files, ~31,300 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
-| **API endpoints** | 256 REST routes via FastAPI |
-| **Test coverage** | 157 tests across 6 test files, all passing |
+| **API endpoints** | 263 REST routes via FastAPI |
+| **Test coverage** | 191 tests across 7 test files, all passing |
 | **Frontend** | 8 HTML + 4 JS files (~4,400 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~33,400 (Python + Frontend) |
+| **Total LOC** | ~35,600 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-21 16:34 UTC |
+| **Last auto-update** | 2026-02-21 16:53 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -921,6 +921,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+52655d6 Praxis v18  Enterprise-Grade Solidification
+46e7f5e docs(auto): update README stats [skip ci]
 f0b1db7 ci: auto-update README stats on every push via GitHub Actions
 a422d95 docs: comprehensive README  full context transfer document for 17-version cognitive architecture
 f9cf543 audit: fix 12 vibe-coding issues across 6 files
@@ -958,9 +960,9 @@ The codebase tells a story:
 ### Current State (Post-Audit)
 <!-- AUTO:STATE:START -->
 - **246 tools**, zero duplicates, clean tag casing
-- **256 API routes**, all functional
-- **157 tests passing**
-- **45 Python modules**, ~29,000 lines
+- **263 API routes**, all functional
+- **191 tests passing**
+- **55 Python modules**, ~31,300 lines
 - **12 frontend files**, ~4,400 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
