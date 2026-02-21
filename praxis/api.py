@@ -297,6 +297,60 @@ try:
     from .llm_resilience import check_llm_health as _check_llm_health
     from .auth import get_current_user as _get_current_user
     from . import config as _cfg
+    # ── v19  Platform Evolution ──────────────────────────────────────
+    from .connectors import (
+        get_registry as _get_connector_registry,
+        execute_connector as _execute_connector,
+        list_connectors as _list_connectors,
+    )
+    from .workflow_engine import (
+        decompose_request as _decompose_request,
+        generate_plan as _generate_plan,
+        execute_plan as _execute_plan,
+        assemble_and_run as _assemble_and_run,
+    )
+    from .marketplace import (
+        publish_template as _publish_template,
+        get_template as _get_mkt_template,
+        list_templates as _list_templates,
+        download_template as _download_template,
+        unpublish_template as _unpublish_template,
+        feature_template as _feature_template,
+        add_review as _add_review,
+        get_reviews as _get_reviews,
+        marketplace_stats as _marketplace_stats,
+    )
+    from .contributions import (
+        submit_tool as _submit_tool,
+        get_submission as _get_submission,
+        list_submissions as _list_submissions,
+        approve_submission as _approve_submission,
+        reject_submission as _reject_submission,
+        request_changes as _request_changes,
+        get_contributor as _get_contributor,
+        get_leaderboard as _get_leaderboard,
+    )
+    from .agent_sdk import (
+        create_session as _create_agent_session,
+        sdk_discover as _sdk_discover,
+        sdk_plan as _sdk_plan,
+        sdk_execute as _sdk_execute,
+        handle_tool_call as _handle_tool_call,
+        get_tool_schema as _get_tool_schema,
+        sdk_info as _sdk_info,
+    )
+    from .governance import (
+        record_audit as _record_audit,
+        get_audit_log as _get_audit_log,
+        record_usage as _record_usage,
+        get_usage as _get_gov_usage,
+        get_cost_summary as _get_cost_summary,
+        assess_compliance as _assess_gov_compliance,
+        create_policy as _create_policy,
+        list_policies as _list_policies,
+        check_tool_allowed as _check_tool_allowed,
+        governance_dashboard as _governance_dashboard,
+    )
 except ImportError:
     from data import get_all_categories, TOOLS, get_all_tools_dict
     from engine import find_tools
@@ -730,6 +784,64 @@ except ImportError:
         _hybrid_v2 = _get_rag_orchestrator = None
         _get_opt_tfidf = _get_llm_circuit = _check_llm_health = None
         _get_current_user = None
+
+    # v19 fallback imports
+    try:
+        from connectors import get_registry as _get_connector_registry
+        from connectors import execute_connector as _execute_connector
+        from connectors import list_connectors as _list_connectors
+        from workflow_engine import decompose_request as _decompose_request
+        from workflow_engine import generate_plan as _generate_plan
+        from workflow_engine import execute_plan as _execute_plan
+        from workflow_engine import assemble_and_run as _assemble_and_run
+        from marketplace import publish_template as _publish_template
+        from marketplace import get_template as _get_mkt_template
+        from marketplace import list_templates as _list_templates
+        from marketplace import download_template as _download_template
+        from marketplace import unpublish_template as _unpublish_template
+        from marketplace import feature_template as _feature_template
+        from marketplace import add_review as _add_review
+        from marketplace import get_reviews as _get_reviews
+        from marketplace import marketplace_stats as _marketplace_stats
+        from contributions import submit_tool as _submit_tool
+        from contributions import get_submission as _get_submission
+        from contributions import list_submissions as _list_submissions
+        from contributions import approve_submission as _approve_submission
+        from contributions import reject_submission as _reject_submission
+        from contributions import request_changes as _request_changes
+        from contributions import get_contributor as _get_contributor
+        from contributions import get_leaderboard as _get_leaderboard
+        from agent_sdk import create_session as _create_agent_session
+        from agent_sdk import sdk_discover as _sdk_discover
+        from agent_sdk import sdk_plan as _sdk_plan
+        from agent_sdk import sdk_execute as _sdk_execute
+        from agent_sdk import handle_tool_call as _handle_tool_call
+        from agent_sdk import get_tool_schema as _get_tool_schema
+        from agent_sdk import sdk_info as _sdk_info
+        from governance import record_audit as _record_audit
+        from governance import get_audit_log as _get_audit_log
+        from governance import record_usage as _record_usage
+        from governance import get_usage as _get_gov_usage
+        from governance import get_cost_summary as _get_cost_summary
+        from governance import assess_compliance as _assess_gov_compliance
+        from governance import create_policy as _create_policy
+        from governance import list_policies as _list_policies
+        from governance import check_tool_allowed as _check_tool_allowed
+        from governance import governance_dashboard as _governance_dashboard
+    except ImportError:
+        _get_connector_registry = _execute_connector = _list_connectors = None
+        _decompose_request = _generate_plan = _execute_plan = _assemble_and_run = None
+        _publish_template = _get_mkt_template = _list_templates = None
+        _download_template = _unpublish_template = _feature_template = None
+        _add_review = _get_reviews = _marketplace_stats = None
+        _submit_tool = _get_submission = _list_submissions = None
+        _approve_submission = _reject_submission = _request_changes = None
+        _get_contributor = _get_leaderboard = None
+        _create_agent_session = _sdk_discover = _sdk_plan = _sdk_execute = None
+        _handle_tool_call = _get_tool_schema = _sdk_info = None
+        _record_audit = _get_audit_log = _record_usage = _get_gov_usage = None
+        _get_cost_summary = _assess_gov_compliance = None
+        _create_policy = _list_policies = _check_tool_allowed = _governance_dashboard = None
 
 try:
     from fastapi import FastAPI
@@ -3186,6 +3298,367 @@ def create_app():
             "enterprise_rate_limiter": _create_rl_mw is not None,
             "telemetry": _configure_telemetry is not None,
             "auth": _get_current_user is not None,
+        }
+
+    # ── v19  Platform Evolution — Connectors ────────────────────────
+    if _list_connectors is not None:
+
+        class ConnectorExecRequest(BaseModel):
+            connector_id: str
+            action: str = "default"
+            params: Optional[Dict] = None
+            secrets: Optional[Dict] = None
+            dry_run: bool = True
+
+        @app.get("/v19/connectors")
+        def connectors_list_ep():
+            """List all registered connectors."""
+            return {"connectors": _list_connectors()}
+
+        @app.post("/v19/connectors/execute")
+        def connectors_execute_ep(req: ConnectorExecRequest):
+            """Execute a connector action (dry-run by default)."""
+            import asyncio
+            result = asyncio.run(_execute_connector(
+                req.connector_id,
+                action=req.action,
+                params=req.params or {},
+                secrets=req.secrets or {},
+                dry_run=req.dry_run,
+            ))
+            return result.to_dict()
+
+    # ── v19  Platform Evolution — Workflow Engine ────────────────────
+    if _generate_plan is not None:
+
+        class WorkflowPlanRequest(BaseModel):
+            query: str
+            budget_seconds: Optional[float] = 300.0
+
+        class WorkflowExecRequest(BaseModel):
+            query: str
+            secrets: Optional[Dict] = None
+            dry_run: bool = True
+
+        @app.post("/v19/workflow/decompose")
+        def workflow_decompose_ep(req: WorkflowPlanRequest):
+            """Decompose a natural-language request into sub-tasks."""
+            return [t.to_dict() for t in _decompose_request(req.query)]
+
+        @app.post("/v19/workflow/plan")
+        def workflow_plan_ep(req: WorkflowPlanRequest):
+            """Generate a full workflow plan (decompose → select → connect → DAG)."""
+            plan = _generate_plan(req.query)
+            return plan.to_dict()
+
+        @app.post("/v19/workflow/execute")
+        def workflow_execute_ep(req: WorkflowExecRequest):
+            """Execute a full workflow from natural language (plan + run)."""
+            import asyncio
+            result = asyncio.run(_assemble_and_run(
+                req.query,
+                secrets=req.secrets or {},
+                dry_run=req.dry_run,
+            ))
+            return result.to_dict()
+
+    # ── v19  Platform Evolution — Marketplace ────────────────────────
+    if _publish_template is not None:
+
+        class TemplatePublishRequest(BaseModel):
+            name: str
+            description: str = ""
+            plan_json: Optional[Dict] = None
+            author: str = "anonymous"
+            category: str = "general"
+            tags: Optional[List[str]] = None
+            price_usd: float = 0.0
+
+        class TemplateReviewRequest(BaseModel):
+            author: str = "anonymous"
+            rating: int = 5
+            comment: str = ""
+
+        @app.get("/v19/marketplace")
+        def marketplace_list_ep(
+            category: Optional[str] = None,
+            featured_only: bool = False,
+            sort_by: str = "download_count",
+            limit: int = 20,
+            skip: int = 0,
+        ):
+            """Browse workflow templates."""
+            return _list_templates(
+                category=category, featured_only=featured_only,
+                sort_by=sort_by, limit=limit, skip=skip,
+            )
+
+        @app.get("/v19/marketplace/stats")
+        def marketplace_stats_ep():
+            """Marketplace statistics."""
+            return _marketplace_stats()
+
+        @app.get("/v19/marketplace/{template_id}")
+        def marketplace_get_ep(template_id: str):
+            """Get a specific template."""
+            t = _get_mkt_template(template_id)
+            if t is None:
+                return {"error": "Template not found"}
+            return t
+
+        @app.post("/v19/marketplace/publish")
+        def marketplace_publish_ep(req: TemplatePublishRequest):
+            """Publish a new workflow template."""
+            tpl = _publish_template(
+                name=req.name, description=req.description,
+                plan_json=req.plan_json or {},
+                author=req.author, category=req.category,
+                tags=req.tags or [], price_usd=req.price_usd,
+            )
+            return tpl.to_dict() if hasattr(tpl, 'to_dict') else tpl
+
+        @app.post("/v19/marketplace/{template_id}/download")
+        def marketplace_download_ep(template_id: str):
+            """Download (increment counter) a template."""
+            return _download_template(template_id)
+
+        @app.post("/v19/marketplace/{template_id}/review")
+        def marketplace_review_ep(template_id: str, req: TemplateReviewRequest):
+            """Add a review to a template."""
+            review = _add_review(
+                template_id=template_id,
+                rating=req.rating,
+                comment=req.comment,
+                author=req.author,
+            )
+            return review.to_dict() if hasattr(review, 'to_dict') else review
+
+        @app.get("/v19/marketplace/{template_id}/reviews")
+        def marketplace_reviews_ep(template_id: str):
+            """Get reviews for a template."""
+            return {"reviews": _get_reviews(template_id)}
+
+        @app.post("/v19/marketplace/{template_id}/feature")
+        def marketplace_feature_ep(template_id: str):
+            """Mark a template as featured (admin)."""
+            return _feature_template(template_id)
+
+        @app.delete("/v19/marketplace/{template_id}")
+        def marketplace_unpublish_ep(template_id: str):
+            """Unpublish a template."""
+            return _unpublish_template(template_id)
+
+    # ── v19  Platform Evolution — Contributions ──────────────────────
+    if _submit_tool is not None:
+
+        class ToolSubmissionRequest(BaseModel):
+            tool_name: str
+            description: str = ""
+            categories: Optional[List[str]] = None
+            url: str = ""
+            tags: Optional[List[str]] = None
+            contributor: str = "anonymous"
+
+        class SubmissionActionRequest(BaseModel):
+            notes: str = ""
+
+        @app.post("/v19/contributions/submit")
+        def contributions_submit_ep(req: ToolSubmissionRequest):
+            """Submit a new tool for review."""
+            return _submit_tool(
+                req.tool_name, req.description,
+                req.categories or [],
+                url=req.url, tags=req.tags or [],
+                contributor=req.contributor,
+            )
+
+        @app.get("/v19/contributions")
+        def contributions_list_ep(status: Optional[str] = None, limit: int = 50):
+            """List tool submissions (optionally filter by status)."""
+            return _list_submissions(status=status, limit=limit)
+
+        @app.get("/v19/contributions/{submission_id}")
+        def contributions_get_ep(submission_id: str):
+            """Get a specific submission."""
+            s = _get_submission(submission_id)
+            if s is None:
+                return {"error": "Submission not found"}
+            return s
+
+        @app.post("/v19/contributions/{submission_id}/approve")
+        def contributions_approve_ep(submission_id: str, req: SubmissionActionRequest):
+            """Approve a submission (admin)."""
+            return _approve_submission(submission_id, reviewer_notes=req.notes)
+
+        @app.post("/v19/contributions/{submission_id}/reject")
+        def contributions_reject_ep(submission_id: str, req: SubmissionActionRequest):
+            """Reject a submission with reason."""
+            return _reject_submission(submission_id, reason=req.notes)
+
+        @app.post("/v19/contributions/{submission_id}/request-changes")
+        def contributions_changes_ep(submission_id: str, req: SubmissionActionRequest):
+            """Request changes on a submission."""
+            return _request_changes(submission_id, req.notes)
+
+        @app.get("/v19/contributions/contributor/{name}")
+        def contributions_contributor_ep(name: str):
+            """Get contributor profile and stats."""
+            c = _get_contributor(name)
+            if c is None:
+                return {"error": "Contributor not found"}
+            return c
+
+        @app.get("/v19/contributions/leaderboard/top")
+        def contributions_leaderboard_ep(limit: int = 20):
+            """Contributor leaderboard by approval count."""
+            return {"leaderboard": _get_leaderboard(limit=limit)}
+
+    # ── v19  Platform Evolution — Agent SDK ──────────────────────────
+    if _sdk_info is not None:
+
+        class AgentDiscoverRequest(BaseModel):
+            capability: str
+            top_n: int = 5
+            session_id: Optional[str] = None
+            constraints: Optional[Dict] = None
+            include_trust: bool = False
+
+        class AgentPlanRequest(BaseModel):
+            query: str
+            session_id: Optional[str] = None
+
+        class AgentExecuteRequest(BaseModel):
+            plan_dict: Optional[Dict] = None
+            session_id: Optional[str] = None
+            secrets: Optional[Dict] = None
+            dry_run: bool = True
+
+        class AgentToolCallRequest(BaseModel):
+            action: str
+            query: str
+
+        @app.get("/v19/agent/info")
+        def agent_info_ep():
+            """SDK handshake — capabilities and version info."""
+            return _sdk_info()
+
+        @app.post("/v19/agent/session")
+        def agent_session_ep():
+            """Create a new agent session."""
+            return _create_agent_session()
+
+        @app.post("/v19/agent/discover")
+        def agent_discover_ep(req: AgentDiscoverRequest):
+            """Discover tools with trust/pricing/compliance enrichment."""
+            return _sdk_discover(
+                req.capability, top_n=req.top_n,
+                constraints=req.constraints,
+                include_trust=req.include_trust,
+                session_id=req.session_id,
+            )
+
+        @app.post("/v19/agent/plan")
+        def agent_plan_ep(req: AgentPlanRequest):
+            """Generate an executable workflow plan."""
+            return _sdk_plan(query=req.query, session_id=req.session_id)
+
+        @app.post("/v19/agent/execute")
+        def agent_execute_ep(req: AgentExecuteRequest):
+            """Execute a workflow plan end-to-end."""
+            import asyncio
+            return asyncio.run(_sdk_execute(
+                req.plan_dict or {}, secrets=req.secrets,
+                dry_run=req.dry_run, session_id=req.session_id,
+            ))
+
+        @app.post("/v19/agent/tool-call")
+        def agent_tool_call_ep(req: AgentToolCallRequest):
+            """Universal tool call dispatcher (OpenAI function-calling compatible)."""
+            return _handle_tool_call(req.action, req.query)
+
+        @app.get("/v19/agent/schema")
+        def agent_schema_ep():
+            """OpenAI-compatible tool/function schema for all Praxis operations."""
+            return _get_tool_schema()
+
+    # ── v19  Platform Evolution — Governance ─────────────────────────
+    if _governance_dashboard is not None:
+
+        class PolicyCreateRequest(BaseModel):
+            name: str
+            rule_type: str = "block_tool"
+            conditions: Optional[Dict] = None
+            description: str = ""
+            created_by: str = "admin"
+
+        class ToolCheckRequest(BaseModel):
+            tool_name: str
+            team: str = "default"
+
+        @app.get("/v19/governance/dashboard")
+        def governance_dashboard_ep(team: Optional[str] = None):
+            """Enterprise governance dashboard — usage, costs, compliance, audit."""
+            return _governance_dashboard(team=team)
+
+        @app.get("/v19/governance/usage")
+        def governance_usage_ep(
+            team: Optional[str] = None,
+            tool_name: Optional[str] = None,
+            limit: int = 50,
+        ):
+            """Query usage records."""
+            return {"usage": _get_gov_usage(team=team, tool_name=tool_name, limit=limit)}
+
+        @app.get("/v19/governance/costs")
+        def governance_costs_ep(team: Optional[str] = None):
+            """Cost summary across tools."""
+            return _get_cost_summary(team=team)
+
+        @app.get("/v19/governance/compliance")
+        def governance_compliance_ep(standards: Optional[str] = None):
+            """Compliance posture assessment."""
+            std_list = standards.split(",") if standards else None
+            return _assess_gov_compliance(required_standards=std_list)
+
+        @app.get("/v19/governance/audit")
+        def governance_audit_ep(
+            team: Optional[str] = None,
+            action: Optional[str] = None,
+            limit: int = 100,
+        ):
+            """Query audit log."""
+            return {"entries": _get_audit_log(team=team, action=action, limit=limit)}
+
+        @app.post("/v19/governance/policies")
+        def governance_create_policy_ep(req: PolicyCreateRequest):
+            """Create an organisational policy."""
+            return _create_policy(
+                name=req.name, rule_type=req.rule_type,
+                conditions=req.conditions or {},
+                description=req.description, created_by=req.created_by,
+            )
+
+        @app.get("/v19/governance/policies")
+        def governance_list_policies_ep(active_only: bool = True):
+            """List policies."""
+            return {"policies": _list_policies(active_only=active_only)}
+
+        @app.post("/v19/governance/check-tool")
+        def governance_check_tool_ep(req: ToolCheckRequest):
+            """Check if a tool is allowed under current policies."""
+            return _check_tool_allowed(req.tool_name, team=req.team)
+
+    # ── v19  Platform Health ─────────────────────────────────────────
+    @app.get("/v19/health")
+    def v19_health_ep():
+        """v19 platform evolution health check."""
+        return {
+            "connectors": _list_connectors is not None,
+            "workflow_engine": _generate_plan is not None,
+            "marketplace": _publish_template is not None,
+            "contributions": _submit_tool is not None,
+            "agent_sdk": _sdk_info is not None,
+            "governance": _governance_dashboard is not None,
         }
 
     return app
