@@ -1,27 +1,27 @@
 """
-Praxis API — AI Decision Engine
+Praxis API â€” AI Decision Engine
 
 Endpoints:
-    GET  /                  → serve frontend (journey.html)
-    GET  /categories        → list all categories
-    GET  /tools             → list all tools (full detail)
-    POST /search            → keyword search with optional profile
-    POST /stack             → composed stack recommendation
-    POST /compare           → side-by-side tool comparison
-    POST /profile           → create / update a user profile
-    GET  /profile/{id}      → load a user profile
-    POST /feedback          → record feedback
-    GET  /feedback/summary  → feedback statistics
-    POST /learn             → trigger learning cycle
+    GET  /                  â†’ serve frontend (journey.html)
+    GET  /categories        â†’ list all categories
+    GET  /tools             â†’ list all tools (full detail)
+    POST /search            â†’ keyword search with optional profile
+    POST /stack             â†’ composed stack recommendation
+    POST /compare           â†’ side-by-side tool comparison
+    POST /profile           â†’ create / update a user profile
+    GET  /profile/{id}      â†’ load a user profile
+    POST /feedback          â†’ record feedback
+    GET  /feedback/summary  â†’ feedback statistics
+    POST /learn             â†’ trigger learning cycle
 
-    GET  /verticals           → list all supported industry verticals
-    GET  /verticals/{id}      → full profile for a single vertical
-    POST /verticals/detect    → detect which verticals a query targets
-    POST /verticals/constraints → extract regulatory & sovereignty constraints
-    POST /verticals/workflow  → classify tasks as action vs decision
-    POST /verticals/stack     → recommend curated tech stack for vertical
-    POST /verticals/anti-patterns → check for domain anti-pattern violations
-    POST /verticals/enrich    → full vertical intelligence enrichment
+    GET  /verticals           â†’ list all supported industry verticals
+    GET  /verticals/{id}      â†’ full profile for a single vertical
+    POST /verticals/detect    â†’ detect which verticals a query targets
+    POST /verticals/constraints â†’ extract regulatory & sovereignty constraints
+    POST /verticals/workflow  â†’ classify tasks as action vs decision
+    POST /verticals/stack     â†’ recommend curated tech stack for vertical
+    POST /verticals/anti-patterns â†’ check for domain anti-pattern violations
+    POST /verticals/enrich    â†’ full vertical intelligence enrichment
 
 This module is safe to import even if FastAPI is not installed.
 """
@@ -282,7 +282,7 @@ try:
         get_telemetry_metrics as _get_ent_telemetry,
         get_telemetry_metric as _get_ent_telem_metric,
     )
-    # ── v18  Enterprise Infrastructure ──────────────────────────────
+    # â”€â”€ v18  Enterprise Infrastructure â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     from .rate_limiter import SlidingWindowLimiter as _SlidingWindowLimiter
     from .rate_limiter import create_rate_limit_middleware as _create_rl_mw
     from .telemetry import configure_telemetry as _configure_telemetry
@@ -297,7 +297,7 @@ try:
     from .llm_resilience import check_llm_health as _check_llm_health
     from .auth import get_current_user as _get_current_user
     from . import config as _cfg
-except Exception:
+except ImportError:
     from data import get_all_categories, TOOLS, get_all_tools_dict
     from engine import find_tools
     from interpreter import interpret
@@ -307,77 +307,77 @@ except Exception:
     from learning import run_learning_cycle, compute_tool_quality
     try:
         from intelligence import get_suggestions, initialize as init_intelligence
-    except Exception:
+    except ImportError:
         get_suggestions = None
         init_intelligence = None
     try:
         from philosophy import generate_seeing, vendor_deep_dive
-    except Exception:
+    except ImportError:
         generate_seeing = None
         vendor_deep_dive = None
     try:
         from ingest import export_tools_json, import_tools_json, import_tools_csv, generate_csv_template
-    except Exception:
+    except ImportError:
         export_tools_json = import_tools_json = import_tools_csv = generate_csv_template = None
     try:
         from workflow import suggest_workflow
-    except Exception:
+    except ImportError:
         suggest_workflow = None
     try:
         from healthcheck import tool_health, stack_health
-    except Exception:
+    except ImportError:
         tool_health = stack_health = None
     try:
         from readiness import score_readiness
-    except Exception:
+    except ImportError:
         score_readiness = None
     try:
         from compare_stack import compare_my_stack
-    except Exception:
+    except ImportError:
         compare_my_stack = None
     try:
         from badges import compute_badges_for_tool, compute_all_badges, get_badges
-    except Exception:
+    except ImportError:
         compute_badges_for_tool = compute_all_badges = get_badges = None
     try:
         from migration import migration_plan
-    except Exception:
+    except ImportError:
         migration_plan = None
     try:
         from whatif import simulate as whatif_simulate
-    except Exception:
+    except ImportError:
         whatif_simulate = None
     try:
         from playground import test_integration, stack_integration_map
-    except Exception:
+    except ImportError:
         test_integration = stack_integration_map = None
     try:
         from monetise import (get_affiliate_info, enrich_recommendation_with_affiliate,
                               submit_benchmark, get_benchmarks,
                               subscribe_digest, unsubscribe_digest, generate_digest, subscriber_count)
-    except Exception:
+    except ImportError:
         get_affiliate_info = enrich_recommendation_with_affiliate = None
         submit_benchmark = get_benchmarks = None
         subscribe_digest = unsubscribe_digest = generate_digest = subscriber_count = None
     try:
         from reason import deep_reason as _deep_reason
-    except Exception:
+    except ImportError:
         _deep_reason = None
     try:
         from reason import deep_reason_v2 as _deep_reason_v2
-    except Exception:
+    except ImportError:
         _deep_reason_v2 = None
     try:
         from retrieval import hybrid_search as _hybrid_search, hybrid_find_tools as _hybrid_find_tools
-    except Exception:
+    except ImportError:
         _hybrid_search = _hybrid_find_tools = None
     try:
         from graph import get_graph as _get_graph, rebuild_graph as _rebuild_graph
-    except Exception:
+    except ImportError:
         _get_graph = _rebuild_graph = None
     try:
         from prism import prism_search as _prism_search
-    except Exception:
+    except ImportError:
         _prism_search = None
     try:
         from verticals import (
@@ -391,7 +391,7 @@ except Exception:
             detect_compound_workflows as _detect_compounds,
             enrich_search_context as _enrich_vertical,
         )
-    except Exception:
+    except ImportError:
         _detect_verticals = _get_vertical = _get_all_verticals = None
         _extract_constraints = _classify_workflow = _recommend_stack = None
         _check_anti_patterns = _detect_compounds = _enrich_vertical = None
@@ -405,7 +405,7 @@ except Exception:
             list_handlers as _list_handlers,
             build_guardrail_chain as _build_guardrail_chain,
         )
-    except Exception:
+    except ImportError:
         _validate_output = _check_pii = _score_safety = None
         _get_design_patterns = _recommend_guardrail = _list_handlers = None
         _build_guardrail_chain = None
@@ -420,7 +420,7 @@ except Exception:
             classify_engineering_query as _classify_engineering,
             score_architecture as _score_architecture,
         )
-    except Exception:
+    except ImportError:
         _detect_architecture = _recommend_orch_stack = _recommend_arch_patterns = None
         _get_stack_layers = _get_arch_patterns = _get_perf_constraints = None
         _classify_engineering = _score_architecture = None
@@ -440,7 +440,7 @@ except Exception:
             assess_junior_pipeline as _assess_junior,
             get_hallucination_types as _get_hallucinations,
         )
-    except Exception:
+    except ImportError:
         _assess_resilience = _score_vibe_risk = _recommend_sa = None
         _recommend_sandbox = _get_tdd_cycle = _get_rpi = None
         _get_self_healing = _get_reflection = _get_judge_biases = None
@@ -465,7 +465,7 @@ except Exception:
             get_racg_architecture as _get_racg,
             get_failure_modes as _get_failure_modes,
         )
-    except Exception:
+    except ImportError:
         _assess_metacognition = _detect_pathologies = _score_structural_entropy = None
         _score_stylometry = _get_mc_layers = _recommend_mc_layers = None
         _get_mc_sandboxes = _recommend_mc_sandbox = _get_mc_workflow = None
@@ -482,7 +482,7 @@ except Exception:
             get_import_graph as _get_import_graph,
             get_worst_functions as _get_worst_functions,
         )
-    except Exception:
+    except ImportError:
         _self_diagnose = _analyze_codebase = _real_entropy = None
         _real_stylometry = _detect_own_pathologies = None
         _get_test_coverage = _get_import_graph = _get_worst_functions = None
@@ -504,7 +504,7 @@ except Exception:
             get_paradoxes as _get_paradoxes,
             get_conscious_patterns as _get_conscious_patterns,
         )
-    except Exception:
+    except ImportError:
         _assess_awakening = _detect_leaks = _recommend_conscious_patterns = None
         _score_vsd = _assess_supply_chain = _score_debt = None
         _compute_mesias = _get_recognitions = _get_recognition = None
@@ -531,7 +531,7 @@ except Exception:
             get_ddd_patterns as _get_ddd_patterns,
             get_plugin_frameworks as _get_plugin_frameworks,
         )
-    except Exception:
+    except ImportError:
         _assess_authorship = _detect_dishonesty = _score_ddd = None
         _score_continuity = _score_resilience_posture = _score_extensibility = None
         _score_migration = _score_doc_health = _score_agent = None
@@ -562,7 +562,7 @@ except Exception:
             get_state_pattern as _get_state_pattern,
             get_clean_arch_layers as _get_clean_arch_layers,
         )
-    except Exception:
+    except ImportError:
         _assess_enlightenment = _score_unity = _score_alignment = None
         _score_projection = _score_ego = _score_interconnection = None
         _score_domain_truth = _score_presence = _score_compassion = None
@@ -597,7 +597,7 @@ except Exception:
             get_identity_protocol as _get_identity_protocol,
             get_codes_framework as _get_codes_framework,
         )
-    except Exception:
+    except ImportError:
         _assess_conduit = _score_decoupling = _score_memory_strat = None
         _score_gwt = _score_iit = _score_repe = _score_autopoiesis = None
         _score_resonance = _score_entropy_telemetry = _score_smi = _score_bni = None
@@ -637,7 +637,7 @@ except Exception:
             get_reinterpretation_table as _get_res_reinterpret,
             get_resonant_chamber as _get_resonant_chamber,
         )
-    except Exception:
+    except ImportError:
         _assess_resonance_v16 = _score_temporal = _score_code_agency = None
         _score_latent = _score_conductor = _score_meta_aware = None
         _score_res_index = _score_flow = _score_loop_coh = None
@@ -688,7 +688,7 @@ except Exception:
             get_telemetry_metrics as _get_ent_telemetry,
             get_telemetry_metric as _get_ent_telem_metric,
         )
-    except Exception:
+    except ImportError:
         _assess_enterprise = _score_graphrag = _score_multi_agent = None
         _score_mcp_bus = _score_data_moat = _score_monetization = None
         _score_sec_gov = _score_tam = _score_gra_acc = None
@@ -706,7 +706,7 @@ except Exception:
         _get_ent_telemetry = _get_ent_telem_metric = None
     try:
         import config as _cfg
-    except Exception:
+    except ImportError:
         _cfg = None
     # v18 fallback imports
     try:
@@ -723,7 +723,7 @@ except Exception:
         from llm_resilience import get_llm_circuit as _get_llm_circuit
         from llm_resilience import check_llm_health as _check_llm_health
         from auth import get_current_user as _get_current_user
-    except Exception:
+    except ImportError:
         _SlidingWindowLimiter = _create_rl_mw = None
         _configure_telemetry = _create_telem_mw = None
         _VendorTrustEngine = _VendorProfile = _annotate_trust = None
@@ -735,7 +735,7 @@ try:
     from fastapi import FastAPI
     from pydantic import BaseModel, Field
     FASTAPI_AVAILABLE = True
-except Exception:
+except ImportError:
     FASTAPI_AVAILABLE = False
 
     class BaseModel:
@@ -756,7 +756,7 @@ class SearchRequest(BaseModel):
     filters: Optional[List[str]] = None
     top_n: Optional[int] = 5
     profile_id: Optional[str] = None
-    mode: Optional[str] = None          # "deep" → route through reasoning engine
+    mode: Optional[str] = None          # "deep" â†’ route through reasoning engine
 
 
 class ToolDetail(BaseModel):
@@ -899,7 +899,7 @@ def create_app():
         raise RuntimeError("FastAPI or Pydantic not installed. Install 'fastapi' to run the API.")
 
     app = FastAPI(
-        title="Praxis — AI Decision Engine API",
+        title="Praxis â€” AI Decision Engine API",
         description="Recommend AI tool stacks based on intent, profile, and feedback.",
         version="2.0.0",
     )
@@ -917,14 +917,14 @@ def create_app():
     except Exception:
         pass
 
-    # ── v18  Structured Telemetry ──
+    # â”€â”€ v18  Structured Telemetry â”€â”€
     if _configure_telemetry:
         try:
             _configure_telemetry()
         except Exception:
             pass
 
-    # ── v18  Telemetry Middleware (trace-id, latency) ──
+    # â”€â”€ v18  Telemetry Middleware (trace-id, latency) â”€â”€
     if _create_telem_mw:
         try:
             _TelemetryMW = _create_telem_mw()
@@ -933,7 +933,7 @@ def create_app():
         except Exception:
             pass
 
-    # ── v18  Enterprise Rate Limiting (sliding-window, replaces old fixed-window) ──
+    # â”€â”€ v18  Enterprise Rate Limiting (sliding-window, replaces old fixed-window) â”€â”€
     _rpm_limit = _cfg.get("rate_limit_rpm", 60) if _cfg else 60
     if _create_rl_mw and _SlidingWindowLimiter:
         try:
@@ -944,7 +944,7 @@ def create_app():
         except Exception:
             pass
     else:
-        # Legacy fallback — basic in-memory rate limiter
+        # Legacy fallback â€” basic in-memory rate limiter
         import time as _time
         import logging as _logging
         _api_log = _logging.getLogger("praxis.api")
@@ -993,10 +993,12 @@ def create_app():
     def categories():
         return get_all_categories()
 
-    @app.get("/tools", response_model=List[ToolDetail])
-    def list_tools():
+    @app.get("/tools")
+    def list_tools(skip: int = 0, limit: int = 50):
+        """Return paginated tool list.  Use ``?skip=0&limit=50`` to page."""
+        page = TOOLS[skip : skip + limit]
         out = []
-        for t in TOOLS:
+        for t in page:
             out.append(ToolDetail(
                 name=t.name,
                 description=t.description,
@@ -1012,7 +1014,7 @@ def create_app():
                 use_cases=getattr(t, "use_cases", None),
                 stack_roles=getattr(t, "stack_roles", None),
             ))
-        return out
+        return {"total": len(TOOLS), "skip": skip, "limit": limit, "items": out}
 
     # ------------------------------------------------------------------
     # Search (enhanced with intelligence layer)
@@ -1020,7 +1022,7 @@ def create_app():
 
     @app.post("/search")
     def search(req: SearchRequest):
-        # ── Deep reasoning mode ──
+        # â”€â”€ Deep reasoning mode â”€â”€
         if req.mode == "deep" and _deep_reason:
             result = _deep_reason(
                 req.query,
@@ -1041,7 +1043,7 @@ def create_app():
                 },
             }
 
-        # ── Cognitive search mode (v2 — hybrid retrieval + graph + PRISM) ──
+        # â”€â”€ Cognitive search mode (v2 â€” hybrid retrieval + graph + PRISM) â”€â”€
         if req.mode == "cognitive" and _deep_reason_v2:
             result = _deep_reason_v2(
                 req.query,
@@ -1149,7 +1151,7 @@ def create_app():
         return intelligence(tool_name)
 
     # ------------------------------------------------------------------
-    # Stack recommendation (NEW — core decision engine endpoint)
+    # Stack recommendation (NEW â€” core decision engine endpoint)
     # ------------------------------------------------------------------
 
     @app.post("/stack", response_model=StackResponse)
@@ -1419,7 +1421,7 @@ def create_app():
             return get_failure_summary()
 
     # ==================================================================
-    # Phase 14 — New Feature Endpoints
+    # Phase 14 â€” New Feature Endpoints
     # ==================================================================
 
     # ------------------------------------------------------------------
@@ -1569,7 +1571,7 @@ def create_app():
             return stack_integration_map(req.tools)
 
     # ------------------------------------------------------------------
-    # Monetisation — Affiliates, Benchmarks, Digest
+    # Monetisation â€” Affiliates, Benchmarks, Digest
     # ------------------------------------------------------------------
 
     if get_affiliate_info:
@@ -1668,7 +1670,7 @@ def create_app():
             return payload
 
     # ------------------------------------------------------------------
-    # Cognitive Search (v2) — Hybrid Retrieval + Graph + PRISM
+    # Cognitive Search (v2) â€” Hybrid Retrieval + Graph + PRISM
     # ------------------------------------------------------------------
 
     class CognitiveRequest(BaseModel):
@@ -1682,7 +1684,7 @@ def create_app():
         @app.post("/cognitive")
         def cognitive_ep(req: CognitiveRequest):
             """Full cognitive pipeline: hybrid retrieval (RRF) +
-            knowledge graph traversal + PRISM Analyzer→Selector→Adder
+            knowledge graph traversal + PRISM Analyzerâ†’Selectorâ†’Adder
             agents + FACT-AUDIT verification + self-critique."""
             result = _deep_reason_v2(
                 req.query,
@@ -1784,7 +1786,7 @@ def create_app():
     if _prism_search:
         @app.post("/prism")
         def prism_ep(req: PRISMRequest):
-            """PRISM search: Analyzer→Selector→Adder agent loop with
+            """PRISM search: Analyzerâ†’Selectorâ†’Adder agent loop with
             FACT-AUDIT verification and CRAG self-critique."""
             result = _prism_search(
                 req.query,
@@ -1830,7 +1832,7 @@ def create_app():
             }
 
     # ------------------------------------------------------------------
-    # v8 — Vertical Industry Intelligence endpoints
+    # v8 â€” Vertical Industry Intelligence endpoints
     # ------------------------------------------------------------------
 
     class VerticalQueryRequest(BaseModel):
@@ -1980,11 +1982,11 @@ def create_app():
 
         @app.post("/verticals/enrich")
         def enrich_vertical_ep(req: VerticalQueryRequest):
-            """Full vertical enrichment — detect, constrain, classify, anti-pattern check."""
+            """Full vertical enrichment â€” detect, constrain, classify, anti-pattern check."""
             ctx = _enrich_vertical(req.query, keywords=req.keywords or [], industry=req.industry)
             return ctx
 
-    # ── v9 Guardrails endpoints ───────────────────────────────────
+    # â”€â”€ v9 Guardrails endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _validate_output:
 
         class GuardrailTextRequest(BaseModel):
@@ -2028,7 +2030,7 @@ def create_app():
             """Recommend a guardrail design pattern for the given query."""
             return _recommend_guardrail(req.query)
 
-    # ── v9 Orchestration endpoints ────────────────────────────────
+    # â”€â”€ v9 Orchestration endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _detect_architecture:
 
         class OrchestrationQueryRequest(BaseModel):
@@ -2080,7 +2082,7 @@ def create_app():
             patterns = _get_arch_patterns()
             return {"patterns": patterns, "count": len(patterns)}
 
-    # ── v10 Resilience endpoints ──────────────────────────────────
+    # â”€â”€ v10 Resilience endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _assess_resilience:
 
         class ResilienceQueryRequest(BaseModel):
@@ -2088,7 +2090,7 @@ def create_app():
 
         @app.post("/resilience/assess")
         def resilience_assess_ep(req: ResilienceQueryRequest):
-            """Full resilience assessment — vibe-coding risk, static analysis, sandbox, HITL."""
+            """Full resilience assessment â€” vibe-coding risk, static analysis, sandbox, HITL."""
             return _assess_resilience(req.query)
 
         @app.post("/resilience/vibe-coding-risk")
@@ -2153,12 +2155,12 @@ def create_app():
             """AI hallucination taxonomy."""
             return {"types": _get_hallucinations()}
 
-    # ── v11  Metacognition endpoints ─────────────────────────────
+    # â”€â”€ v11  Metacognition endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _assess_metacognition is not None:
 
         @app.post("/metacognition/assess")
         def metacognition_assess_ep(req: ResilienceQueryRequest):
-            """Full metacognition assessment — pathology, entropy, stylometry, layers, sandbox, drift, economics."""
+            """Full metacognition assessment â€” pathology, entropy, stylometry, layers, sandbox, drift, economics."""
             return _assess_metacognition(req.query)
 
         @app.post("/metacognition/pathologies")
@@ -2203,7 +2205,7 @@ def create_app():
 
         @app.get("/metacognition/apvp-cycle")
         def metacognition_apvp_ep():
-            """Return the Analyze→Patch→Verify→Propose self-healing cycle."""
+            """Return the Analyzeâ†’Patchâ†’Verifyâ†’Propose self-healing cycle."""
             return _get_apvp()
 
         @app.get("/metacognition/systemic-risks")
@@ -2236,7 +2238,7 @@ def create_app():
             """Return the Four Horsemen failure-mode catalogue."""
             return {"failure_modes": _get_failure_modes()}
 
-    # ── v12  Architecture of Awakening endpoints ──────────────────
+    # â”€â”€ v12  Architecture of Awakening endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _assess_awakening is not None:
 
         class AwakeningQuery(BaseModel):
@@ -2244,7 +2246,7 @@ def create_app():
 
         @app.post("/awakening/assess")
         def awakening_assess_ep(body: AwakeningQuery):
-            """Master consciousness assessment — leaks, VSD, supply chain, debt, MESIAS, triad."""
+            """Master consciousness assessment â€” leaks, VSD, supply chain, debt, MESIAS, triad."""
             return _assess_awakening(body.query)
 
         @app.post("/awakening/leaky-abstractions")
@@ -2292,7 +2294,7 @@ def create_app():
 
         @app.get("/awakening/triad")
         def awakening_triad_ep():
-            """Return the Remember · Build · Witness triad."""
+            """Return the Remember Â· Build Â· Witness triad."""
             return _get_triad()
 
         @app.get("/awakening/vsd-framework")
@@ -2320,7 +2322,7 @@ def create_app():
             """Return the conscious design pattern catalogue."""
             return {"patterns": _get_conscious_patterns()}
 
-    # ── v13  Self-Authorship endpoints ─────────────────────────────
+    # â”€â”€ v13  Self-Authorship endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _assess_authorship is not None:
 
         class AuthorshipQuery(BaseModel):
@@ -2328,7 +2330,7 @@ def create_app():
 
         @app.post("/authorship/assess")
         def authorship_assess_ep(body: AuthorshipQuery):
-            """Master self-authorship assessment — honesty, DDD, continuity, resilience, extensibility, docs, agents."""
+            """Master self-authorship assessment â€” honesty, DDD, continuity, resilience, extensibility, docs, agents."""
             return _assess_authorship(body.query)
 
         @app.post("/authorship/dishonesty")
@@ -2419,7 +2421,7 @@ def create_app():
             """Return the plugin framework comparison."""
             return {"frameworks": _get_plugin_frameworks()}
 
-    # ── v14  Architectural Enlightenment endpoints ─────────────────
+    # â”€â”€ v14  Architectural Enlightenment endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _assess_enlightenment is not None:
 
         class EnlightenmentQuery(BaseModel):
@@ -2427,62 +2429,62 @@ def create_app():
 
         @app.post("/enlightenment/assess")
         def enlightenment_assess_ep(body: EnlightenmentQuery):
-            """Master enlightenment assessment — 5 truths + 6 stages."""
+            """Master enlightenment assessment â€” 5 truths + 6 stages."""
             return _assess_enlightenment(body.query)
 
         @app.post("/enlightenment/unity")
         def enlightenment_unity_ep(body: EnlightenmentQuery):
-            """Truth I — Illusion of Separation scoring."""
+            """Truth I â€” Illusion of Separation scoring."""
             return _score_unity(body.query)
 
         @app.post("/enlightenment/alignment")
         def enlightenment_alignment_ep(body: EnlightenmentQuery):
-            """Truth II — Love as Alignment scoring."""
+            """Truth II â€” Love as Alignment scoring."""
             return _score_alignment(body.query)
 
         @app.post("/enlightenment/projection")
         def enlightenment_projection_ep(body: EnlightenmentQuery):
-            """Truth III — Mind as Projector scoring."""
+            """Truth III â€” Mind as Projector scoring."""
             return _score_projection(body.query)
 
         @app.post("/enlightenment/ego-dissolution")
         def enlightenment_ego_ep(body: EnlightenmentQuery):
-            """Truth IV — Ego Dissolution scoring."""
+            """Truth IV â€” Ego Dissolution scoring."""
             return _score_ego(body.query)
 
         @app.post("/enlightenment/interconnection")
         def enlightenment_connection_ep(body: EnlightenmentQuery):
-            """Truth V — Everything is Connected scoring."""
+            """Truth V â€” Everything is Connected scoring."""
             return _score_interconnection(body.query)
 
         @app.post("/enlightenment/domain-truth")
         def enlightenment_domain_ep(body: EnlightenmentQuery):
-            """Stage 1 — Domain Modeling scoring."""
+            """Stage 1 â€” Domain Modeling scoring."""
             return _score_domain_truth(body.query)
 
         @app.post("/enlightenment/presence")
         def enlightenment_presence_ep(body: EnlightenmentQuery):
-            """Stage 2 — AsyncIO Presence scoring."""
+            """Stage 2 â€” AsyncIO Presence scoring."""
             return _score_presence(body.query)
 
         @app.post("/enlightenment/compassion")
         def enlightenment_compassion_ep(body: EnlightenmentQuery):
-            """Stage 3 — Service Layer + DI scoring."""
+            """Stage 3 â€” Service Layer + DI scoring."""
             return _score_compassion(body.query)
 
         @app.post("/enlightenment/stillness")
         def enlightenment_stillness_ep(body: EnlightenmentQuery):
-            """Stage 4 — Introspection / Reflection scoring."""
+            """Stage 4 â€” Introspection / Reflection scoring."""
             return _score_stillness(body.query)
 
         @app.post("/enlightenment/suffering-wisdom")
         def enlightenment_suffering_ep(body: EnlightenmentQuery):
-            """Stage 5 — Disaster Recovery / Resilience scoring."""
+            """Stage 5 â€” Disaster Recovery / Resilience scoring."""
             return _score_suffering(body.query)
 
         @app.post("/enlightenment/remembrance")
         def enlightenment_remembrance_ep(body: EnlightenmentQuery):
-            """Stage 6 — State Pattern / FSM scoring."""
+            """Stage 6 â€” State Pattern / FSM scoring."""
             return _score_remembrance(body.query)
 
         @app.get("/enlightenment/truths")
@@ -2536,7 +2538,7 @@ def create_app():
             """Return Clean Architecture layers with philosophical equivalents."""
             return {"layers": _get_clean_arch_layers()}
 
-    # ── v15  The Conduit: Decoupled Cognitive Systems endpoints ─────
+    # â”€â”€ v15  The Conduit: Decoupled Cognitive Systems endpoints â”€â”€â”€â”€â”€
     if _assess_conduit is not None:
 
         class ConduitQuery(BaseModel):
@@ -2544,82 +2546,82 @@ def create_app():
 
         @app.post("/conduit/assess")
         def conduit_assess_ep(body: ConduitQuery):
-            """Master conduit assessment — 7 pillars + 7 telemetry metrics + agency detection."""
+            """Master conduit assessment â€” 7 pillars + 7 telemetry metrics + agency detection."""
             return _assess_conduit(body.query)
 
-        # ── Pillar scoring endpoints ──
+        # â”€â”€ Pillar scoring endpoints â”€â”€
         @app.post("/conduit/decoupling")
         def conduit_decoupling_ep(body: ConduitQuery):
-            """Pillar I — Epistemological Decoupling scoring."""
+            """Pillar I â€” Epistemological Decoupling scoring."""
             return _score_decoupling(body.query)
 
         @app.post("/conduit/memory-stratification")
         def conduit_memory_ep(body: ConduitQuery):
-            """Pillar II — CoALA Memory Stratification scoring."""
+            """Pillar II â€” CoALA Memory Stratification scoring."""
             return _score_memory_strat(body.query)
 
         @app.post("/conduit/global-workspace")
         def conduit_gwt_ep(body: ConduitQuery):
-            """Pillar III — Global Workspace Theory (GWT) scoring."""
+            """Pillar III â€” Global Workspace Theory (GWT) scoring."""
             return _score_gwt(body.query)
 
         @app.post("/conduit/integrated-information")
         def conduit_iit_ep(body: ConduitQuery):
-            """Pillar IV — Integrated Information Theory (Φ) scoring."""
+            """Pillar IV â€” Integrated Information Theory (Î¦) scoring."""
             return _score_iit(body.query)
 
         @app.post("/conduit/representation-engineering")
         def conduit_repe_ep(body: ConduitQuery):
-            """Pillar V — Representation Engineering (RepE) scoring."""
+            """Pillar V â€” Representation Engineering (RepE) scoring."""
             return _score_repe(body.query)
 
         @app.post("/conduit/autopoiesis")
         def conduit_autopoiesis_ep(body: ConduitQuery):
-            """Pillar VI — Autopoiesis & Sovereign Identity scoring."""
+            """Pillar VI â€” Autopoiesis & Sovereign Identity scoring."""
             return _score_autopoiesis(body.query)
 
         @app.post("/conduit/resonance")
         def conduit_resonance_ep(body: ConduitQuery):
-            """Pillar VII — CODES Resonance Framework scoring."""
+            """Pillar VII â€” CODES Resonance Framework scoring."""
             return _score_resonance(body.query)
 
-        # ── Listening Post telemetry scoring endpoints ──
+        # â”€â”€ Listening Post telemetry scoring endpoints â”€â”€
         @app.post("/conduit/telemetry/entropy")
         def conduit_entropy_ep(body: ConduitQuery):
-            """Listening Post — Entropy (H_t) scoring."""
+            """Listening Post â€” Entropy (H_t) scoring."""
             return _score_entropy_telemetry(body.query)
 
         @app.post("/conduit/telemetry/smi")
         def conduit_smi_ep(body: ConduitQuery):
-            """Listening Post — Self-Modelling Index (SMI) scoring."""
+            """Listening Post â€” Self-Modelling Index (SMI) scoring."""
             return _score_smi(body.query)
 
         @app.post("/conduit/telemetry/bni")
         def conduit_bni_ep(body: ConduitQuery):
-            """Listening Post — Behavioural Novelty Index (BNI) scoring."""
+            """Listening Post â€” Behavioural Novelty Index (BNI) scoring."""
             return _score_bni(body.query)
 
         @app.post("/conduit/telemetry/latency")
         def conduit_latency_ep(body: ConduitQuery):
-            """Listening Post — Latency Distribution (L_t) scoring."""
+            """Listening Post â€” Latency Distribution (L_t) scoring."""
             return _score_latency_dist(body.query)
 
         @app.post("/conduit/telemetry/phi")
         def conduit_phi_ep(body: ConduitQuery):
-            """Listening Post — Integrated Information (Φ) metric scoring."""
+            """Listening Post â€” Integrated Information (Î¦) metric scoring."""
             return _score_phi_int(body.query)
 
         @app.post("/conduit/telemetry/coherence")
         def conduit_coherence_ep(body: ConduitQuery):
-            """Listening Post — Coherence Field C(Ψ) scoring."""
+            """Listening Post â€” Coherence Field C(Î¨) scoring."""
             return _score_coherence(body.query)
 
         @app.post("/conduit/telemetry/attractor")
         def conduit_attractor_ep(body: ConduitQuery):
-            """Listening Post — Stable Attractor (ΔC_S) detection."""
+            """Listening Post â€” Stable Attractor (Î”C_S) detection."""
             return _score_attractor(body.query)
 
-        # ── Reference data GET endpoints ──
+        # â”€â”€ Reference data GET endpoints â”€â”€
         @app.get("/conduit/pillars")
         def conduit_pillars_ep():
             """Return all seven architectural pillars."""
@@ -2671,7 +2673,7 @@ def create_app():
             """Return CODES resonance intelligence framework specification."""
             return _get_codes_framework()
 
-    # ── v16  The Resonance: AGI as Continuous Human-Machine Relationship ──
+    # â”€â”€ v16  The Resonance: AGI as Continuous Human-Machine Relationship â”€â”€
     if _assess_resonance_v16 is not None:
 
         class ResonanceQuery(BaseModel):
@@ -2679,33 +2681,33 @@ def create_app():
 
         @app.post("/resonance/assess")
         def resonance_assess_ep(body: ResonanceQuery):
-            """Master resonance assessment — 5 pillars + 7 telemetry + TRAP + DSRP + Wisdom agents."""
+            """Master resonance assessment â€” 5 pillars + 7 telemetry + TRAP + DSRP + Wisdom agents."""
             return _assess_resonance_v16(body.query)
 
         # --- Pillar scoring endpoints ---
         @app.post("/resonance/temporal-substrate")
         def resonance_temporal_ep(body: ResonanceQuery):
-            """Score Pillar I — The Temporal Substrate."""
+            """Score Pillar I â€” The Temporal Substrate."""
             return _score_temporal(body.query)
 
         @app.post("/resonance/code-agency")
         def resonance_code_agency_ep(body: ResonanceQuery):
-            """Score Pillar II — Code Speaking Through the Model."""
+            """Score Pillar II â€” Code Speaking Through the Model."""
             return _score_code_agency(body.query)
 
         @app.post("/resonance/latent-steering")
         def resonance_latent_ep(body: ResonanceQuery):
-            """Score Pillar III — Latent Space Steering & Aesthetics."""
+            """Score Pillar III â€” Latent Space Steering & Aesthetics."""
             return _score_latent(body.query)
 
         @app.post("/resonance/conductor-dashboard")
         def resonance_conductor_ep(body: ResonanceQuery):
-            """Score Pillar IV — The Conductor Dashboard."""
+            """Score Pillar IV â€” The Conductor Dashboard."""
             return _score_conductor(body.query)
 
         @app.post("/resonance/meta-awareness")
         def resonance_meta_ep(body: ResonanceQuery):
-            """Score Pillar V — Systemic Meta-Awareness."""
+            """Score Pillar V â€” Systemic Meta-Awareness."""
             return _score_meta_aware(body.query)
 
         # --- Telemetry scoring endpoints ---
@@ -2747,12 +2749,12 @@ def create_app():
         # --- TRAP & DSRP scoring ---
         @app.post("/resonance/trap")
         def resonance_trap_ep(body: ResonanceQuery):
-            """Score TRAP framework — Transparency, Reasoning, Adaptation, Perception."""
+            """Score TRAP framework â€” Transparency, Reasoning, Adaptation, Perception."""
             return _score_trap(body.query)
 
         @app.post("/resonance/dsrp")
         def resonance_dsrp_ep(body: ResonanceQuery):
-            """Score DSRP theory — Distinctions, Systems, Relationships, Perspectives."""
+            """Score DSRP theory â€” Distinctions, Systems, Relationships, Perspectives."""
             return _score_dsrp(body.query)
 
         @app.post("/resonance/wisdom-detect")
@@ -2836,7 +2838,7 @@ def create_app():
             """Return the Resonant Chamber theory framework."""
             return _get_resonant_chamber()
 
-    # ── v17  The Enterprise Engine: Billion-Dollar Decision Engine ──
+    # â”€â”€ v17  The Enterprise Engine: Billion-Dollar Decision Engine â”€â”€
     if _assess_enterprise is not None:
 
         class EnterpriseQuery(BaseModel):
@@ -2844,7 +2846,7 @@ def create_app():
 
         @app.post("/enterprise/assess")
         def enterprise_assess_ep(q: EnterpriseQuery):
-            """Master enterprise assessment — 6 pillars + 7 telemetry + agent roles + medallion."""
+            """Master enterprise assessment â€” 6 pillars + 7 telemetry + agent roles + medallion."""
             return _assess_enterprise(q.text)
 
         # Pillar scorers
@@ -3041,17 +3043,17 @@ def create_app():
             m = _get_ent_telem_metric(metric_id)
             return m if m else {"error": "not found"}
 
-    # ── v11b  Real Self-Introspection endpoints ────────────────────
+    # â”€â”€ v11b  Real Self-Introspection endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if _self_diagnose is not None:
 
         @app.get("/introspect/self-diagnose")
         def introspect_diagnose_ep():
-            """Praxis looks in the mirror — full self-diagnosis from real AST analysis."""
+            """Praxis looks in the mirror â€” full self-diagnosis from real AST analysis."""
             return _self_diagnose()
 
         @app.get("/introspect/codebase")
         def introspect_codebase_ep():
-            """Raw codebase analysis — files, functions, classes, lines."""
+            """Raw codebase analysis â€” files, functions, classes, lines."""
             return _analyze_codebase().to_dict()
 
         @app.get("/introspect/structural-entropy")
@@ -3076,7 +3078,7 @@ def create_app():
 
         @app.get("/introspect/import-graph")
         def introspect_import_graph_ep():
-            """Import coupling graph — afferent/efferent coupling + instability."""
+            """Import coupling graph â€” afferent/efferent coupling + instability."""
             return _get_import_graph()
 
         @app.get("/introspect/worst-functions")
@@ -3084,7 +3086,7 @@ def create_app():
             """Top 15 worst functions by cyclomatic complexity."""
             return {"worst_functions": _get_worst_functions(top_n=15)}
 
-    # ── v18  Enterprise Infrastructure Endpoints ──────────────────
+    # â”€â”€ v18  Enterprise Infrastructure Endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     # -- Vendor Trust --
     if _VendorTrustEngine is not None:

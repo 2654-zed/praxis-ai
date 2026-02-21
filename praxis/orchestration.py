@@ -574,6 +574,27 @@ _ENTERPRISE_SIGNALS = [
     "observability", "SLA", "99.9%", "uptime",
 ]
 
+# Words that negate a following signal ("avoid vibe coding" ≠ promoting it)
+_NEGATION_PREFIXES = [
+    "avoid", "prevent", "stop", "don't", "do not", "never",
+    "without", "eliminate", "fix", "refactor away from",
+    "migrate from", "escape", "instead of",
+]
+
+def _filter_negated(signals: list, text: str) -> list:
+    """Remove signals whose occurrence in *text* is preceded by a negation."""
+    confirmed = []
+    for sig in signals:
+        idx = text.find(sig)
+        if idx < 0:
+            continue
+        # Look at the 40-char window before the signal for negation words
+        prefix_window = text[max(0, idx - 40) : idx].strip()
+        if any(prefix_window.endswith(neg) or neg in prefix_window for neg in _NEGATION_PREFIXES):
+            continue  # negated — skip this signal
+        confirmed.append(sig)
+    return confirmed
+
 
 def classify_engineering_query(query: str) -> Dict[str, Any]:
     """
@@ -592,7 +613,9 @@ def classify_engineering_query(query: str) -> Dict[str, Any]:
     """
     q_lower = query.lower()
     architect_hits = [s for s in _ARCHITECT_FIRST_SIGNALS if s in q_lower]
-    vibe_hits = [s for s in _VIBE_CODING_SIGNALS if s in q_lower]
+    vibe_hits = _filter_negated(
+        [s for s in _VIBE_CODING_SIGNALS if s in q_lower], q_lower,
+    )
     enterprise_hits = [s for s in _ENTERPRISE_SIGNALS if s in q_lower]
 
     # Score

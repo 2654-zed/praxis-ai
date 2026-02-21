@@ -416,3 +416,114 @@ class TestPorts:
         assert hasattr(lim, 'is_allowed')
         assert hasattr(lim, 'record')
         assert hasattr(lim, 'remaining')
+
+
+# ======================================================================
+# 10. Architecture Review Fixes (v18.1)
+# ======================================================================
+
+class TestRateLimiterSweep:
+    """TTL sweep prevents unbounded dict growth."""
+
+    def test_sliding_window_sweep_removes_stale(self):
+        import time
+        from praxis.rate_limiter import SlidingWindowLimiter
+        lim = SlidingWindowLimiter(max_requests=10, window_seconds=60)
+        # Simulate old traffic
+        _run(lim.is_allowed("old_key"))
+        # Fake the last-seen to the past
+        lim._last_seen["old_key"] = time.monotonic() - 999
+        removed = lim.sweep_stale_keys(max_idle=300)
+        assert removed == 1
+        assert "old_key" not in lim._buckets
+
+    def test_sliding_window_sweep_keeps_active(self):
+        from praxis.rate_limiter import SlidingWindowLimiter
+        lim = SlidingWindowLimiter(max_requests=10, window_seconds=60)
+        _run(lim.is_allowed("active"))
+        removed = lim.sweep_stale_keys(max_idle=300)
+        assert removed == 0
+        assert "active" in lim._buckets
+
+    def test_token_bucket_sweep_removes_stale(self):
+        import time
+        from praxis.rate_limiter import TokenBucketLimiter
+        lim = TokenBucketLimiter(capacity=10)
+        _run(lim.is_allowed("stale"))
+        lim._buckets["stale"]["last_refill"] = time.monotonic() - 999
+        removed = lim.sweep_stale_keys(max_idle=300)
+        assert removed == 1
+
+    def test_reset_clears_last_seen(self):
+        from praxis.rate_limiter import SlidingWindowLimiter
+        lim = SlidingWindowLimiter()
+        _run(lim.is_allowed("k"))
+        lim.reset("k")
+        assert "k" not in lim._last_seen
+        lim.reset_all()
+        assert len(lim._last_seen) == 0
+
+
+class TestProxyIPExtraction:
+    """_extract_client_ip respects X-Forwarded-For only from trusted proxies."""
+
+    def test_direct_ip_returned_for_untrusted(self):
+        from praxis.rate_limiter import _extract_client_ip
+
+        class FakeClient:
+            host = "203.0.113.5"
+        class FakeRequest:
+            client = FakeClient()
+            headers = {"x-forwarded-for": "10.0.0.1"}
+
+        assert _extract_client_ip(FakeRequest()) == "203.0.113.5"
+
+    def test_forwarded_ip_for_trusted_proxy(self):
+        from praxis.rate_limiter import _extract_client_ip
+
+        class FakeClient:
+            host = "127.0.0.1"
+        class FakeRequest:
+            client = FakeClient()
+            headers = {"x-forwarded-for": "198.51.100.42, 10.0.0.1"}
+
+        assert _extract_client_ip(FakeRequest()) == "198.51.100.42"
+
+
+class TestNegationGuard:
+    """Vibe-coding negation filter prevents false positives."""
+
+    def test_avoid_vibe_coding_not_vibe_style(self):
+        from praxis.orchestration import classify_engineering_query
+        result = classify_engineering_query("How do I avoid vibe coding?")
+        assert result["style"] != "vibe-coding"
+
+    def test_direct_vibe_coding_still_detected(self):
+        from praxis.orchestration import classify_engineering_query
+        result = classify_engineering_query("I want to do vibe coding and just prompt my way through")
+        assert result["style"] == "vibe-coding"
+
+
+class TestComputedFieldPassed:
+    """VendorTrustScore.passed is now a computed_field, not mutated."""
+
+    def test_passing_score(self):
+        from praxis.domain_models import VendorTrustScore
+        v = VendorTrustScore(
+            tool_name="Good", composite_score=0.8, open_cve_count=0,
+        )
+        assert v.passed is True
+
+    def test_failing_score(self):
+        from praxis.domain_models import VendorTrustScore
+        v = VendorTrustScore(
+            tool_name="Bad", composite_score=0.2, open_cve_count=10,
+        )
+        assert v.passed is False
+
+    def test_boundary_cve(self):
+        from praxis.domain_models import VendorTrustScore
+        v = VendorTrustScore(
+            tool_name="Edge", composite_score=0.5, open_cve_count=6,
+        )
+        assert v.passed is False  # CVE > 5

@@ -25,6 +25,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    computed_field,
     field_validator,
     model_validator,
 )
@@ -224,14 +225,12 @@ class VendorTrustScore(BaseModel):
     lock_in_risk: float = Field(default=0.0, ge=0.0, le=1.0)
     maturity: SecurityMaturity = SecurityMaturity.NONE
     warnings: List[str] = Field(default_factory=list)
-    passed: bool = True
 
-    @model_validator(mode="after")
-    def _set_passed(self) -> "VendorTrustScore":
-        # Use object.__setattr__ because frozen=True
-        fail = self.composite_score < 0.4 or self.open_cve_count > 5
-        object.__setattr__(self, "passed", not fail)
-        return self
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def passed(self) -> bool:
+        """Derived — no need to mutate the frozen model."""
+        return self.composite_score >= 0.4 and self.open_cve_count <= 5
 
 
 # -----------------------------------------------------------------------

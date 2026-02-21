@@ -22,9 +22,17 @@ import logging
 import time
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from ipaddress import ip_address as _parse_ip, IPv4Address, IPv6Address
+from typing import Any, Dict, FrozenSet, Optional, Set
 
 log = logging.getLogger("praxis.rate_limiter")
+
+# Max seconds a key can sit idle before the sweep reclaims it.
+_MAX_IDLE_SECONDS: float = 300.0
+# How often (seconds) the background sweep runs.
+_SWEEP_INTERVAL: float = 60.0
+# IPs trusted to set X-Forwarded-For (loopback + common RFC-1918 ranges).
+TRUSTED_PROXIES: Set[str] = {"127.0.0.1", "::1"}
 
 
 # -----------------------------------------------------------------------
@@ -48,9 +56,23 @@ class SlidingWindowLimiter:
     max_requests: int = 60
     window_seconds: float = 60.0
     _buckets: Dict[str, list] = field(default_factory=lambda: defaultdict(list))
+    _last_seen: Dict[str, float] = field(default_factory=dict)
+
+    # ── TTL sweep ────────────────────────────────────────────────
+    def sweep_stale_keys(self, max_idle: float = _MAX_IDLE_SECONDS) -> int:
+        """Remove keys idle longer than *max_idle* seconds. Returns count."""
+        now = time.monotonic()
+        stale = [k for k, ts in self._last_seen.items() if now - ts > max_idle]
+        for k in stale:
+            self._buckets.pop(k, None)
+            self._last_seen.pop(k, None)
+        if stale:
+            log.debug("sliding-window sweep: removed %d stale keys", len(stale))
+        return len(stale)
 
     async def is_allowed(self, key: str) -> bool:
         now = time.monotonic()
+        self._last_seen[key] = now
         bucket = self._buckets[key]
         cutoff = now - self.window_seconds
         # Purge old entries
@@ -73,9 +95,11 @@ class SlidingWindowLimiter:
 
     def reset(self, key: str) -> None:
         self._buckets.pop(key, None)
+        self._last_seen.pop(key, None)
 
     def reset_all(self) -> None:
         self._buckets.clear()
+        self._last_seen.clear()
 
 
 # -----------------------------------------------------------------------
@@ -94,6 +118,18 @@ class TokenBucketLimiter:
     capacity: int = 60
     refill_rate: float = 1.0  # tokens per second
     _buckets: Dict[str, Any] = field(default_factory=dict)
+
+    # ── TTL sweep ────────────────────────────────────────────────
+    def sweep_stale_keys(self, max_idle: float = _MAX_IDLE_SECONDS) -> int:
+        """Remove keys idle longer than *max_idle* seconds. Returns count."""
+        now = time.monotonic()
+        stale = [k for k, b in self._buckets.items()
+                 if now - b.get("last_refill", now) > max_idle]
+        for k in stale:
+            del self._buckets[k]
+        if stale:
+            log.debug("token-bucket sweep: removed %d stale keys", len(stale))
+        return len(stale)
 
     def _get_bucket(self, key: str) -> dict:
         if key not in self._buckets:
@@ -163,6 +199,43 @@ class TieredRateLimiter:
 # FastAPI Middleware (drop-in replacement for the old RateLimitMiddleware)
 # -----------------------------------------------------------------------
 
+# -----------------------------------------------------------------------
+# Background Sweep (evict stale keys to prevent unbounded memory growth)
+# -----------------------------------------------------------------------
+
+async def _background_sweep(
+    limiter: SlidingWindowLimiter,
+    interval: float = _SWEEP_INTERVAL,
+) -> None:
+    """Periodically evict idle keys from the in-memory limiter."""
+    while True:
+        await asyncio.sleep(interval)
+        try:
+            limiter.sweep_stale_keys()
+        except Exception as exc:
+            log.warning("rate-limiter sweep error: %s", exc)
+
+
+# -----------------------------------------------------------------------
+# IP Extraction (proxy-aware)
+# -----------------------------------------------------------------------
+
+def _extract_client_ip(request, trusted_proxies: Set[str] = TRUSTED_PROXIES) -> str:
+    """Extract real client IP, respecting X-Forwarded-For only from trusted proxies."""
+    direct_ip = request.client.host if request.client else "unknown"
+    if direct_ip in trusted_proxies:
+        forwarded = request.headers.get("x-forwarded-for", "")
+        if forwarded:
+            # Take the left-most (client) IP from the chain
+            candidate = forwarded.split(",")[0].strip()
+            try:
+                _parse_ip(candidate)  # validate it's a real IP
+                return candidate
+            except ValueError:
+                pass
+    return direct_ip
+
+
 def create_rate_limit_middleware(
     limiter: Optional[SlidingWindowLimiter] = None,
 ):
@@ -183,8 +256,16 @@ def create_rate_limit_middleware(
         return None
 
     class EnterpriseRateLimitMiddleware(BaseHTTPMiddleware):
+        _sweep_task: Optional[asyncio.Task] = None
+
         async def dispatch(self, request, call_next):
-            ip = request.client.host if request.client else "unknown"
+            # ── Start background sweep on first request ──
+            if EnterpriseRateLimitMiddleware._sweep_task is None:
+                EnterpriseRateLimitMiddleware._sweep_task = asyncio.create_task(
+                    _background_sweep(_limiter)
+                )
+
+            ip = _extract_client_ip(request)
 
             # Determine tier from path
             path = request.url.path

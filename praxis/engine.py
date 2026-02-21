@@ -13,16 +13,15 @@ used by both the CLI and the stack composer without side effects.
 
 try:
     from .data import TOOLS
-except Exception:
+except ImportError:
     from data import TOOLS
 try:
     from . import config as _cfg
-except Exception:
+except ImportError:
     try:
         import config as _cfg
-    except Exception:
+    except ImportError:
         _cfg = None
-from difflib import SequenceMatcher
 import logging
 log = logging.getLogger("praxis.engine")
 
@@ -30,11 +29,11 @@ log = logging.getLogger("praxis.engine")
 try:
     from .diagnostics import record_failure as _record_failure, MIN_RESULTS_THRESHOLD, LOW_SCORE_THRESHOLD
     _DIAG_AVAILABLE = True
-except Exception:
+except ImportError:
     try:
         from diagnostics import record_failure as _record_failure, MIN_RESULTS_THRESHOLD, LOW_SCORE_THRESHOLD
         _DIAG_AVAILABLE = True
-    except Exception:
+    except ImportError:
         _DIAG_AVAILABLE = False
 
 
@@ -54,14 +53,14 @@ try:
         diversity_rerank, initialize as _init_intelligence,
     )
     _INTEL_AVAILABLE = True
-except Exception:
+except ImportError:
     try:
         from intelligence import (
             get_tfidf_index, get_learned_boost, get_industry_boost,
             diversity_rerank, initialize as _init_intelligence,
         )
         _INTEL_AVAILABLE = True
-    except Exception:
+    except ImportError:
         _INTEL_AVAILABLE = False
 
 # Initialize intelligence on first import
@@ -91,11 +90,13 @@ def score_tool(tool, keywords):
         tag match       → 3
         keyword match   → 2
         name/desc match → 1
-        fuzzy name      → up to 3
-        fuzzy desc      → up to 2
         popularity      → tool.popularity
         TF-IDF          → up to 5 (semantic similarity)
         learned boost   → up to 4 (from feedback signals)
+
+    Note: fuzzy SequenceMatcher scoring was removed in the v18 architecture
+    review — it ran O(n²) per tool per query and is fully superseded by the
+    TF-IDF pipeline + exact keyword matching.
     """
     score = 0
     desc_blob = (tool.description or "").lower()
@@ -124,24 +125,6 @@ def score_tool(tool, keywords):
         # Use-case bonus
         if w in uc_blob:
             score += w_uc
-
-    # Fuzzy matching
-    joined = " ".join(str(k).lower() for k in keywords)
-    try:
-        name_ratio = SequenceMatcher(None, joined, name_blob).ratio()
-        desc_ratio = SequenceMatcher(None, joined, desc_blob).ratio()
-    except Exception:
-        name_ratio = desc_ratio = 0
-
-    if name_ratio > 0.75:
-        score += _w("weight_fuzzy_name_strong", 3)
-    elif name_ratio > 0.5:
-        score += _w("weight_fuzzy_name_weak", 1)
-
-    if desc_ratio > 0.75:
-        score += _w("weight_fuzzy_desc_strong", 2)
-    elif desc_ratio > 0.5:
-        score += _w("weight_fuzzy_desc_weak", 1)
 
     score += int(getattr(tool, "popularity", 0) or 0)
 
