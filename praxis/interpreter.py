@@ -64,8 +64,8 @@ def interpret(user_input: str) -> dict:
     if _cfg and _cfg.llm_available():
         try:
             return _llm_interpret(raw)
-        except Exception:
-            pass  # fall through to rule-based
+        except Exception as exc:
+            log.warning("LLM interpretation failed, falling back to rules: %s", exc)
 
     return _rule_based_interpret(raw)
 

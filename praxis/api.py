@@ -102,7 +102,7 @@ try:
     from .metacognition import (
         assess_metacognition as _assess_metacognition,
         detect_pathologies as _detect_pathologies,
-        score_structural_entropy as _score_entropy,
+        score_structural_entropy as _score_structural_entropy,
         score_stylometry as _score_stylometry,
         get_metacognitive_layers as _get_mc_layers,
         recommend_layers as _recommend_mc_layers,
@@ -196,7 +196,7 @@ try:
         score_representation_engineering as _score_repe,
         score_autopoiesis as _score_autopoiesis,
         score_resonance as _score_resonance,
-        score_entropy_telemetry as _score_entropy,
+        score_entropy_telemetry as _score_entropy_telemetry,
         score_self_modelling as _score_smi,
         score_behavioural_novelty as _score_bni,
         score_latency_distribution as _score_latency_dist,
@@ -436,7 +436,7 @@ except Exception:
         from metacognition import (
             assess_metacognition as _assess_metacognition,
             detect_pathologies as _detect_pathologies,
-            score_structural_entropy as _score_entropy,
+            score_structural_entropy as _score_structural_entropy,
             score_stylometry as _score_stylometry,
             get_metacognitive_layers as _get_mc_layers,
             recommend_layers as _recommend_mc_layers,
@@ -452,7 +452,7 @@ except Exception:
             get_failure_modes as _get_failure_modes,
         )
     except Exception:
-        _assess_metacognition = _detect_pathologies = _score_entropy = None
+        _assess_metacognition = _detect_pathologies = _score_structural_entropy = None
         _score_stylometry = _get_mc_layers = _recommend_mc_layers = None
         _get_mc_sandboxes = _recommend_mc_sandbox = _get_mc_workflow = None
         _get_apvp = _get_systemic_risks = _assess_economics = None
@@ -566,7 +566,7 @@ except Exception:
             score_representation_engineering as _score_repe,
             score_autopoiesis as _score_autopoiesis,
             score_resonance as _score_resonance,
-            score_entropy_telemetry as _score_entropy,
+            score_entropy_telemetry as _score_entropy_telemetry,
             score_self_modelling as _score_smi,
             score_behavioural_novelty as _score_bni,
             score_latency_distribution as _score_latency_dist,
@@ -586,7 +586,7 @@ except Exception:
     except Exception:
         _assess_conduit = _score_decoupling = _score_memory_strat = None
         _score_gwt = _score_iit = _score_repe = _score_autopoiesis = None
-        _score_resonance = _score_entropy = _score_smi = _score_bni = None
+        _score_resonance = _score_entropy_telemetry = _score_smi = _score_bni = None
         _score_latency_dist = _score_phi_int = _score_coherence = None
         _score_attractor = _get_pillars = _get_pillar = None
         _get_telemetry_metrics = _get_telemetry_metric = None
@@ -1316,7 +1316,7 @@ def create_app():
     @app.get("/tools/stale")
     def stale_tools():
         """List tools whose metadata hasn't been updated within the freshness window."""
-        max_days = int(_cfg.get("tool_freshness_days") if _cfg else 90)
+        max_days = int(_cfg.get("tool_freshness_days", 90) if _cfg else 90)
         stale = [
             {
                 "name": t.name,
@@ -2108,7 +2108,7 @@ def create_app():
         @app.post("/metacognition/entropy")
         def metacognition_entropy_ep(req: ResilienceQueryRequest):
             """Score structural entropy / technical bankruptcy risk."""
-            return _score_entropy(req.query)
+            return _score_structural_entropy(req.query)
 
         @app.post("/metacognition/stylometry")
         def metacognition_stylometry_ep(req: ResilienceQueryRequest):
@@ -2526,7 +2526,7 @@ def create_app():
         @app.post("/conduit/telemetry/entropy")
         def conduit_entropy_ep(body: ConduitQuery):
             """Listening Post — Entropy (H_t) scoring."""
-            return _score_entropy(body.query)
+            return _score_entropy_telemetry(body.query)
 
         @app.post("/conduit/telemetry/smi")
         def conduit_smi_ep(body: ConduitQuery):

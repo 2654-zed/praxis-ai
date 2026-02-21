@@ -68,7 +68,8 @@ except Exception:
 if _INTEL_AVAILABLE:
     try:
         _init_intelligence(TOOLS)
-    except Exception:
+    except Exception as exc:
+        log.warning("Intelligence init failed (permanently disabled): %s", exc)
         _INTEL_AVAILABLE = False
 
 
@@ -151,15 +152,15 @@ def score_tool(tool, keywords):
             tfidf_score = tfidf.score(keywords, tool.name)
             scale = _w("weight_tfidf_scale", 8)
             score += int(tfidf_score * scale)
-        except Exception:
-            pass
+        except Exception as exc:
+            log.debug("TF-IDF scoring failed for %s: %s", tool.name, exc)
 
     # ── Learned feedback boost (A/B testable) ──
     if _INTEL_AVAILABLE and _w("enable_learned_boosts", True):
         try:
             score += get_learned_boost(tool.name)
-        except Exception:
-            pass
+        except Exception as exc:
+            log.debug("Learned boost failed for %s: %s", tool.name, exc)
 
     return score
 
@@ -317,8 +318,8 @@ def find_tools(user_input, top_n: int = 5, categories_filter: list = None, profi
     if _INTEL_AVAILABLE and len(scored) > top_n:
         try:
             scored = diversity_rerank(scored, top_n=top_n)
-        except Exception:
-            pass
+        except Exception as exc:
+            log.warning("Diversity reranking failed: %s", exc)
 
     return [tool for _, tool in scored[:top_n]]
 

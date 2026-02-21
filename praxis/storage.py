@@ -110,23 +110,26 @@ def load_tools(path: Path = None) -> List[Dict[str, Any]]:
     if not p.exists():
         return []
     conn = sqlite3.connect(p)
-    c = conn.cursor()
-    c.execute("SELECT name, description, categories, url, popularity, tags, keywords, pricing, integrations, compliance, skill_level, use_cases, stack_roles, languages FROM tools ORDER BY id ASC")
-    rows = c.fetchall()
-    conn.close()
+    try:
+        c = conn.cursor()
+        c.execute("SELECT name, description, categories, url, popularity, tags, keywords, pricing, integrations, compliance, skill_level, use_cases, stack_roles, languages FROM tools ORDER BY id ASC")
+        rows = c.fetchall()
+    finally:
+        conn.close()
+
+    def _parse_json(val, default):
+        if not val:
+            return default
+        try:
+            return json.loads(val)
+        except Exception:
+            return default
+
     tools = []
     for r in rows:
         (name, description, categories, url, popularity, tags, keywords,
          pricing, integrations, compliance, skill_level, use_cases,
          stack_roles, languages) = r
-
-        def _parse_json(val, default):
-            if not val:
-                return default
-            try:
-                return json.loads(val)
-            except Exception:
-                return default
 
         tools.append(
             {

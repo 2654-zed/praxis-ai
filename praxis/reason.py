@@ -59,14 +59,6 @@ except Exception:
     from explain import explain_tool
 
 try:
-    from .stack import compose_stack, compare_tools
-except Exception:
-    try:
-        from stack import compose_stack, compare_tools
-    except Exception:
-        compose_stack = compare_tools = None
-
-try:
     from .profile import load_profile
 except Exception:
     try:
@@ -75,11 +67,11 @@ except Exception:
         load_profile = None
 
 try:
-    from .philosophy import assess_transparency, assess_freedom, vendor_deep_dive
+    from .philosophy import assess_transparency, assess_freedom
     _PHILOSOPHY = True
 except Exception:
     try:
-        from philosophy import assess_transparency, assess_freedom, vendor_deep_dive
+        from philosophy import assess_transparency, assess_freedom
         _PHILOSOPHY = True
     except Exception:
         _PHILOSOPHY = False
@@ -2025,7 +2017,8 @@ def deep_reason_v2(
 
     # ── Follow-ups & caveats ──────────────────────────────────────
     follow_ups = _generate_follow_ups(query, plan, top_tools, critique)
-    all_caveats = []
+    # Append tool / PRISM / critique caveats to the domain-intelligence
+    # caveats already gathered (verticals, architecture, resilience, etc.)
     for t in top_tools[:3]:
         for c in t.get("caveats", []):
             if c not in all_caveats:
