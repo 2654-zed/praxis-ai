@@ -431,6 +431,68 @@ try:
         get_registry as _get_vendor_registry,
         compute_risk_score as _compute_vendor_risk,
     )
+    # ── v22: Cognitive Resilience Architecture ─────────────────────
+    from .reasoning_router import (
+        router_summary as _router_summary,
+        assess_complexity as _assess_complexity,
+        route_task as _route_task,
+        decompose_task as _decompose_task_v22,
+        analyze_reasoning_trace as _analyze_reasoning_trace,
+        get_puzzle_environments as _get_puzzle_environments,
+        get_model_tiers as _get_model_tiers,
+    )
+    from .dsrp_ontology import (
+        dsrp_summary as _dsrp_summary,
+        build_dsrp_matrix as _build_dsrp_matrix,
+        structural_cognition as _structural_cognition,
+        love_reality_loop as _love_reality_loop,
+        auto_perspectives as _auto_perspectives,
+    )
+    from .codes_resonance import (
+        codes_summary as _codes_summary,
+        assess_chirality as _assess_chirality,
+        compute_resonance as _compute_resonance,
+        analyze_network as _analyze_network_v22,
+        evaluate_seven_p as _evaluate_seven_p,
+        assess_autopoiesis as _assess_autopoiesis,
+        compute_coherence_gradient as _compute_coherence_gradient,
+    )
+    from .coala_architecture import (
+        coala_summary as _coala_summary,
+        CoALAMemorySystem as _CoALAMemorySystem,
+        DecisionCycle as _DecisionCycle,
+        GlobalWorkspace as _GlobalWorkspace,
+        compute_phi as _compute_phi_v22,
+    )
+    from .repe_transparency import (
+        repe_summary as _repe_summary,
+        analyze_hidden_states as _analyze_hidden_states,
+        generate_control_plan as _generate_control_plan,
+        compute_neural_signature as _compute_neural_signature,
+    )
+    from .mesias_governance import (
+        mesias_summary as _mesias_summary,
+        evaluate_ethics as _evaluate_ethics,
+        assess_risk as _assess_risk_v22,
+        analyze_vsd as _analyze_vsd,
+        measure_efficiency as _measure_efficiency,
+        GovernanceWorkspace as _GovernanceWorkspace,
+    )
+    from .anti_patterns import (
+        anti_patterns_summary as _anti_patterns_summary,
+        detect_trap as _detect_trap,
+        scan_all_traps as _scan_all_traps,
+        assess_vibe_coding as _assess_vibe_coding,
+        scan_for_shadow_ai as _scan_for_shadow_ai,
+    )
+    from .runtime_protection import (
+        runtime_protection_summary as _runtime_protection_summary,
+        scan_input as _scan_input,
+        scan_and_respond as _scan_and_respond,
+        validate_headers as _validate_headers,
+        detect_anomaly as _detect_anomaly,
+        check_compliance as _check_compliance_v22,
+    )
 except ImportError:
     from data import get_all_categories, TOOLS, get_all_tools_dict
     from engine import find_tools
@@ -964,6 +1026,52 @@ except ImportError:
         from vendor_risk import vendor_risk_dashboard as _vendor_risk_dashboard
         from vendor_risk import get_registry as _get_vendor_registry
         from vendor_risk import compute_risk_score as _compute_vendor_risk
+        # ── v22 fallback imports ──
+        from reasoning_router import router_summary as _router_summary
+        from reasoning_router import assess_complexity as _assess_complexity
+        from reasoning_router import route_task as _route_task
+        from reasoning_router import decompose_task as _decompose_task_v22
+        from reasoning_router import analyze_reasoning_trace as _analyze_reasoning_trace
+        from reasoning_router import get_puzzle_environments as _get_puzzle_environments
+        from reasoning_router import get_model_tiers as _get_model_tiers
+        from dsrp_ontology import dsrp_summary as _dsrp_summary
+        from dsrp_ontology import build_dsrp_matrix as _build_dsrp_matrix
+        from dsrp_ontology import structural_cognition as _structural_cognition
+        from dsrp_ontology import love_reality_loop as _love_reality_loop
+        from dsrp_ontology import auto_perspectives as _auto_perspectives
+        from codes_resonance import codes_summary as _codes_summary
+        from codes_resonance import assess_chirality as _assess_chirality
+        from codes_resonance import compute_resonance as _compute_resonance
+        from codes_resonance import analyze_network as _analyze_network_v22
+        from codes_resonance import evaluate_seven_p as _evaluate_seven_p
+        from codes_resonance import assess_autopoiesis as _assess_autopoiesis
+        from codes_resonance import compute_coherence_gradient as _compute_coherence_gradient
+        from coala_architecture import coala_summary as _coala_summary
+        from coala_architecture import CoALAMemorySystem as _CoALAMemorySystem
+        from coala_architecture import DecisionCycle as _DecisionCycle
+        from coala_architecture import GlobalWorkspace as _GlobalWorkspace
+        from coala_architecture import compute_phi as _compute_phi_v22
+        from repe_transparency import repe_summary as _repe_summary
+        from repe_transparency import analyze_hidden_states as _analyze_hidden_states
+        from repe_transparency import generate_control_plan as _generate_control_plan
+        from repe_transparency import compute_neural_signature as _compute_neural_signature
+        from mesias_governance import mesias_summary as _mesias_summary
+        from mesias_governance import evaluate_ethics as _evaluate_ethics
+        from mesias_governance import assess_risk as _assess_risk_v22
+        from mesias_governance import analyze_vsd as _analyze_vsd
+        from mesias_governance import measure_efficiency as _measure_efficiency
+        from mesias_governance import GovernanceWorkspace as _GovernanceWorkspace
+        from anti_patterns import anti_patterns_summary as _anti_patterns_summary
+        from anti_patterns import detect_trap as _detect_trap
+        from anti_patterns import scan_all_traps as _scan_all_traps
+        from anti_patterns import assess_vibe_coding as _assess_vibe_coding
+        from anti_patterns import scan_for_shadow_ai as _scan_for_shadow_ai
+        from runtime_protection import runtime_protection_summary as _runtime_protection_summary
+        from runtime_protection import scan_input as _scan_input
+        from runtime_protection import scan_and_respond as _scan_and_respond
+        from runtime_protection import validate_headers as _validate_headers
+        from runtime_protection import detect_anomaly as _detect_anomaly
+        from runtime_protection import check_compliance as _check_compliance_v22
     except ImportError:
         _get_connector_registry = _execute_connector = _list_connectors = None
         _decompose_request = _generate_plan = _execute_plan = _assemble_and_run = None
@@ -996,6 +1104,24 @@ except ImportError:
         _economics_dashboard = _token_cost = _calculate_roi = _get_ledger = None
         _MODEL_PRICING = None
         _vendor_risk_dashboard = _get_vendor_registry = _compute_vendor_risk = None
+        # ── v22 None fallbacks ──
+        _router_summary = _assess_complexity = _route_task = _decompose_task_v22 = None
+        _analyze_reasoning_trace = _get_puzzle_environments = _get_model_tiers = None
+        _dsrp_summary = _build_dsrp_matrix = _structural_cognition = None
+        _love_reality_loop = _auto_perspectives = None
+        _codes_summary = _assess_chirality = _compute_resonance = None
+        _analyze_network_v22 = _evaluate_seven_p = _assess_autopoiesis = None
+        _compute_coherence_gradient = None
+        _coala_summary = _CoALAMemorySystem = _DecisionCycle = _GlobalWorkspace = None
+        _compute_phi_v22 = None
+        _repe_summary = _analyze_hidden_states = _generate_control_plan = None
+        _compute_neural_signature = None
+        _mesias_summary = _evaluate_ethics = _assess_risk_v22 = None
+        _analyze_vsd = _measure_efficiency = _GovernanceWorkspace = None
+        _anti_patterns_summary = _detect_trap = _scan_all_traps = None
+        _assess_vibe_coding = _scan_for_shadow_ai = None
+        _runtime_protection_summary = _scan_input = _scan_and_respond = None
+        _validate_headers = _detect_anomaly = _check_compliance_v22 = None
 
 try:
     from fastapi import FastAPI
@@ -4197,6 +4323,420 @@ def create_app():
             "compliance": _compliance_posture is not None,
             "ai_economics": _economics_dashboard is not None,
             "vendor_risk": _vendor_risk_dashboard is not None,
+        }
+
+    # ==================================================================
+    # v22 — Cognitive Resilience Architecture
+    # ==================================================================
+
+    # ── v22 shared state ─────────────────────────────────────────────
+    _v22_memory_system = _CoALAMemorySystem() if _CoALAMemorySystem else None
+    _v22_decision_cycle = _DecisionCycle(_v22_memory_system) if _DecisionCycle and _v22_memory_system else None
+    _v22_global_workspace = _GlobalWorkspace() if _GlobalWorkspace else None
+    _v22_gov_workspace = _GovernanceWorkspace() if _GovernanceWorkspace else None
+
+    # ── Reasoning Router ─────────────────────────────────────────────
+    if _router_summary is not None:
+
+        @app.get("/v22/reasoning-router/summary")
+        def v22_router_summary_ep():
+            """Reasoning router summary: regimes, puzzle environments, model tiers."""
+            return _router_summary()
+
+        @app.post("/v22/reasoning-router/route")
+        def v22_router_route_ep(body: dict):
+            """Route a task based on complexity assessment."""
+            result = _route_task(
+                task_description=body.get("task_description", ""),
+                puzzle=body.get("puzzle_type"),
+                puzzle_n=body.get("n", 3),
+                estimated_steps=body.get("estimated_steps", 0),
+                nesting_depth=body.get("nesting_depth", 0),
+                constraint_count=body.get("constraint_count", 0),
+                state_space_size=body.get("state_space_size", 0),
+            )
+            return result.__dict__
+
+        @app.post("/v22/reasoning-router/assess")
+        def v22_router_assess_ep(body: dict):
+            """Assess complexity of a task."""
+            return _assess_complexity(
+                task_description=body.get("task_description", ""),
+                puzzle=body.get("puzzle_type"),
+                puzzle_n=body.get("n", 3),
+                estimated_steps=body.get("estimated_steps", 0),
+                nesting_depth=body.get("nesting_depth", 0),
+                constraint_count=body.get("constraint_count", 0),
+                state_space_size=body.get("state_space_size", 0),
+            ).__dict__
+
+        @app.post("/v22/reasoning-router/decompose")
+        def v22_router_decompose_ep(body: dict):
+            """Decompose a complex task into subtasks."""
+            assessment = _assess_complexity(
+                task_description=body.get("task_description", ""),
+                estimated_steps=body.get("estimated_steps", 100),
+                nesting_depth=body.get("nesting_depth", 20),
+                constraint_count=body.get("constraint_count", 15),
+                state_space_size=body.get("state_space_size", 1000),
+            )
+            result = _decompose_task_v22(
+                task_description=body.get("task_description", ""),
+                assessment=assessment,
+                max_subtasks=body.get("max_subtasks", 5),
+            )
+            return [s.__dict__ for s in result]
+
+        @app.get("/v22/reasoning-router/puzzles")
+        def v22_router_puzzles_ep():
+            """List available puzzle environments."""
+            return _get_puzzle_environments()
+
+        @app.get("/v22/reasoning-router/tiers")
+        def v22_router_tiers_ep():
+            """List model tiers for routing."""
+            return _get_model_tiers()
+
+    # ── DSRP Ontology ────────────────────────────────────────────────
+    if _dsrp_summary is not None:
+
+        @app.get("/v22/dsrp/summary")
+        def v22_dsrp_summary_ep():
+            """DSRP structural ontology summary."""
+            return _dsrp_summary()
+
+        @app.post("/v22/dsrp/matrix")
+        def v22_dsrp_matrix_ep(body: dict):
+            """Build and validate a DSRP matrix from provided elements."""
+            matrix = _build_dsrp_matrix(
+                task_description=body.get("task_description", ""),
+                distinctions=body.get("distinctions", []),
+                systems=body.get("systems", []),
+                relationships=body.get("relationships", []),
+                perspectives=body.get("perspectives", []),
+            )
+            return matrix.to_dict()
+
+        @app.post("/v22/dsrp/cognition")
+        def v22_dsrp_cognition_ep(body: dict):
+            """Compute structural cognition M = I * O."""
+            return {
+                "meaning": _structural_cognition(
+                    body.get("information", 1.0),
+                    body.get("organization", 1.0),
+                ),
+            }
+
+        @app.post("/v22/dsrp/perspectives")
+        def v22_dsrp_perspectives_ep(body: dict):
+            """Auto-generate perspectives for a task description."""
+            result = _auto_perspectives(body.get("task_description", ""))
+            return [p.to_dict() for p in result]
+
+    # ── CODES Resonance ──────────────────────────────────────────────
+    if _codes_summary is not None:
+
+        @app.get("/v22/codes/summary")
+        def v22_codes_summary_ep():
+            """CODES resonance framework summary."""
+            return _codes_summary()
+
+        @app.post("/v22/codes/seven-p")
+        def v22_codes_seven_p_ep(body: dict):
+            """Evaluate 7P-MCST multi-criteria scoring."""
+            return _evaluate_seven_p(body.get("scores", {})).__dict__
+
+        @app.post("/v22/codes/coherence")
+        def v22_codes_coherence_ep(body: dict):
+            """Compute coherence gradient across subsystems."""
+            result = _compute_coherence_gradient(
+                subsystem_alignments=body.get("subsystem_alignments", {}),
+            )
+            return result.__dict__
+
+        @app.post("/v22/codes/network")
+        def v22_codes_network_ep(body: dict):
+            """Analyze network topology (SCNT²)."""
+            result = _analyze_network_v22(
+                adjacency=body.get("adjacency", {}),
+            )
+            return result.__dict__
+
+        @app.post("/v22/codes/chirality")
+        def v22_codes_chirality_ep(body: dict):
+            """Assess chirality of two system components."""
+            result = _assess_chirality(
+                component_a=body.get("component_a", {}),
+                component_b=body.get("component_b", {}),
+            )
+            return result.__dict__
+
+        @app.post("/v22/codes/resonance")
+        def v22_codes_resonance_ep(body: dict):
+            """Compute prime resonance profile for a signal."""
+            result = _compute_resonance(
+                signal=body.get("signal", [0.5] * 20),
+                system_id=body.get("system_id", "default"),
+            )
+            return result.__dict__
+
+    # ── CoALA Architecture ───────────────────────────────────────────
+    if _coala_summary is not None:
+
+        @app.get("/v22/coala/summary")
+        def v22_coala_summary_ep():
+            """CoALA cognitive architecture summary."""
+            return _coala_summary()
+
+        @app.get("/v22/coala/memory/status")
+        def v22_coala_memory_status_ep():
+            """Memory system status across all modules."""
+            if _v22_memory_system:
+                return _v22_memory_system.status()
+            return {"error": "Memory system not initialized"}
+
+        @app.post("/v22/coala/memory/store")
+        def v22_coala_memory_store_ep(body: dict):
+            """Store an entry in a memory module."""
+            if not _v22_memory_system:
+                return {"error": "Memory system not initialized"}
+            from .coala_architecture import MemoryType as _MemType
+            type_str = body.get("memory_type", "working")
+            try:
+                mt = _MemType(type_str)
+            except ValueError:
+                mt = _MemType.WORKING
+            content = body.get("content", "")
+            metadata = body.get("metadata", {})
+            entry = _v22_memory_system.store(mt, content, metadata)
+            return {"status": "stored", "memory_type": type_str, "entry_id": entry.entry_id}
+
+        @app.post("/v22/coala/memory/retrieve")
+        def v22_coala_memory_retrieve_ep(body: dict):
+            """Cross-retrieve from memory modules."""
+            if not _v22_memory_system:
+                return {"error": "Memory system not initialized"}
+            query = body.get("query", "")
+            results = _v22_memory_system.cross_retrieve(query)
+            return {"query": query, "results": results}
+
+        @app.get("/v22/coala/workspace/status")
+        def v22_coala_workspace_status_ep():
+            """Global Workspace Theory broadcast status."""
+            if _v22_global_workspace:
+                return _v22_global_workspace.status()
+            return {"error": "Global workspace not initialized"}
+
+        @app.post("/v22/coala/phi")
+        def v22_coala_phi_ep(body: dict):
+            """Compute IIT Φ metrics."""
+            result = _compute_phi_v22(
+                subsystem_connections=body.get("subsystem_connections", {}),
+                subsystem_information=body.get("subsystem_information", {}),
+            )
+            return result.to_dict()
+
+    # ── RepE Transparency ────────────────────────────────────────────
+    if _repe_summary is not None:
+
+        @app.get("/v22/repe/summary")
+        def v22_repe_summary_ep():
+            """Representation Engineering summary."""
+            return _repe_summary()
+
+        @app.post("/v22/repe/analyze")
+        def v22_repe_analyze_ep(body: dict):
+            """Analyze hidden states for concept activations."""
+            result = _analyze_hidden_states(
+                system_description=body.get("system_description", "system"),
+                concept_scores=body.get("concept_scores", {}),
+            )
+            return result.to_dict()
+
+        @app.post("/v22/repe/control-plan")
+        def v22_repe_control_plan_ep(body: dict):
+            """Generate a control plan from hidden state analysis."""
+            profile = _analyze_hidden_states(
+                system_description=body.get("system_description", "system"),
+                concept_scores=body.get("concept_scores", {}),
+            )
+            plan = _generate_control_plan(
+                profile=profile,
+                target_alignment=body.get("target_alignment", 0.7),
+            )
+            return plan.to_dict()
+
+        @app.post("/v22/repe/neural-signature")
+        def v22_repe_neural_sig_ep(body: dict):
+            """Compute neural signature for baseline monitoring."""
+            profile = _analyze_hidden_states(
+                system_description=body.get("system_description", "system"),
+                concept_scores=body.get("concept_scores", {}),
+            )
+            result = _compute_neural_signature(
+                profile=profile,
+                baseline=body.get("baseline"),
+            )
+            return result.__dict__
+
+    # ── MESIAS Governance ────────────────────────────────────────────
+    if _mesias_summary is not None:
+
+        @app.get("/v22/mesias/summary")
+        def v22_mesias_summary_ep():
+            """MESIAS governance framework summary."""
+            return _mesias_summary()
+
+        @app.post("/v22/mesias/ethics")
+        def v22_mesias_ethics_ep(body: dict):
+            """Evaluate ethical dimensions of a subject."""
+            result = _evaluate_ethics(
+                subject=body.get("subject", ""),
+                dimension_scores=body.get("dimension_scores", {}),
+            )
+            return result.to_dict()
+
+        @app.post("/v22/mesias/risk")
+        def v22_mesias_risk_ep(body: dict):
+            """Assess risk for an operation."""
+            result = _assess_risk_v22(
+                operation=body.get("operation", ""),
+                impact=body.get("impact", 0.5),
+                likelihood=body.get("likelihood", 0.3),
+                existing_mitigations=body.get("mitigations", []),
+            )
+            return result.to_dict()
+
+        @app.post("/v22/mesias/vsd")
+        def v22_mesias_vsd_ep(body: dict):
+            """Perform Value-Sensitive Design analysis."""
+            result = _analyze_vsd(
+                stakeholder_values=body.get("stakeholder_values", []),
+            )
+            return result.to_dict()
+
+        @app.post("/v22/mesias/efficiency")
+        def v22_mesias_efficiency_ep(body: dict):
+            """Measure governance efficiency metrics."""
+            result = _measure_efficiency(
+                total_operations=body.get("total_operations", 100),
+                governance_overhead_ms=body.get("governance_overhead_ms", 50.0),
+                operation_time_ms=body.get("operation_time_ms", 200.0),
+            )
+            return result.to_dict()
+
+        @app.get("/v22/mesias/governance/status")
+        def v22_mesias_governance_status_ep():
+            """Governance workspace status."""
+            if _v22_gov_workspace:
+                return _v22_gov_workspace.status()
+            return {"error": "Governance workspace not initialized"}
+
+    # ── Anti-Patterns ────────────────────────────────────────────────
+    if _anti_patterns_summary is not None:
+
+        @app.get("/v22/anti-patterns/summary")
+        def v22_anti_patterns_summary_ep():
+            """Anti-pattern detection summary."""
+            return _anti_patterns_summary()
+
+        @app.post("/v22/anti-patterns/scan")
+        def v22_anti_patterns_scan_ep(body: dict):
+            """Scan for all TRAP anti-patterns."""
+            results = _scan_all_traps(body.get("indicators", []))
+            return {k: v.__dict__ for k, v in results.items()}
+
+        @app.post("/v22/anti-patterns/detect")
+        def v22_anti_patterns_detect_ep(body: dict):
+            """Detect a specific TRAP pattern."""
+            from .anti_patterns import TrapType as _TrapType
+            trap_str = body.get("trap_type", "bag_of_agents")
+            try:
+                tt = _TrapType(trap_str)
+            except ValueError:
+                tt = _TrapType.BAG_OF_AGENTS
+            result = _detect_trap(
+                trap_type=tt,
+                observed_indicators=body.get("indicators", []),
+            )
+            return result.__dict__
+
+        @app.post("/v22/anti-patterns/vibe-coding")
+        def v22_vibe_coding_ep(body: dict):
+            """Assess vibe-coding risk."""
+            result = _assess_vibe_coding(
+                project_description=body.get("project_description", "project"),
+                ai_generated_ratio=body.get("ai_generated_ratio", 0.5),
+                review_coverage=body.get("review_coverage", 0.5),
+                test_coverage=body.get("test_coverage", 0.5),
+                developer_experience_years=body.get("developer_experience_years", 3),
+            )
+            return result.to_dict()
+
+        @app.post("/v22/anti-patterns/shadow-ai")
+        def v22_shadow_ai_ep(body: dict):
+            """Scan for shadow AI usage patterns."""
+            result = _scan_for_shadow_ai(
+                code_snippets=body.get("code_samples", []),
+            )
+            return result.__dict__
+
+    # ── Runtime Protection ───────────────────────────────────────────
+    if _runtime_protection_summary is not None:
+
+        @app.get("/v22/runtime/summary")
+        def v22_runtime_summary_ep():
+            """Runtime protection summary."""
+            return _runtime_protection_summary()
+
+        @app.post("/v22/runtime/scan")
+        def v22_runtime_scan_ep(body: dict):
+            """Scan input for threats and respond."""
+            results = _scan_and_respond(
+                input_text=body.get("text", ""),
+            )
+            return [r.to_dict() for r in results]
+
+        @app.post("/v22/runtime/headers")
+        def v22_runtime_headers_ep(body: dict):
+            """Validate security headers."""
+            result = _validate_headers(body.get("headers", {}))
+            return result.to_dict()
+
+        @app.post("/v22/runtime/anomaly")
+        def v22_runtime_anomaly_ep(body: dict):
+            """Detect statistical anomaly in a metric."""
+            result = _detect_anomaly(
+                metric_name=body.get("metric_name", "unknown"),
+                observed=body.get("observed", 0.0),
+                historical_mean=body.get("historical_mean", 0.0),
+                historical_std=body.get("historical_std", 1.0),
+                threshold_sigmas=body.get("threshold_sigmas", 3.0),
+            )
+            return result.to_dict() if result else {"anomaly": False}
+
+        @app.post("/v22/runtime/compliance")
+        def v22_runtime_compliance_ep(body: dict):
+            """Check compliance against a framework."""
+            result = _check_compliance_v22(
+                framework=body.get("framework", "SOC2"),
+                control_statuses=body.get("control_statuses", {}),
+            )
+            return result.to_dict()
+
+    # ── v22 Platform Health ──────────────────────────────────────────
+    @app.get("/v22/health")
+    def v22_health_ep():
+        """v22 cognitive resilience architecture health check."""
+        return {
+            "reasoning_router": _router_summary is not None,
+            "dsrp_ontology": _dsrp_summary is not None,
+            "codes_resonance": _codes_summary is not None,
+            "coala_architecture": _coala_summary is not None,
+            "repe_transparency": _repe_summary is not None,
+            "mesias_governance": _mesias_summary is not None,
+            "anti_patterns": _anti_patterns_summary is not None,
+            "runtime_protection": _runtime_protection_summary is not None,
         }
 
     return app

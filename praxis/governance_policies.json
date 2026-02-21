@@ -26,5 +26,621 @@
     "active": true,
     "created_by": "admin",
     "created_at": 1771703108.6484296
+  },
+  "3c1f2de6a8": {
+    "policy_id": "3c1f2de6a8",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771710901.7919924
+  },
+  "7881f03847": {
+    "policy_id": "7881f03847",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771710901.8193297
+  },
+  "96b7676d3d": {
+    "policy_id": "96b7676d3d",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771710971.8921232
+  },
+  "a6595746c9": {
+    "policy_id": "a6595746c9",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771710971.9100792
+  },
+  "7d249da14e": {
+    "policy_id": "7d249da14e",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771711001.6083195
+  },
+  "3fe1ed3727": {
+    "policy_id": "3fe1ed3727",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771711001.6215167
+  },
+  "6a948eacaa": {
+    "policy_id": "6a948eacaa",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771711803.6931484
+  },
+  "b9047ef95a": {
+    "policy_id": "b9047ef95a",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771711803.714808
+  },
+  "cfbd9678f7": {
+    "policy_id": "cfbd9678f7",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715457.6059856
+  },
+  "8e9e4911e6": {
+    "policy_id": "8e9e4911e6",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715457.623557
+  },
+  "41d66030be": {
+    "policy_id": "41d66030be",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715629.1007345
+  },
+  "215cccb676": {
+    "policy_id": "215cccb676",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715629.126091
+  },
+  "03cb40da08": {
+    "policy_id": "03cb40da08",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715663.2463017
+  },
+  "f61fef7143": {
+    "policy_id": "f61fef7143",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715663.2596958
+  },
+  "b2b5956194": {
+    "policy_id": "b2b5956194",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715789.2705307
+  },
+  "33955f6d07": {
+    "policy_id": "33955f6d07",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715789.293638
+  },
+  "89f369feb7": {
+    "policy_id": "89f369feb7",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715888.633093
+  },
+  "da58a51a69": {
+    "policy_id": "da58a51a69",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771715888.6490004
+  },
+  "992db75582": {
+    "policy_id": "992db75582",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716153.6500976
+  },
+  "8cadc26b36": {
+    "policy_id": "8cadc26b36",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716153.6677825
+  },
+  "aa707ccf2f": {
+    "policy_id": "aa707ccf2f",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716228.941966
+  },
+  "64d9a92e92": {
+    "policy_id": "64d9a92e92",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716228.9617245
+  },
+  "e0dfcd55d0": {
+    "policy_id": "e0dfcd55d0",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716332.8454807
+  },
+  "2496cddf4b": {
+    "policy_id": "2496cddf4b",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716332.8726063
+  },
+  "f43701f5db": {
+    "policy_id": "f43701f5db",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716455.7071533
+  },
+  "3db1f1fcb6": {
+    "policy_id": "3db1f1fcb6",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716455.744653
+  },
+  "ccbb2ca4c5": {
+    "policy_id": "ccbb2ca4c5",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716623.5388765
+  },
+  "4b838c3d68": {
+    "policy_id": "4b838c3d68",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716623.5559072
+  },
+  "d41ab98c1e": {
+    "policy_id": "d41ab98c1e",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716714.0613544
+  },
+  "2e8674f7e3": {
+    "policy_id": "2e8674f7e3",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716714.0791624
+  },
+  "7894fc6a3b": {
+    "policy_id": "7894fc6a3b",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716746.6203778
+  },
+  "3880eaa47e": {
+    "policy_id": "3880eaa47e",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716746.6576416
+  },
+  "58cf844209": {
+    "policy_id": "58cf844209",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716790.529139
+  },
+  "a90a4c0fb5": {
+    "policy_id": "a90a4c0fb5",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771716790.5464175
+  },
+  "c028a7d672": {
+    "policy_id": "c028a7d672",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771717124.96135
+  },
+  "e5561982a2": {
+    "policy_id": "e5561982a2",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771717124.9769797
+  },
+  "3173681c58": {
+    "policy_id": "3173681c58",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771717171.1955988
+  },
+  "48e2d7be98": {
+    "policy_id": "48e2d7be98",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771717171.2147655
+  },
+  "aea016c6e7": {
+    "policy_id": "aea016c6e7",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771717329.1241097
+  },
+  "cf2a8c7a2f": {
+    "policy_id": "cf2a8c7a2f",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771717329.1406238
+  },
+  "f14eec0116": {
+    "policy_id": "f14eec0116",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771718514.0850472
+  },
+  "c9997b4a85": {
+    "policy_id": "c9997b4a85",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771718514.1001992
+  },
+  "ec063a13b9": {
+    "policy_id": "ec063a13b9",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771719235.289714
+  },
+  "352ba8fcb2": {
+    "policy_id": "352ba8fcb2",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771719235.3271706
   }
 }

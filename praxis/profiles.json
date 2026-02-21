@@ -19,17 +19,17 @@
   },
   "journey": {
     "profile_id": "journey",
-    "industry": "startup",
-    "budget": "free",
+    "industry": "saas",
+    "budget": "low",
     "team_size": "solo",
-    "skill_level": "advanced",
+    "skill_level": "intermediate",
     "existing_tools": [],
     "goals": [
-      "automation"
+      "design"
     ],
     "constraints": [],
     "preferences": {},
-    "created_at": "2026-02-21T08:14:47.418089Z",
-    "updated_at": "2026-02-21T08:14:47.422127Z"
+    "created_at": "2026-02-21T22:20:00.930950Z",
+    "updated_at": "2026-02-21T22:20:00.965260Z"
   }
 }
