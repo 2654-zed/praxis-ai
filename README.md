@@ -21,7 +21,7 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~33,400 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-21 16:32 UTC |
+| **Last auto-update** | 2026-02-21 16:34 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -921,6 +921,7 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+f0b1db7 ci: auto-update README stats on every push via GitHub Actions
 a422d95 docs: comprehensive README  full context transfer document for 17-version cognitive architecture
 f9cf543 audit: fix 12 vibe-coding issues across 6 files
 10abd49 Praxis v17  The Enterprise Engine: Billion-Dollar Decision Engine
