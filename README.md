@@ -10,16 +10,19 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 
 ## At a Glance
 
+<!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 45 files, ~33,000 lines |
+| **Python modules** | 45 files, ~29,000 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
 | **API endpoints** | 256 REST routes via FastAPI |
 | **Test coverage** | 157 tests across 6 test files, all passing |
-| **Frontend** | 8 HTML + 4 JS files (~4,800 lines), Liquid Glass UI |
+| **Frontend** | 8 HTML + 4 JS files (~4,400 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~38,600 (Python + Frontend) |
+| **Total LOC** | ~33,400 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
+| **Last auto-update** | 2026-02-21 16:32 UTC |
+<!-- AUTO:STATS:END -->
 
 ---
 
@@ -916,13 +919,16 @@ _CONDUIT_OK = False  # set in except block
 
 ## Git History
 
+<!-- AUTO:GIT:START -->
 ```
+a422d95 docs: comprehensive README  full context transfer document for 17-version cognitive architecture
 f9cf543 audit: fix 12 vibe-coding issues across 6 files
-10abd49 Praxis v17 — The Enterprise Engine
-2069dad Praxis v16 — The Resonance
-485a6dd Praxis v15 — The Conduit
-85dfa25 Praxis v14 — Architectural Enlightenment
+10abd49 Praxis v17  The Enterprise Engine: Billion-Dollar Decision Engine
+2069dad Praxis v16  The Resonance: AGI as continuous human-machine relationship
+485a6dd Praxis v15  The Conduit: decoupled cognitive systems & emergent intelligence
+85dfa25 Praxis v14  Architectural Enlightenment: 223 tools, 171 API endpoints, 22 tests, 48 modules
 ```
+<!-- AUTO:GIT:END -->
 
 ---
 
@@ -949,13 +955,15 @@ The codebase tells a story:
 6. **v15–v17**: Enterprise transcendence (cognitive architecture at scale)
 
 ### Current State (Post-Audit)
+<!-- AUTO:STATE:START -->
 - **246 tools**, zero duplicates, clean tag casing
 - **256 API routes**, all functional
-- **157/157 tests passing**
-- **45 Python modules**, ~33,000 lines
-- **12 frontend files**, ~4,800 lines
+- **157 tests passing**
+- **45 Python modules**, ~29,000 lines
+- **12 frontend files**, ~4,400 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
+<!-- AUTO:STATE:END -->
 
 ### How to Add a New Module (v18+)
 1. Create `praxis/new_module.py` with an `assess_*()` master function and sub-scorers
