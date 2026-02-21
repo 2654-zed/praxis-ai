@@ -282,6 +282,20 @@ try:
         get_telemetry_metrics as _get_ent_telemetry,
         get_telemetry_metric as _get_ent_telem_metric,
     )
+    # ── v18  Enterprise Infrastructure ──────────────────────────────
+    from .rate_limiter import SlidingWindowLimiter as _SlidingWindowLimiter
+    from .rate_limiter import create_rate_limit_middleware as _create_rl_mw
+    from .telemetry import configure_telemetry as _configure_telemetry
+    from .telemetry import create_telemetry_middleware as _create_telem_mw
+    from .vendor_trust import VendorTrustEngine as _VendorTrustEngine
+    from .vendor_trust import VendorProfile as _VendorProfile
+    from .vendor_trust import annotate_recommendations as _annotate_trust
+    from .hybrid_retrieval_v2 import hybrid_search_v2 as _hybrid_v2
+    from .hybrid_retrieval_v2 import get_orchestrator as _get_rag_orchestrator
+    from .scoring_optimized import get_optimized_tfidf as _get_opt_tfidf
+    from .llm_resilience import get_llm_circuit as _get_llm_circuit
+    from .llm_resilience import check_llm_health as _check_llm_health
+    from .auth import get_current_user as _get_current_user
     from . import config as _cfg
 except Exception:
     from data import get_all_categories, TOOLS, get_all_tools_dict
@@ -694,6 +708,28 @@ except Exception:
         import config as _cfg
     except Exception:
         _cfg = None
+    # v18 fallback imports
+    try:
+        from rate_limiter import SlidingWindowLimiter as _SlidingWindowLimiter
+        from rate_limiter import create_rate_limit_middleware as _create_rl_mw
+        from telemetry import configure_telemetry as _configure_telemetry
+        from telemetry import create_telemetry_middleware as _create_telem_mw
+        from vendor_trust import VendorTrustEngine as _VendorTrustEngine
+        from vendor_trust import VendorProfile as _VendorProfile
+        from vendor_trust import annotate_recommendations as _annotate_trust
+        from hybrid_retrieval_v2 import hybrid_search_v2 as _hybrid_v2
+        from hybrid_retrieval_v2 import get_orchestrator as _get_rag_orchestrator
+        from scoring_optimized import get_optimized_tfidf as _get_opt_tfidf
+        from llm_resilience import get_llm_circuit as _get_llm_circuit
+        from llm_resilience import check_llm_health as _check_llm_health
+        from auth import get_current_user as _get_current_user
+    except Exception:
+        _SlidingWindowLimiter = _create_rl_mw = None
+        _configure_telemetry = _create_telem_mw = None
+        _VendorTrustEngine = _VendorProfile = _annotate_trust = None
+        _hybrid_v2 = _get_rag_orchestrator = None
+        _get_opt_tfidf = _get_llm_circuit = _check_llm_health = None
+        _get_current_user = None
 
 try:
     from fastapi import FastAPI
@@ -881,33 +917,58 @@ def create_app():
     except Exception:
         pass
 
-    # ── Rate Limiting (per-IP, in-memory) ──
-    import time as _time
-    import logging as _logging
-    _api_log = _logging.getLogger("praxis.api")
-    _rate_buckets: dict = {}  # ip → [timestamps]
+    # ── v18  Structured Telemetry ──
+    if _configure_telemetry:
+        try:
+            _configure_telemetry()
+        except Exception:
+            pass
+
+    # ── v18  Telemetry Middleware (trace-id, latency) ──
+    if _create_telem_mw:
+        try:
+            _TelemetryMW = _create_telem_mw()
+            if _TelemetryMW:
+                app.add_middleware(_TelemetryMW)
+        except Exception:
+            pass
+
+    # ── v18  Enterprise Rate Limiting (sliding-window, replaces old fixed-window) ──
     _rpm_limit = _cfg.get("rate_limit_rpm", 60) if _cfg else 60
+    if _create_rl_mw and _SlidingWindowLimiter:
+        try:
+            _rl = _SlidingWindowLimiter(max_requests=_rpm_limit, window_seconds=60)
+            _RateLimitMW = _create_rl_mw(limiter=_rl)
+            if _RateLimitMW:
+                app.add_middleware(_RateLimitMW)
+        except Exception:
+            pass
+    else:
+        # Legacy fallback — basic in-memory rate limiter
+        import time as _time
+        import logging as _logging
+        _api_log = _logging.getLogger("praxis.api")
+        _rate_buckets: dict = {}
 
-    from starlette.middleware.base import BaseHTTPMiddleware
-    from starlette.responses import JSONResponse as _JSONResponse
+        from starlette.middleware.base import BaseHTTPMiddleware
+        from starlette.responses import JSONResponse as _JSONResponse
 
-    class RateLimitMiddleware(BaseHTTPMiddleware):
-        async def dispatch(self, request, call_next):
-            ip = request.client.host if request.client else "unknown"
-            now = _time.time()
-            bucket = _rate_buckets.setdefault(ip, [])
-            # Prune entries older than 60s
-            bucket[:] = [t for t in bucket if now - t < 60]
-            if len(bucket) >= _rpm_limit:
-                _api_log.warning("rate-limit: %s exceeded %d rpm", ip, _rpm_limit)
-                return _JSONResponse({"error": "Rate limit exceeded. Try again shortly."}, status_code=429)
-            bucket.append(now)
-            return await call_next(request)
+        class RateLimitMiddleware(BaseHTTPMiddleware):
+            async def dispatch(self, request, call_next):
+                ip = request.client.host if request.client else "unknown"
+                now = _time.time()
+                bucket = _rate_buckets.setdefault(ip, [])
+                bucket[:] = [t for t in bucket if now - t < 60]
+                if len(bucket) >= _rpm_limit:
+                    _api_log.warning("rate-limit: %s exceeded %d rpm", ip, _rpm_limit)
+                    return _JSONResponse({"error": "Rate limit exceeded. Try again shortly."}, status_code=429)
+                bucket.append(now)
+                return await call_next(request)
 
-    try:
-        app.add_middleware(RateLimitMiddleware)
-    except Exception:
-        pass
+        try:
+            app.add_middleware(RateLimitMiddleware)
+        except Exception:
+            pass
 
     # Static frontend
     try:
@@ -3022,6 +3083,108 @@ def create_app():
         def introspect_worst_functions_ep():
             """Top 15 worst functions by cyclomatic complexity."""
             return {"worst_functions": _get_worst_functions(top_n=15)}
+
+    # ── v18  Enterprise Infrastructure Endpoints ──────────────────
+
+    # -- Vendor Trust --
+    if _VendorTrustEngine is not None:
+        _trust_engine = _VendorTrustEngine()
+
+        class VendorTrustRequest(BaseModel):
+            vendor_name: str = ""
+            tool_name: str = ""
+            soc2: bool = False
+            gdpr: bool = False
+            iso27001: bool = False
+            hipaa: bool = False
+            open_cve_count: int = 0
+            days_since_last_update: int = 0
+            github_stars: int = 0
+            github_contributors: int = 0
+            has_security_policy: bool = False
+
+        @app.post("/v18/vendor-trust/score")
+        def vendor_trust_score_ep(req: VendorTrustRequest):
+            """Score a vendor on the multi-dimensional trust matrix."""
+            profile = _VendorProfile(
+                vendor_name=req.vendor_name, tool_name=req.tool_name,
+                soc2=req.soc2, gdpr=req.gdpr, iso27001=req.iso27001,
+                hipaa=req.hipaa, open_cve_count=req.open_cve_count,
+                days_since_last_update=req.days_since_last_update,
+                github_stars=req.github_stars,
+                github_contributors=req.github_contributors,
+                has_security_policy=req.has_security_policy,
+            )
+            return _trust_engine.score(profile)
+
+    # -- Hybrid RAG v2 --
+    if _hybrid_v2 is not None:
+        class HybridV2Request(BaseModel):
+            query: str
+            top_n: int = 10
+
+        @app.post("/v18/hybrid-search")
+        def hybrid_search_v2_ep(req: HybridV2Request):
+            """Three-lane HybridRAG retrieval (sparse + dense + graph)."""
+            terms = req.query.lower().split()
+            result = _hybrid_v2(terms, req.query, top_n=req.top_n)
+            return {
+                "results": [{"name": t.name, "score": round(s, 4)} for t, s in result.tools],
+                "lanes_used": result.lanes_used,
+                "query_classification": result.query_classification,
+                "alpha": result.alpha,
+                "elapsed_ms": result.elapsed_ms,
+            }
+
+    # -- Optimized TF-IDF --
+    if _get_opt_tfidf is not None:
+        class BatchScoreRequest(BaseModel):
+            query: str
+            top_n: int = 10
+
+        @app.post("/v18/tfidf/batch-score")
+        def tfidf_batch_score_ep(req: BatchScoreRequest):
+            """Batch TF-IDF scoring via optimized sparse-matrix engine."""
+            idx = _get_opt_tfidf()
+            terms = req.query.lower().split()
+            results = idx.batch_score(terms, top_n=req.top_n)
+            return {"results": [{"name": n, "score": round(s, 4)} for n, s in results]}
+
+        @app.get("/v18/tfidf/stats")
+        def tfidf_stats_ep():
+            """Optimized TF-IDF index statistics."""
+            idx = _get_opt_tfidf()
+            return idx.stats()
+
+    # -- LLM Circuit Breaker Status --
+    if _get_llm_circuit is not None:
+        @app.get("/v18/llm/circuit-status")
+        def llm_circuit_status_ep():
+            """Current LLM circuit breaker state."""
+            cb = _get_llm_circuit()
+            return {"state": cb.state, "failure_count": cb._failure_count,
+                    "recovery_timeout": cb.recovery_timeout}
+
+        @app.post("/v18/llm/circuit-reset")
+        def llm_circuit_reset_ep():
+            """Manually reset the LLM circuit breaker."""
+            cb = _get_llm_circuit()
+            cb.reset()
+            return {"state": cb.state, "message": "Circuit breaker reset"}
+
+    # -- Infrastructure health --
+    @app.get("/v18/health")
+    def v18_health_ep():
+        """v18 enterprise infrastructure health check."""
+        return {
+            "vendor_trust": _VendorTrustEngine is not None,
+            "hybrid_rag_v2": _hybrid_v2 is not None,
+            "optimized_tfidf": _get_opt_tfidf is not None,
+            "llm_resilience": _get_llm_circuit is not None,
+            "enterprise_rate_limiter": _create_rl_mw is not None,
+            "telemetry": _configure_telemetry is not None,
+            "auth": _get_current_user is not None,
+        }
 
     return app
 

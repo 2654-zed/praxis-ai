@@ -62,4 +62,21 @@ __all__ = [
     "authorship",
     # v14 enlightenment — metaphysical truths, Identity Map, Observer, Clean Arch, FSM, asyncio, DI
     "enlightenment",
+    # v15 conduit — signal flow, pattern recognition, integration scoring
+    "conduit",
+    # v16 resonance — temporal awareness, code agency, latent steering, trap detection, DSRP
+    "resonance",
+    # v17 enterprise — hybrid GraphRAG, multi-agent, MCP bus, data moat, monetization, security
+    "enterprise",
+    # v18 enterprise infrastructure — hexagonal architecture, resilience, auth, telemetry, trust
+    "ports",
+    "exceptions",
+    "domain_models",
+    "llm_resilience",
+    "rate_limiter",
+    "auth",
+    "telemetry",
+    "vendor_trust",
+    "hybrid_retrieval_v2",
+    "scoring_optimized",
 ]
