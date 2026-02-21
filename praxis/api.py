@@ -243,6 +243,45 @@ try:
         get_reinterpretation_table as _get_res_reinterpret,
         get_resonant_chamber as _get_resonant_chamber,
     )
+    from .enterprise import (
+        assess_enterprise as _assess_enterprise,
+        score_hybrid_graphrag as _score_graphrag,
+        score_multi_agent as _score_multi_agent,
+        score_mcp_bus as _score_mcp_bus,
+        score_data_moat as _score_data_moat,
+        score_monetization as _score_monetization,
+        score_security_governance as _score_sec_gov,
+        score_tam_coverage as _score_tam,
+        score_graphrag_accuracy as _score_gra_acc,
+        score_agent_utilization as _score_agent_util,
+        score_moat_strength as _score_moat_str,
+        score_unit_economics as _score_unit_econ,
+        score_compliance as _score_ent_compliance,
+        score_capital_efficiency as _score_cap_eff,
+        score_agent_roles as _score_agent_roles,
+        score_medallion as _score_medallion,
+        detect_active_agents as _detect_active_agents,
+        get_pillars as _get_ent_pillars,
+        get_pillar as _get_ent_pillar,
+        get_agent_roles as _get_agent_roles,
+        get_agent_role as _get_agent_role,
+        get_db_tiers as _get_db_tiers,
+        get_db_tier as _get_db_tier,
+        get_medallion_tiers as _get_medallion_tiers,
+        get_medallion_tier as _get_medallion_tier,
+        get_enrichment_apis as _get_enrichment_apis,
+        get_enrichment_api as _get_enrichment_api,
+        get_pricing_models as _get_pricing_models,
+        get_pricing_model as _get_pricing_model,
+        get_security_frameworks as _get_sec_frameworks,
+        get_security_framework as _get_sec_framework,
+        get_capitalization_phases as _get_cap_phases,
+        get_capitalization_phase as _get_cap_phase,
+        get_market_metrics as _get_market_metrics,
+        get_market_metric as _get_market_metric,
+        get_telemetry_metrics as _get_ent_telemetry,
+        get_telemetry_metric as _get_ent_telem_metric,
+    )
     from . import config as _cfg
 except Exception:
     from data import get_all_categories, TOOLS, get_all_tools_dict
@@ -595,6 +634,62 @@ except Exception:
         _get_dsrp_rule = _get_wisdom_agents = _get_wisdom_agent = None
         _get_res_telemetry = _get_res_telem_metric = None
         _get_res_reinterpret = _get_resonant_chamber = None
+    try:
+        from enterprise import (
+            assess_enterprise as _assess_enterprise,
+            score_hybrid_graphrag as _score_graphrag,
+            score_multi_agent as _score_multi_agent,
+            score_mcp_bus as _score_mcp_bus,
+            score_data_moat as _score_data_moat,
+            score_monetization as _score_monetization,
+            score_security_governance as _score_sec_gov,
+            score_tam_coverage as _score_tam,
+            score_graphrag_accuracy as _score_gra_acc,
+            score_agent_utilization as _score_agent_util,
+            score_moat_strength as _score_moat_str,
+            score_unit_economics as _score_unit_econ,
+            score_compliance as _score_ent_compliance,
+            score_capital_efficiency as _score_cap_eff,
+            score_agent_roles as _score_agent_roles,
+            score_medallion as _score_medallion,
+            detect_active_agents as _detect_active_agents,
+            get_pillars as _get_ent_pillars,
+            get_pillar as _get_ent_pillar,
+            get_agent_roles as _get_agent_roles,
+            get_agent_role as _get_agent_role,
+            get_db_tiers as _get_db_tiers,
+            get_db_tier as _get_db_tier,
+            get_medallion_tiers as _get_medallion_tiers,
+            get_medallion_tier as _get_medallion_tier,
+            get_enrichment_apis as _get_enrichment_apis,
+            get_enrichment_api as _get_enrichment_api,
+            get_pricing_models as _get_pricing_models,
+            get_pricing_model as _get_pricing_model,
+            get_security_frameworks as _get_sec_frameworks,
+            get_security_framework as _get_sec_framework,
+            get_capitalization_phases as _get_cap_phases,
+            get_capitalization_phase as _get_cap_phase,
+            get_market_metrics as _get_market_metrics,
+            get_market_metric as _get_market_metric,
+            get_telemetry_metrics as _get_ent_telemetry,
+            get_telemetry_metric as _get_ent_telem_metric,
+        )
+    except Exception:
+        _assess_enterprise = _score_graphrag = _score_multi_agent = None
+        _score_mcp_bus = _score_data_moat = _score_monetization = None
+        _score_sec_gov = _score_tam = _score_gra_acc = None
+        _score_agent_util = _score_moat_str = _score_unit_econ = None
+        _score_ent_compliance = _score_cap_eff = None
+        _score_agent_roles = _score_medallion = _detect_active_agents = None
+        _get_ent_pillars = _get_ent_pillar = _get_agent_roles = None
+        _get_agent_role = _get_db_tiers = _get_db_tier = None
+        _get_medallion_tiers = _get_medallion_tier = None
+        _get_enrichment_apis = _get_enrichment_api = None
+        _get_pricing_models = _get_pricing_model = None
+        _get_sec_frameworks = _get_sec_framework = None
+        _get_cap_phases = _get_cap_phase = None
+        _get_market_metrics = _get_market_metric = None
+        _get_ent_telemetry = _get_ent_telem_metric = None
     try:
         import config as _cfg
     except Exception:
@@ -2679,6 +2774,211 @@ def create_app():
         def resonance_chamber_ep():
             """Return the Resonant Chamber theory framework."""
             return _get_resonant_chamber()
+
+    # ── v17  The Enterprise Engine: Billion-Dollar Decision Engine ──
+    if _assess_enterprise is not None:
+
+        class EnterpriseQuery(BaseModel):
+            text: str = Field(..., description="Enterprise architecture query text")
+
+        @app.post("/enterprise/assess")
+        def enterprise_assess_ep(q: EnterpriseQuery):
+            """Master enterprise assessment — 6 pillars + 7 telemetry + agent roles + medallion."""
+            return _assess_enterprise(q.text)
+
+        # Pillar scorers
+        @app.post("/enterprise/hybrid-graphrag")
+        def enterprise_graphrag_ep(q: EnterpriseQuery):
+            """Score for Hybrid GraphRAG architecture alignment."""
+            return _score_graphrag(q.text)
+
+        @app.post("/enterprise/multi-agent")
+        def enterprise_multi_agent_ep(q: EnterpriseQuery):
+            """Score for Multi-Agent Orchestration alignment."""
+            return _score_multi_agent(q.text)
+
+        @app.post("/enterprise/mcp-bus")
+        def enterprise_mcp_bus_ep(q: EnterpriseQuery):
+            """Score for MCP & Agentic Service Bus alignment."""
+            return _score_mcp_bus(q.text)
+
+        @app.post("/enterprise/data-moat")
+        def enterprise_data_moat_ep(q: EnterpriseQuery):
+            """Score for Proprietary Data Moat alignment."""
+            return _score_data_moat(q.text)
+
+        @app.post("/enterprise/monetization")
+        def enterprise_monetization_ep(q: EnterpriseQuery):
+            """Score for Monetization & AI Unit Economics alignment."""
+            return _score_monetization(q.text)
+
+        @app.post("/enterprise/security-governance")
+        def enterprise_security_ep(q: EnterpriseQuery):
+            """Score for Enterprise Security & Governance alignment."""
+            return _score_sec_gov(q.text)
+
+        # Telemetry scorers
+        @app.post("/enterprise/telemetry/tam-coverage")
+        def enterprise_tam_ep(q: EnterpriseQuery):
+            """TAM Coverage Index telemetry."""
+            return _score_tam(q.text)
+
+        @app.post("/enterprise/telemetry/graphrag-accuracy")
+        def enterprise_gra_acc_ep(q: EnterpriseQuery):
+            """GraphRAG Accuracy telemetry."""
+            return _score_gra_acc(q.text)
+
+        @app.post("/enterprise/telemetry/agent-utilization")
+        def enterprise_agent_util_ep(q: EnterpriseQuery):
+            """Agent Utilization telemetry."""
+            return _score_agent_util(q.text)
+
+        @app.post("/enterprise/telemetry/moat-strength")
+        def enterprise_moat_str_ep(q: EnterpriseQuery):
+            """Moat Strength telemetry."""
+            return _score_moat_str(q.text)
+
+        @app.post("/enterprise/telemetry/unit-economics")
+        def enterprise_unit_econ_ep(q: EnterpriseQuery):
+            """Unit Economics Health telemetry."""
+            return _score_unit_econ(q.text)
+
+        @app.post("/enterprise/telemetry/compliance")
+        def enterprise_compliance_ep(q: EnterpriseQuery):
+            """Compliance Score telemetry."""
+            return _score_ent_compliance(q.text)
+
+        @app.post("/enterprise/telemetry/capital-efficiency")
+        def enterprise_cap_eff_ep(q: EnterpriseQuery):
+            """Capital Efficiency telemetry."""
+            return _score_cap_eff(q.text)
+
+        # Framework scorers
+        @app.post("/enterprise/agent-roles")
+        def enterprise_agent_roles_ep(q: EnterpriseQuery):
+            """Score text against the 4 agent roles."""
+            return _score_agent_roles(q.text)
+
+        @app.post("/enterprise/medallion")
+        def enterprise_medallion_ep(q: EnterpriseQuery):
+            """Score text against 3 Medallion Architecture tiers."""
+            return _score_medallion(q.text)
+
+        @app.post("/enterprise/detect-agents")
+        def enterprise_detect_agents_ep(q: EnterpriseQuery):
+            """Detect which sub-agents would be activated."""
+            return {"active_agents": _detect_active_agents(q.text)}
+
+        # Reference data endpoints
+        @app.get("/enterprise/pillars")
+        def enterprise_pillars_ep():
+            """Return all six enterprise pillars."""
+            return {"pillars": _get_ent_pillars()}
+
+        @app.get("/enterprise/pillars/{pillar_id}")
+        def enterprise_pillar_ep(pillar_id: str):
+            """Return a single enterprise pillar."""
+            p = _get_ent_pillar(pillar_id)
+            return p if p else {"error": "not found"}
+
+        @app.get("/enterprise/agent-roles-ref")
+        def enterprise_agent_roles_ref_ep():
+            """Return all four agent role definitions."""
+            return {"agent_roles": _get_agent_roles()}
+
+        @app.get("/enterprise/agent-roles-ref/{role_id}")
+        def enterprise_agent_role_ep(role_id: str):
+            """Return a single agent role definition."""
+            r = _get_agent_role(role_id)
+            return r if r else {"error": "not found"}
+
+        @app.get("/enterprise/db-tiers")
+        def enterprise_db_tiers_ep():
+            """Return all four database architecture tiers."""
+            return {"db_tiers": _get_db_tiers()}
+
+        @app.get("/enterprise/db-tiers/{tier_id}")
+        def enterprise_db_tier_ep(tier_id: str):
+            """Return a single DB architecture tier."""
+            t = _get_db_tier(tier_id)
+            return t if t else {"error": "not found"}
+
+        @app.get("/enterprise/medallion-tiers")
+        def enterprise_medallion_tiers_ep():
+            """Return all three Medallion Architecture tiers."""
+            return {"medallion_tiers": _get_medallion_tiers()}
+
+        @app.get("/enterprise/medallion-tiers/{tier_id}")
+        def enterprise_medallion_tier_ep(tier_id: str):
+            """Return a single medallion tier."""
+            t = _get_medallion_tier(tier_id)
+            return t if t else {"error": "not found"}
+
+        @app.get("/enterprise/enrichment-apis")
+        def enterprise_enrichment_apis_ep():
+            """Return all three data enrichment API profiles."""
+            return {"enrichment_apis": _get_enrichment_apis()}
+
+        @app.get("/enterprise/enrichment-apis/{api_id}")
+        def enterprise_enrichment_api_ep(api_id: str):
+            """Return a single enrichment API profile."""
+            a = _get_enrichment_api(api_id)
+            return a if a else {"error": "not found"}
+
+        @app.get("/enterprise/pricing-models")
+        def enterprise_pricing_models_ep():
+            """Return all three pricing model strategies."""
+            return {"pricing_models": _get_pricing_models()}
+
+        @app.get("/enterprise/pricing-models/{model_id}")
+        def enterprise_pricing_model_ep(model_id: str):
+            """Return a single pricing model."""
+            m = _get_pricing_model(model_id)
+            return m if m else {"error": "not found"}
+
+        @app.get("/enterprise/security-frameworks")
+        def enterprise_sec_frameworks_ep():
+            """Return all four security frameworks."""
+            return {"security_frameworks": _get_sec_frameworks()}
+
+        @app.get("/enterprise/security-frameworks/{framework_id}")
+        def enterprise_sec_framework_ep(framework_id: str):
+            """Return a single security framework."""
+            f = _get_sec_framework(framework_id)
+            return f if f else {"error": "not found"}
+
+        @app.get("/enterprise/capitalization")
+        def enterprise_cap_phases_ep():
+            """Return all four capitalization phases."""
+            return {"capitalization_phases": _get_cap_phases()}
+
+        @app.get("/enterprise/capitalization/{phase_id}")
+        def enterprise_cap_phase_ep(phase_id: str):
+            """Return a single capitalization phase."""
+            p = _get_cap_phase(phase_id)
+            return p if p else {"error": "not found"}
+
+        @app.get("/enterprise/market-metrics")
+        def enterprise_market_metrics_ep():
+            """Return all three market metrics."""
+            return {"market_metrics": _get_market_metrics()}
+
+        @app.get("/enterprise/market-metrics/{metric_id}")
+        def enterprise_market_metric_ep(metric_id: str):
+            """Return a single market metric."""
+            m = _get_market_metric(metric_id)
+            return m if m else {"error": "not found"}
+
+        @app.get("/enterprise/telemetry-metrics")
+        def enterprise_telemetry_metrics_ep():
+            """Return all seven enterprise telemetry metrics."""
+            return {"telemetry_metrics": _get_ent_telemetry()}
+
+        @app.get("/enterprise/telemetry-metrics/{metric_id}")
+        def enterprise_telemetry_metric_ep(metric_id: str):
+            """Return a single enterprise telemetry metric."""
+            m = _get_ent_telem_metric(metric_id)
+            return m if m else {"error": "not found"}
 
     # ── v11b  Real Self-Introspection endpoints ────────────────────
     if _self_diagnose is not None:

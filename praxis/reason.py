@@ -357,6 +357,33 @@ except Exception:
     except Exception:
         _RESONANCE_OK = False
 
+# ── v17 The Enterprise Engine: Billion-Dollar Decision Engine ─────────
+try:
+    from .enterprise import (
+        assess_enterprise as _assess_enterprise,
+        score_hybrid_graphrag as _score_graphrag,
+        score_multi_agent as _score_multi_agent,
+        score_mcp_bus as _score_mcp_bus,
+        score_data_moat as _score_data_moat,
+        score_monetization as _score_monetization,
+        score_security_governance as _score_sec_gov,
+    )
+    _ENTERPRISE_OK = True
+except Exception:
+    try:
+        from enterprise import (
+            assess_enterprise as _assess_enterprise,
+            score_hybrid_graphrag as _score_graphrag,
+            score_multi_agent as _score_multi_agent,
+            score_mcp_bus as _score_mcp_bus,
+            score_data_moat as _score_data_moat,
+            score_monetization as _score_monetization,
+            score_security_governance as _score_sec_gov,
+        )
+        _ENTERPRISE_OK = True
+    except Exception:
+        _ENTERPRISE_OK = False
+
 
 # ======================================================================
 # Data structures
@@ -1629,6 +1656,41 @@ def deep_reason_v2(
             ))
         except Exception as exc:
             log.debug("v2 resonance enrichment: %s", exc)
+
+    # ── PHASE 1l: Enterprise Engine — Billion-Dollar Architecture Assessment ──
+    enterprise_ctx = None
+    if _ENTERPRISE_OK:
+        try:
+            t_ent = time.time()
+            ent_result = _assess_enterprise(query)
+            enterprise_ctx = {
+                "enterprise": ent_result["enterprise_score"],
+                "grade": ent_result["grade"],
+                "graphrag_grade": ent_result["hybrid_graphrag"]["grade"],
+                "multi_agent_grade": ent_result["multi_agent"]["grade"],
+                "mcp_bus_grade": ent_result["mcp_bus"]["grade"],
+                "data_moat_grade": ent_result["data_moat"]["grade"],
+                "monetization_grade": ent_result["monetization"]["grade"],
+                "security_grade": ent_result["security"]["grade"],
+                "agent_roles_grade": ent_result["agent_roles_grade"],
+                "medallion_grade": ent_result["medallion_grade"],
+                "active_agents": ent_result["active_agents"],
+                "enterprise_ready": ent_result["enterprise_ready"],
+                "warnings": ent_result["warnings"],
+            }
+            steps.append(ReasoningStep(
+                phase="enterprise",
+                action=f"Enterprise: {ent_result['enterprise_score']:.2f} "
+                       f"(grade {ent_result['grade']}), "
+                       f"graphrag={ent_result['hybrid_graphrag']['grade']}, "
+                       f"agents={ent_result['multi_agent']['grade']}, "
+                       f"security={ent_result['security']['grade']}, "
+                       f"ready={'YES' if ent_result['enterprise_ready'] else 'no'}",
+                detail=enterprise_ctx,
+                elapsed_ms=int((time.time() - t_ent) * 1000),
+            ))
+        except Exception as exc:
+            log.debug("v2 enterprise enrichment: %s", exc)
 
     # ── PHASE 2: PRISM Pipeline ───────────────────────────────────
     t_prism = time.time()
