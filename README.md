@@ -21,7 +21,7 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~50,600 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-22 01:37 UTC |
+| **Last auto-update** | 2026-02-22 02:14 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -921,6 +921,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+6e31139 audit: fix knowledge graph deadlock, improve interpreter lazy imports, and refine frontend accessibility
+83b70a3 docs(auto): update README stats [skip ci]
 945f1a8 v22: Cognitive Resilience Architecture  8 modules, 6 frontends, 124 tests  reasoning router, DSRP ontology, CODES resonance, CoALA memory, RepE transparency, MESIAS governance, anti-patterns, runtime protection
 1de8dd1 v21: Commercial Enterprise-Grade Frontend & Cognitive Interface  GWT workspace, IIT Phi metric, structural entropy, OpenTelemetry tracing, CoT parsing, GraphRAG knowledge graphs, EU AI Act/HIPAA/GDPR compliance, immutable audit trails, PII masking, AI economics/ROI tracking, vendor risk scoring  6 backend modules, 6 frontend pages, 113 new tests (433 total)
 748207d docs(auto): update README stats [skip ci]
