@@ -13,15 +13,15 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 81 files, ~43,300 lines |
+| **Python modules** | 83 files, ~44,100 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
-| **API endpoints** | 391 REST routes via FastAPI |
-| **Test coverage** | 557 tests across 11 test files, all passing |
-| **Frontend** | 20 HTML + 4 JS files (~7,200 lines), Liquid Glass UI |
+| **API endpoints** | 392 REST routes via FastAPI |
+| **Test coverage** | 642 tests across 12 test files, all passing |
+| **Frontend** | 21 HTML + 4 JS files (~7,700 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~50,600 (Python + Frontend) |
+| **Total LOC** | ~51,700 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-22 02:14 UTC |
+| **Last auto-update** | 2026-02-22 03:30 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -921,6 +921,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+c5f2190 v23: public API surface, metric translator, stack advisor UX
+26a5fd4 docs(auto): update README stats [skip ci]
 6e31139 audit: fix knowledge graph deadlock, improve interpreter lazy imports, and refine frontend accessibility
 83b70a3 docs(auto): update README stats [skip ci]
 945f1a8 v22: Cognitive Resilience Architecture  8 modules, 6 frontends, 124 tests  reasoning router, DSRP ontology, CODES resonance, CoALA memory, RepE transparency, MESIAS governance, anti-patterns, runtime protection
@@ -939,8 +941,6 @@ a422d95 docs: comprehensive README  full context transfer document for 17-versio
 f9cf543 audit: fix 12 vibe-coding issues across 6 files
 10abd49 Praxis v17  The Enterprise Engine: Billion-Dollar Decision Engine
 2069dad Praxis v16  The Resonance: AGI as continuous human-machine relationship
-485a6dd Praxis v15  The Conduit: decoupled cognitive systems & emergent intelligence
-85dfa25 Praxis v14  Architectural Enlightenment: 223 tools, 171 API endpoints, 22 tests, 48 modules
 ```
 <!-- AUTO:GIT:END -->
 
@@ -971,10 +971,10 @@ The codebase tells a story:
 ### Current State (Post-Audit)
 <!-- AUTO:STATE:START -->
 - **246 tools**, zero duplicates, clean tag casing
-- **391 API routes**, all functional
-- **557 tests passing**
-- **81 Python modules**, ~43,300 lines
-- **24 frontend files**, ~7,200 lines
+- **392 API routes**, all functional
+- **642 tests passing**
+- **83 Python modules**, ~44,100 lines
+- **25 frontend files**, ~7,700 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
 <!-- AUTO:STATE:END -->
