@@ -2648,5 +2648,163 @@
       ]
     },
     "timestamp": 1771726066.5126204
+  },
+  {
+    "entry_id": "bf619c9d4f6d",
+    "action": "tool_search",
+    "actor": "tester",
+    "team": "engineering",
+    "details": {
+      "query": "CRM"
+    },
+    "timestamp": 1771730981.1199105
+  },
+  {
+    "entry_id": "0f82ec3c029c",
+    "action": "config_changed",
+    "actor": "admin",
+    "team": "default",
+    "details": {
+      "key": "test"
+    },
+    "timestamp": 1771730981.1208458
+  },
+  {
+    "entry_id": "80b84f1b108b",
+    "action": "config_changed",
+    "actor": "admin",
+    "team": "default",
+    "details": {
+      "policy_created": "384ddf0cd4",
+      "name": "Block Risky Tool"
+    },
+    "timestamp": 1771730981.1889155
+  },
+  {
+    "entry_id": "873097f68121",
+    "action": "config_changed",
+    "actor": "admin",
+    "team": "default",
+    "details": {
+      "policy_created": "6e93e8bbc6",
+      "name": "Block ForbiddenTool Test"
+    },
+    "timestamp": 1771730981.2001874
+  },
+  {
+    "entry_id": "48cebed06dc7",
+    "action": "policy_violation",
+    "actor": "system",
+    "team": "default",
+    "details": {
+      "tool": "ForbiddenToolTest",
+      "violations": [
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        },
+        {
+          "policy": "Block ForbiddenTool Test",
+          "reason": "Tool 'ForbiddenToolTest' is blocked by policy"
+        }
+      ]
+    },
+    "timestamp": 1771730981.209995
   }
 ]

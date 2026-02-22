@@ -1374,8 +1374,26 @@ def create_app():
             @app.get("/")
             def index():
                 return FileResponse(frontend_dir / "home.html")
+
+            @app.get("/advisor", tags=["Product"])
+            def stack_advisor():
+                """Core product — AI Stack Advisor landing page."""
+                return FileResponse(frontend_dir / "stack-advisor.html")
     except Exception:
         pass
+
+    # ------------------------------------------------------------------
+    # PUBLIC API v1 — 12 enterprise-facing endpoints
+    # ------------------------------------------------------------------
+    try:
+        from .public_api import mount_public_api
+        mount_public_api(app)
+    except Exception:
+        try:
+            from public_api import mount_public_api
+            mount_public_api(app)
+        except Exception:
+            pass
 
     # ------------------------------------------------------------------
     # Categories & Tools

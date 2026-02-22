@@ -4323,5 +4323,178 @@
     "validation_errors": [
       "description must be at least 10 characters"
     ]
+  },
+  "69ff2cdafefe": {
+    "submission_id": "69ff2cdafefe",
+    "tool_name": "TestToolX",
+    "description": "A test tool for unit testing",
+    "url": "https://example.com/testtoolx",
+    "categories": [
+      "testing"
+    ],
+    "tags": [
+      "unit-test"
+    ],
+    "keywords": [],
+    "pricing": {},
+    "integrations": [],
+    "compliance": [],
+    "use_cases": [],
+    "api_spec_url": "",
+    "docs_url": "",
+    "contributor": "test_contributor",
+    "status": "pending",
+    "reviewer_notes": "",
+    "created_at": 1771730980.7316635,
+    "updated_at": 1771730980.7316637,
+    "validation_errors": []
+  },
+  "ac67b368b498": {
+    "submission_id": "ac67b368b498",
+    "tool_name": "TestToolY",
+    "description": "Another test tool",
+    "url": "https://example.com/testtooly",
+    "categories": [
+      "testing"
+    ],
+    "tags": [],
+    "keywords": [],
+    "pricing": {},
+    "integrations": [],
+    "compliance": [],
+    "use_cases": [],
+    "api_spec_url": "",
+    "docs_url": "",
+    "contributor": "contributor_y",
+    "status": "pending",
+    "reviewer_notes": "",
+    "created_at": 1771730980.8021762,
+    "updated_at": 1771730980.8021765,
+    "validation_errors": []
+  },
+  "8d1cd5ce2faa": {
+    "submission_id": "8d1cd5ce2faa",
+    "tool_name": "TestToolZ",
+    "description": "Z tool",
+    "url": "https://z.com",
+    "categories": [
+      "testing"
+    ],
+    "tags": [],
+    "keywords": [],
+    "pricing": {},
+    "integrations": [],
+    "compliance": [],
+    "use_cases": [],
+    "api_spec_url": "",
+    "docs_url": "",
+    "contributor": "z_contributor",
+    "status": "changes_requested",
+    "reviewer_notes": "Automated validation failed",
+    "created_at": 1771730980.8513741,
+    "updated_at": 1771730980.8513741,
+    "validation_errors": [
+      "description must be at least 10 characters"
+    ]
+  },
+  "1a54d63a4488": {
+    "submission_id": "1a54d63a4488",
+    "tool_name": "ApprovableToolTest",
+    "description": "Good tool",
+    "url": "https://example.com/approvable",
+    "categories": [
+      "productivity"
+    ],
+    "tags": [
+      "test"
+    ],
+    "keywords": [],
+    "pricing": {},
+    "integrations": [],
+    "compliance": [],
+    "use_cases": [],
+    "api_spec_url": "",
+    "docs_url": "",
+    "contributor": "good_contributor",
+    "status": "approved",
+    "reviewer_notes": "Looks good",
+    "created_at": 1771730980.878475,
+    "updated_at": 1771730980.9066288,
+    "validation_errors": [
+      "description must be at least 10 characters"
+    ]
+  },
+  "fd143a4e4d85": {
+    "submission_id": "fd143a4e4d85",
+    "tool_name": "RejectableToolTest",
+    "description": "Bad tool",
+    "url": "https://example.com/rejectable",
+    "categories": [
+      "testing"
+    ],
+    "tags": [],
+    "keywords": [],
+    "pricing": {},
+    "integrations": [],
+    "compliance": [],
+    "use_cases": [],
+    "api_spec_url": "",
+    "docs_url": "",
+    "contributor": "bad_contributor",
+    "status": "rejected",
+    "reviewer_notes": "Duplicate",
+    "created_at": 1771730980.9208684,
+    "updated_at": 1771730980.957936,
+    "validation_errors": [
+      "description must be at least 10 characters"
+    ]
+  },
+  "e11b520fd017": {
+    "submission_id": "e11b520fd017",
+    "tool_name": "ChangeableToolTest",
+    "description": "Needs work",
+    "url": "https://example.com/changeable",
+    "categories": [
+      "testing"
+    ],
+    "tags": [],
+    "keywords": [],
+    "pricing": {},
+    "integrations": [],
+    "compliance": [],
+    "use_cases": [],
+    "api_spec_url": "",
+    "docs_url": "",
+    "contributor": "change_contributor",
+    "status": "changes_requested",
+    "reviewer_notes": "Needs better description",
+    "created_at": 1771730980.9611504,
+    "updated_at": 1771730981.0018914,
+    "validation_errors": []
+  },
+  "0063e06014a6": {
+    "submission_id": "0063e06014a6",
+    "tool_name": "ContribTestTool",
+    "description": "A tool",
+    "url": "https://example.com/contribtool",
+    "categories": [
+      "testing"
+    ],
+    "tags": [],
+    "keywords": [],
+    "pricing": {},
+    "integrations": [],
+    "compliance": [],
+    "use_cases": [],
+    "api_spec_url": "",
+    "docs_url": "",
+    "contributor": "prof_test_user",
+    "status": "changes_requested",
+    "reviewer_notes": "Automated validation failed",
+    "created_at": 1771730981.0049584,
+    "updated_at": 1771730981.0049586,
+    "validation_errors": [
+      "description must be at least 10 characters"
+    ]
   }
 }

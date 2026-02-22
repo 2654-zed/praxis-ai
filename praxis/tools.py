@@ -89,10 +89,16 @@ class Tool:
             return bool(self.pricing.get("free_tier"))
         if budget_tier == "low":
             starter = self.pricing.get("starter") or self.pricing.get("pro") or 0
-            return bool(self.pricing.get("free_tier")) or (starter <= 50)
+            try:
+                return bool(self.pricing.get("free_tier")) or (float(starter) <= 50)
+            except (TypeError, ValueError):
+                return True
         if budget_tier == "medium":
             pro = self.pricing.get("pro") or self.pricing.get("starter") or 0
-            return bool(self.pricing.get("free_tier")) or (pro <= 500)
+            try:
+                return bool(self.pricing.get("free_tier")) or (float(pro) <= 500)
+            except (TypeError, ValueError):
+                return True
         return True
 
     def fits_skill(self, user_skill: str) -> bool:

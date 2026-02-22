@@ -1,0 +1,26 @@
+[
+  {
+    "timestamp": "2026-02-22T03:28:53.325767Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:29:30.200149Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:29:47.279123Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  }
+]

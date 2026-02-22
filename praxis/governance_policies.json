@@ -698,5 +698,33 @@
     "active": true,
     "created_by": "admin",
     "created_at": 1771726066.4820511
+  },
+  "384ddf0cd4": {
+    "policy_id": "384ddf0cd4",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771730981.1748796
+  },
+  "6e93e8bbc6": {
+    "policy_id": "6e93e8bbc6",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771730981.1989555
   }
 }
