@@ -4506,5 +4506,397 @@
     "updated_at": 1771719234.6371374,
     "price_usd": 0.0,
     "version": "1.0.0"
+  },
+  "2b4634312f8a": {
+    "template_id": "2b4634312f8a",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771725824.9520986,
+    "updated_at": 1771725824.9520993,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "12b2f3526058": {
+    "template_id": "12b2f3526058",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771725825.018788,
+    "updated_at": 1771725825.018789,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "21cddafaf0d5": {
+    "template_id": "21cddafaf0d5",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 1,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771725825.0616548,
+    "updated_at": 1771725825.0616553,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "26b76deb5a7a": {
+    "template_id": "26b76deb5a7a",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 4.0,
+    "review_count": 1,
+    "created_at": 1771725825.132767,
+    "updated_at": 1771725825.1327672,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "db44237fbcb6": {
+    "template_id": "db44237fbcb6",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": true,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771725825.1844685,
+    "updated_at": 1771725825.1844687,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "176ddf79419e": {
+    "template_id": "176ddf79419e",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": false,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771725825.278739,
+    "updated_at": 1771725825.2787392,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "1952c9426bd7": {
+    "template_id": "1952c9426bd7",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771725825.318082,
+    "updated_at": 1771725825.3180823,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "df1b0fc476a9": {
+    "template_id": "df1b0fc476a9",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771726065.168794,
+    "updated_at": 1771726065.1687949,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "e3a636751e90": {
+    "template_id": "e3a636751e90",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771726065.2135088,
+    "updated_at": 1771726065.213509,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "80105f75527b": {
+    "template_id": "80105f75527b",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 1,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771726065.2480278,
+    "updated_at": 1771726065.2480285,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "27e4bc7ce07a": {
+    "template_id": "27e4bc7ce07a",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 4.0,
+    "review_count": 1,
+    "created_at": 1771726065.3240082,
+    "updated_at": 1771726065.3240087,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "78aeb5a99252": {
+    "template_id": "78aeb5a99252",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": true,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771726065.4062884,
+    "updated_at": 1771726065.4062889,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "347cd659676d": {
+    "template_id": "347cd659676d",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": false,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771726065.5146525,
+    "updated_at": 1771726065.514653,
+    "price_usd": 0.0,
+    "version": "1.0.0"
+  },
+  "4f42fbc3da63": {
+    "template_id": "4f42fbc3da63",
+    "name": "Test Workflow Template",
+    "description": "A test template for unit tests",
+    "author": "test_user",
+    "category": "testing",
+    "tags": [
+      "test",
+      "ci"
+    ],
+    "plan_json": {
+      "steps": [
+        {
+          "tool": "pytest",
+          "action": "run_tests"
+        }
+      ]
+    },
+    "published": true,
+    "featured": false,
+    "download_count": 0,
+    "avg_rating": 0.0,
+    "review_count": 0,
+    "created_at": 1771726065.5624332,
+    "updated_at": 1771726065.5624337,
+    "price_usd": 0.0,
+    "version": "1.0.0"
   }
 }

@@ -23,6 +23,7 @@ The caller always gets the same output shape regardless of mode:
 import json
 import re
 import logging
+import importlib
 log = logging.getLogger("praxis.interpreter")
 
 try:
@@ -99,7 +100,7 @@ def _llm_interpret(raw: str) -> dict:
 
 
 def _openai_interpret(raw: str) -> dict:
-    import openai
+    openai = importlib.import_module("openai")
     client = openai.OpenAI(api_key=_cfg.get("openai_api_key"))
     resp = client.chat.completions.create(
         model=_cfg.get("openai_model", "gpt-4o-mini"),
@@ -116,7 +117,7 @@ def _openai_interpret(raw: str) -> dict:
 
 
 def _anthropic_interpret(raw: str) -> dict:
-    import anthropic
+    anthropic = importlib.import_module("anthropic")
     client = anthropic.Anthropic(api_key=_cfg.get("anthropic_api_key"))
     resp = client.messages.create(
         model=_cfg.get("anthropic_model", "claude-3-haiku-20240307"),

@@ -27,7 +27,7 @@ import re
 import math
 import hashlib
 import threading
-from collections import defaultdict
+from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from typing import Any, Dict, FrozenSet, List, Optional, Set, Tuple
 
@@ -117,7 +117,7 @@ class KnowledgeGraph:
     """
 
     def __init__(self) -> None:
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._nodes: Dict[str, GraphNode] = {}
         self._edges: List[GraphEdge] = []
         self._adjacency: Dict[str, List[str]] = defaultdict(list)
@@ -180,18 +180,21 @@ class KnowledgeGraph:
 
     def graph_stats(self) -> Dict[str, Any]:
         with self._lock:
-            type_dist: Dict[str, int] = defaultdict(int)
-            for n in self._nodes.values():
-                type_dist[n.entity_type] += 1
-            return {
-                "node_count": len(self._nodes),
-                "edge_count": len(self._edges),
-                "community_count": len(self._communities),
-                "entity_type_distribution": dict(type_dist),
-                "avg_degree": round(
-                    2 * len(self._edges) / max(len(self._nodes), 1), 2
-                ),
-            }
+            return self._graph_stats_unlocked()
+
+    def _graph_stats_unlocked(self) -> Dict[str, Any]:
+        type_dist: Dict[str, int] = defaultdict(int)
+        for n in self._nodes.values():
+            type_dist[n.entity_type] += 1
+        return {
+            "node_count": len(self._nodes),
+            "edge_count": len(self._edges),
+            "community_count": len(self._communities),
+            "entity_type_distribution": dict(type_dist),
+            "avg_degree": round(
+                2 * len(self._edges) / max(len(self._nodes), 1), 2
+            ),
+        }
 
     # ── Centrality ───────────────────────────────────────────────
     def compute_centrality(self) -> Dict[str, float]:
@@ -393,10 +396,10 @@ class KnowledgeGraph:
                 return [source]
 
             visited: Set[str] = {source}
-            queue: List[Tuple[str, List[str]]] = [(source, [source])]
+            queue: deque[Tuple[str, List[str]]] = deque([(source, [source])])
 
             while queue:
-                current, path = queue.pop(0)
+                current, path = queue.popleft()
                 for neighbor in self._adjacency.get(current, []) + self._reverse_adj.get(current, []):
                     if neighbor == target:
                         return path + [neighbor]
@@ -412,7 +415,7 @@ class KnowledgeGraph:
                 "nodes": [n.to_dict() for n in self._nodes.values()],
                 "edges": [e.to_dict() for e in self._edges],
                 "communities": [c.to_dict() for c in self._communities],
-                "stats": self.graph_stats(),
+                "stats": self._graph_stats_unlocked(),
             }
 
 
