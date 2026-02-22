@@ -13,7 +13,7 @@ Badges are auto-computed from learned_signals + feedback data.
 """
 
 import logging
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 log = logging.getLogger("praxis.badges")
 

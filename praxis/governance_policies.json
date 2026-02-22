@@ -726,5 +726,173 @@
     "active": true,
     "created_by": "admin",
     "created_at": 1771730981.1989555
+  },
+  "c10c95c7ab": {
+    "policy_id": "c10c95c7ab",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771731949.610349
+  },
+  "bec1c99cb8": {
+    "policy_id": "bec1c99cb8",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771731949.6222825
+  },
+  "4788f9b0c6": {
+    "policy_id": "4788f9b0c6",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771731995.171399
+  },
+  "ce6ec5d239": {
+    "policy_id": "ce6ec5d239",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771731995.184516
+  },
+  "523ce037fc": {
+    "policy_id": "523ce037fc",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771732523.8060873
+  },
+  "10f7476dbd": {
+    "policy_id": "10f7476dbd",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771732523.8209765
+  },
+  "92f8a47980": {
+    "policy_id": "92f8a47980",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771732553.805079
+  },
+  "b574519b35": {
+    "policy_id": "b574519b35",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771732553.817755
+  },
+  "abe9a88b42": {
+    "policy_id": "abe9a88b42",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771732774.8657677
+  },
+  "54155cff17": {
+    "policy_id": "54155cff17",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771732774.8808315
+  },
+  "4d61d6362b": {
+    "policy_id": "4d61d6362b",
+    "name": "Block Risky Tool",
+    "description": "Block usage of RiskyToolABC",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "RiskyToolABC"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771733077.865844
+  },
+  "ced903d622": {
+    "policy_id": "ced903d622",
+    "name": "Block ForbiddenTool Test",
+    "description": "",
+    "rule_type": "block_tool",
+    "conditions": {
+      "tools": [
+        "ForbiddenToolTest"
+      ]
+    },
+    "active": true,
+    "created_by": "admin",
+    "created_at": 1771733077.883605
   }
 }

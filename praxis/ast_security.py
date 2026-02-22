@@ -39,7 +39,7 @@ import ast
 import logging
 import sys
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
 log = logging.getLogger("praxis.ast_security")
 

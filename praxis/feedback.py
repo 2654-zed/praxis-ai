@@ -1,7 +1,7 @@
 import json
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 log = logging.getLogger("praxis.feedback")
 try:
     from .usage import increment as increment_usage
@@ -44,7 +44,7 @@ def record_feedback(query: str, tool_name: str, accepted: bool = None, rating: i
         accepted = bool(int(rating) >= 6)
 
     entry = {
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "query": query,
         "tool": tool_name,
         "accepted": bool(accepted) if accepted is not None else None,

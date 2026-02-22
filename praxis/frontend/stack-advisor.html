@@ -398,7 +398,6 @@ function renderCompareResults(data, a, b) {
 
   let html = `<div class="result-section"><h3><span class="dot"></span>${a} vs ${b}</h3>`;
   html += '<div class="risk-card">';
-  renderCompareDimensions(data, html);
   // Show all top-level keys as comparison rows
   Object.entries(data).forEach(([k, v]) => {
     if (k === '_meta' || k === 'error') return;
@@ -484,8 +483,6 @@ function renderRiskCard(risk) {
   html += '</div></div>';
   return html;
 }
-
-function renderCompareDimensions() { /* noop — handled inline */ }
 </script>
 </body>
 </html>

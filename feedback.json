@@ -22,5 +22,69 @@
     "accepted": true,
     "rating": null,
     "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:45:55.303003Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:46:43.243727Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:55:29.543954Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:55:59.384248Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:59:03.024303Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T03:59:40.531546Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T04:03:31.101534Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
+  },
+  {
+    "timestamp": "2026-02-22T04:04:43.438935Z",
+    "query": "ChatGPT",
+    "tool": 5,
+    "accepted": true,
+    "rating": null,
+    "details": null
   }
 ]

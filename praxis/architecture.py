@@ -40,9 +40,9 @@ from __future__ import annotations
 import ast
 import logging
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple
 
 log = logging.getLogger("praxis.architecture")
 

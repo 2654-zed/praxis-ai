@@ -36,14 +36,32 @@ class Tool:
         # --- Phase 2 additions ---
         last_updated=None,
     ):
+        acronym_map = {
+            "api": "API",
+            "rag": "RAG",
+            "llm": "LLM",
+            "seo": "SEO",
+            "wasm": "WASM",
+            "hitl": "HITL",
+        }
+
+        def _normalize_tokens(values):
+            normalized = []
+            for token in (values or []):
+                if isinstance(token, str):
+                    normalized.append(acronym_map.get(token.lower(), token))
+                else:
+                    normalized.append(token)
+            return normalized
+
         # Core
         self.name = name
         self.description = description
         self.categories = categories or []
         self.url = url
         self.popularity = int(popularity or 0)
-        self.tags = tags or []
-        self.keywords = keywords or []
+        self.tags = _normalize_tokens(tags)
+        self.keywords = _normalize_tokens(keywords)
 
         # Decision-engine extensions
         self.pricing = pricing or {}

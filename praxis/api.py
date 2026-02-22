@@ -25,10 +25,12 @@ Endpoints:
 
 This module is safe to import even if FastAPI is not installed.
 """
-from typing import List, Optional, Dict
+from typing import Any, List, Optional, Dict
 
 try:
     from .data import get_all_categories, TOOLS, get_all_tools_dict
+    from .api_routes_core import register_core_routes
+    from .api_routes_features import register_feature_routes
     from .engine import find_tools
     from .interpreter import interpret
     from .explain import explain_tool
@@ -352,7 +354,7 @@ try:
         governance_dashboard as _governance_dashboard,
     )
     # ── v20: Stress Testing & Architecture Hardening ──────────────
-    from .persistence import (
+    from .persistence_facade import (
         get_connection as _get_db_connection,
         get_write_queue as _get_write_queue,
         pool_stats as _pool_stats,
@@ -495,6 +497,8 @@ try:
     )
 except ImportError:
     from data import get_all_categories, TOOLS, get_all_tools_dict
+    from api_routes_core import register_core_routes
+    from api_routes_features import register_feature_routes
     from engine import find_tools
     from interpreter import interpret
     from explain import explain_tool
@@ -971,11 +975,11 @@ except ImportError:
         from governance import check_tool_allowed as _check_tool_allowed
         from governance import governance_dashboard as _governance_dashboard
         # ── v20 fallback imports ──
-        from persistence import get_connection as _get_db_connection
-        from persistence import get_write_queue as _get_write_queue
-        from persistence import pool_stats as _pool_stats
-        from persistence import upgrade_to_wal as _upgrade_to_wal
-        from persistence import diagnose as _db_diagnose
+        from persistence_facade import get_connection as _get_db_connection
+        from persistence_facade import get_write_queue as _get_write_queue
+        from persistence_facade import pool_stats as _pool_stats
+        from persistence_facade import upgrade_to_wal as _upgrade_to_wal
+        from persistence_facade import diagnose as _db_diagnose
         from ast_security import safe_parse as _safe_parse
         from ast_security import scan_praxis_source as _scan_praxis_source
         from ast_security import is_safe_for_introspection as _is_safe_for_introspection
@@ -1139,6 +1143,67 @@ except ImportError:
         return kw.get("default")
 
 
+_MOJIBAKE_REPLACEMENTS = {
+    "â€”": "—",
+    "â†’": "→",
+    "â‰¥": "≥",
+    "â‰¤": "≤",
+    "â€“": "–",
+    "â€˜": "‘",
+    "â€™": "’",
+    "â€œ": "“",
+    "â€�": "”",
+    "Î¦": "Φ",
+    "Î¨": "Ψ",
+    "Î”": "Δ",
+    "ï¿½": "",
+    "�": "",
+}
+
+
+def _repair_mojibake_text(value: str) -> str:
+    """Repair common mojibake sequences in user-facing text."""
+    repaired = value
+    for bad, good in _MOJIBAKE_REPLACEMENTS.items():
+        repaired = repaired.replace(bad, good)
+    return repaired
+
+
+def _sanitize_openapi_payload(value: Any) -> Any:
+    """Recursively sanitize all strings in OpenAPI payload."""
+    if isinstance(value, str):
+        return _repair_mojibake_text(value)
+    if isinstance(value, list):
+        return [_sanitize_openapi_payload(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _sanitize_openapi_payload(item) for key, item in value.items()}
+    return value
+
+
+def _install_openapi_text_sanitizer(app) -> None:
+    """Install a custom OpenAPI builder that sanitizes schema text fields."""
+    if not FASTAPI_AVAILABLE:
+        return
+    try:
+        from fastapi.openapi.utils import get_openapi
+    except Exception:
+        return
+
+    def _custom_openapi():
+        if app.openapi_schema:
+            return app.openapi_schema
+        raw_schema = get_openapi(
+            title=_repair_mojibake_text(app.title),
+            version=app.version,
+            description=_repair_mojibake_text(app.description),
+            routes=app.routes,
+        )
+        app.openapi_schema = _sanitize_openapi_payload(raw_schema)
+        return app.openapi_schema
+
+    app.openapi = _custom_openapi
+
+
 # ======================================================================
 # Request / Response models
 # ======================================================================
@@ -1291,10 +1356,11 @@ def create_app():
         raise RuntimeError("FastAPI or Pydantic not installed. Install 'fastapi' to run the API.")
 
     app = FastAPI(
-        title="Praxis â€” AI Decision Engine API",
+        title="Praxis — AI Decision Engine API",
         description="Recommend AI tool stacks based on intent, profile, and feedback.",
         version="2.0.0",
     )
+    _install_openapi_text_sanitizer(app)
 
     # CORS
     try:
@@ -1395,689 +1461,76 @@ def create_app():
         except Exception:
             pass
 
-    # ------------------------------------------------------------------
-    # Categories & Tools
-    # ------------------------------------------------------------------
-
-    @app.get("/categories")
-    def categories():
-        return get_all_categories()
-
-    @app.get("/tools")
-    def list_tools(skip: int = 0, limit: int = 50):
-        """Return paginated tool list.  Use ``?skip=0&limit=50`` to page."""
-        page = TOOLS[skip : skip + limit]
-        out = []
-        for t in page:
-            out.append(ToolDetail(
-                name=t.name,
-                description=t.description,
-                url=getattr(t, "url", None),
-                categories=getattr(t, "categories", None),
-                tags=getattr(t, "tags", None),
-                keywords=getattr(t, "keywords", None),
-                popularity=getattr(t, "popularity", 0),
-                pricing=getattr(t, "pricing", None),
-                integrations=getattr(t, "integrations", None),
-                compliance=getattr(t, "compliance", None),
-                skill_level=getattr(t, "skill_level", None),
-                use_cases=getattr(t, "use_cases", None),
-                stack_roles=getattr(t, "stack_roles", None),
-            ))
-        return {"total": len(TOOLS), "skip": skip, "limit": limit, "items": out}
-
-    # ------------------------------------------------------------------
-    # Search (enhanced with intelligence layer)
-    # ------------------------------------------------------------------
-
-    @app.post("/search")
-    def search(req: SearchRequest):
-        # â”€â”€ Deep reasoning mode â”€â”€
-        if req.mode == "deep" and _deep_reason:
-            result = _deep_reason(
-                req.query,
-                profile_id=req.profile_id,
-                max_steps=min(req.top_n or 5, 8),
-            )
-            return {
-                "results": result.tools_recommended,
-                "meta": {
-                    "mode": "deep",
-                    "reasoning_depth": result.reasoning_depth,
-                    "confidence": result.confidence,
-                    "plan": result.plan,
-                    "narrative": result.narrative,
-                    "follow_up_questions": result.follow_up_questions,
-                    "tools_considered": result.tools_considered,
-                    "total_elapsed_ms": result.total_elapsed_ms,
-                },
-            }
-
-        # â”€â”€ Cognitive search mode (v2 â€” hybrid retrieval + graph + PRISM) â”€â”€
-        if req.mode == "cognitive" and _deep_reason_v2:
-            result = _deep_reason_v2(
-                req.query,
-                profile_id=req.profile_id,
-                max_steps=min(req.top_n or 5, 8),
-            )
-            return {
-                "results": result.tools_recommended,
-                "meta": {
-                    "mode": "cognitive",
-                    "reasoning_depth": result.reasoning_depth,
-                    "confidence": result.confidence,
-                    "plan": result.plan,
-                    "narrative": result.narrative,
-                    "follow_up_questions": result.follow_up_questions,
-                    "tools_considered": result.tools_considered,
-                    "total_elapsed_ms": result.total_elapsed_ms,
-                    "caveats": result.caveats,
-                    "steps": len(result.steps),
-                },
-            }
-
-        struct = interpret(req.query)
-
-        # Load profile if provided
-        profile = None
-        if req.profile_id:
-            profile = load_profile(req.profile_id)
-
-        results = find_tools(struct, top_n=req.top_n, categories_filter=req.filters, profile=profile)
-
-        out = []
-        for idx, t in enumerate(results):
-            expl = explain_tool(t, struct, profile)
-            confidence = expl.get("fit_score", max(0, 100 - idx * 15))
-            out.append(ToolDetail(
-                name=t.name,
-                description=t.description,
-                url=getattr(t, "url", None),
-                categories=getattr(t, "categories", None),
-                tags=getattr(t, "tags", None),
-                keywords=getattr(t, "keywords", None),
-                popularity=getattr(t, "popularity", 0),
-                confidence=confidence,
-                match_reasons=expl.get("reasons", [])[:3],
-                fit_score=expl.get("fit_score"),
-                caveats=expl.get("caveats", [])[:3],
-                pricing=getattr(t, "pricing", None),
-                integrations=getattr(t, "integrations", None),
-                compliance=getattr(t, "compliance", None),
-                skill_level=getattr(t, "skill_level", None),
-                use_cases=getattr(t, "use_cases", None),
-                stack_roles=getattr(t, "stack_roles", None),
-                transparency_score=expl.get("transparency_score"),
-                transparency_grade=expl.get("transparency_grade"),
-                flexibility_score=expl.get("freedom_score"),
-                flexibility_grade=expl.get("freedom_grade"),
-            ))
-
-        # Build intelligence metadata
-        meta = {
-            "intent": struct.get("intent"),
-            "industry": struct.get("industry"),
-            "goal": struct.get("goal"),
-            "corrections": struct.get("corrections", {}),
-            "negatives": struct.get("negatives", []),
-            "multi_intents": struct.get("multi_intents", []),
-            "expanded_keywords": struct.get("keywords", []),
-            "suggested_questions": struct.get("suggested_questions", []),
-        }
-
-        return {"results": out, "meta": meta}
-
-    # ------------------------------------------------------------------
-    # Smart Suggestions / Autocomplete
-    # ------------------------------------------------------------------
-
-    @app.get("/suggest")
-    def suggest(q: str = ""):
-        if get_suggestions:
-            return get_suggestions(q, TOOLS, limit=8)
-        return {"tool_matches": [], "category_matches": [], "did_you_mean": None, "popular_queries": []}
-
-    # ------------------------------------------------------------------
-    # Vendor Intelligence endpoint
-    # Enterprise-grade vendor risk assessment and due diligence.
-    # ------------------------------------------------------------------
-
-    @app.get("/intelligence/{tool_name}")
-    def intelligence(tool_name: str):
-        if not generate_seeing:
-            return {"error": "Vendor intelligence module not available"}
-        tool = None
-        for t in TOOLS:
-            if t.name.lower() == tool_name.lower():
-                tool = t
-                break
-        if not tool:
-            return {"error": f"Tool '{tool_name}' not found"}
-        return generate_seeing(tool)
-
-    # Legacy alias
-    @app.get("/seeing/{tool_name}")
-    def seeing(tool_name: str):
-        return intelligence(tool_name)
-
-    # ------------------------------------------------------------------
-    # Stack recommendation (NEW â€” core decision engine endpoint)
-    # ------------------------------------------------------------------
-
-    @app.post("/stack", response_model=StackResponse)
-    def stack(req: StackRequest):
-        struct = interpret(req.query)
-        profile = load_profile(req.profile_id) if req.profile_id else None
-
-        result = compose_stack(
-            struct,
-            profile=profile,
-            stack_size=req.stack_size,
-            categories_filter=req.filters,
-        )
-
-        explanation = result.get("explanation", {})
-
-        stack_entries = []
-        for entry in result.get("stack", []):
-            tool = entry["tool"]
-            tool_expl = None
-            for te in explanation.get("tool_explanations", []):
-                if te.get("tool_name") == tool.name:
-                    tool_expl = te
-                    break
-
-            stack_entries.append(StackToolEntry(
-                name=tool.name,
-                role=entry["role"],
-                description=tool.description,
-                url=getattr(tool, "url", None),
-                fit_score=tool_expl.get("fit_score") if tool_expl else None,
-                reasons=tool_expl.get("reasons", [])[:4] if tool_expl else None,
-                caveats=tool_expl.get("caveats", [])[:2] if tool_expl else None,
-                pricing=getattr(tool, "pricing", None),
-                categories=getattr(tool, "categories", None),
-                integrations=getattr(tool, "integrations", None),
-                skill_level=getattr(tool, "skill_level", None),
-            ))
-
-        alts = []
-        for t in result.get("alternatives", [])[:5]:
-            alts.append(ToolDetail(
-                name=t.name,
-                description=t.description,
-                url=getattr(t, "url", None),
-                categories=getattr(t, "categories", None),
-                pricing=getattr(t, "pricing", None),
-            ))
-
-        return StackResponse(
-            narrative=explanation.get("narrative"),
-            stack=stack_entries,
-            integration_notes=explanation.get("integration_notes"),
-            total_monthly_cost=explanation.get("total_monthly_cost"),
-            stack_fit_score=explanation.get("stack_fit_score"),
-            alternatives=alts,
-        )
-
-    # ------------------------------------------------------------------
-    # Compare
-    # ------------------------------------------------------------------
-
-    @app.post("/compare")
-    def compare(req: CompareRequest):
-        profile = load_profile(req.profile_id) if req.profile_id else None
-        return compare_tools(req.tool_a, req.tool_b, profile)
-
-    # ------------------------------------------------------------------
-    # Profile
-    # ------------------------------------------------------------------
-
-    @app.post("/profile")
-    def upsert_profile(req: ProfileRequest):
-        p = UserProfile(
-            profile_id=req.profile_id,
-            industry=req.industry,
-            budget=req.budget,
-            team_size=req.team_size,
-            skill_level=req.skill_level,
-            existing_tools=req.existing_tools or [],
-            goals=req.goals or [],
-            constraints=req.constraints or [],
-        )
-        save_profile(p)
-        return {"ok": True, "profile": p.to_dict()}
-
-    @app.get("/profile/{profile_id}")
-    def get_profile(profile_id: str):
-        p = load_profile(profile_id)
-        if not p:
-            return {"error": "Profile not found"}
-        return p.to_dict()
-
-    @app.get("/profiles")
-    def get_profiles():
-        return list_profiles()
-
-    # ------------------------------------------------------------------
-    # Feedback
-    # ------------------------------------------------------------------
-
-    @app.post("/feedback")
-    def feedback(entry: FeedbackRequest):
-        try:
-            from .feedback import record_feedback
-        except Exception:
-            from feedback import record_feedback
-
-        try:
-            record_feedback(
-                entry.query, entry.tool,
-                accepted=entry.accepted,
-                rating=entry.rating,
-                details=entry.details,
-            )
-        except TypeError:
-            record_feedback(entry.query, entry.tool, entry.accepted)
-
-        return {"ok": True}
-
-    @app.get("/feedback/summary")
-    def feedback_summary():
-        try:
-            from .feedback import summary
-        except Exception:
-            from feedback import summary
-        return summary()
-
-    # ------------------------------------------------------------------
-    # Learning
-    # ------------------------------------------------------------------
-
-    @app.post("/learn")
-    def learn():
-        signals = run_learning_cycle()
-        return {
-            "ok": True,
-            "tools_processed": len(signals.get("tool_quality", {})),
-            "computed_at": signals.get("computed_at"),
-        }
-
-    @app.get("/learn/quality")
-    def tool_quality():
-        return compute_tool_quality()
-
-    # ------------------------------------------------------------------
-    # Data Export / Import
-    # ------------------------------------------------------------------
-
-    @app.get("/tools/export")
-    def tools_export():
-        """Export all tools as downloadable JSON."""
-        if export_tools_json:
-            import json as _json
-            return _json.loads(export_tools_json())
-        return {"error": "Export module not available"}
-
-    @app.post("/tools/import/json")
-    async def tools_import_json(payload: dict):
-        """Import tools from JSON.  Body: {"tools": [...]} or raw array."""
-        if not import_tools_json:
-            return {"error": "Import module not available"}
-        import json as _json
-        items = payload.get("tools", payload) if isinstance(payload, dict) else payload
-        return import_tools_json(_json.dumps(items))
-
-    @app.post("/tools/import/csv")
-    async def tools_import_csv(payload: dict):
-        """Import tools from CSV string.  Body: {"csv": "name,desc,...\nrow,..."}"""
-        if not import_tools_csv:
-            return {"error": "Import module not available"}
-        csv_text = payload.get("csv", "")
-        if not csv_text:
-            return {"error": "No CSV data in 'csv' field"}
-        return import_tools_csv(csv_text)
-
-    @app.get("/tools/csv-template")
-    def csv_template():
-        """Download a CSV template for bulk tool import."""
-        if generate_csv_template:
-            from fastapi.responses import PlainTextResponse
-            return PlainTextResponse(generate_csv_template(), media_type="text/csv",
-                                     headers={"Content-Disposition": "attachment; filename=praxis_tools_template.csv"})
-        return {"error": "Template generator not available"}
-
-    # ------------------------------------------------------------------
-    # Config (read-only for frontend diagnostics)
-    # ------------------------------------------------------------------
-
-    @app.get("/config/weights")
-    def config_weights():
-        """Return current scoring weights for transparency / tuning."""
-        weight_keys = [k for k in (_cfg.DEFAULTS if _cfg else {}) if k.startswith("weight_")]
-        return {k: _cfg.get(k) for k in weight_keys} if _cfg else {}
-
-    @app.get("/health")
-    def health():
-        """Health check with diagnostics."""
-        return {
-            "status": "ok",
-            "tools_loaded": len(TOOLS),
-            "categories": len(get_all_categories()),
-            "intelligence": init_intelligence is not None,
-            "philosophy": generate_seeing is not None,
-            "modules": {
-                "workflow": suggest_workflow is not None,
-                "healthcheck": tool_health is not None,
-                "readiness": score_readiness is not None,
-                "compare_stack": compare_my_stack is not None,
-                "badges": get_badges is not None,
-                "migration": migration_plan is not None,
-                "whatif": whatif_simulate is not None,
-                "vendor_deep_dive": vendor_deep_dive is not None,
-                "playground": test_integration is not None,
-                "affiliates": get_affiliate_info is not None,
-                "benchmarks": submit_benchmark is not None,
-                "digest": subscribe_digest is not None,
-            },
-        }
-
-    # ------------------------------------------------------------------
-    # Tool freshness & staleness
-    # ------------------------------------------------------------------
-
-    @app.get("/tools/stale")
-    def stale_tools():
-        """List tools whose metadata hasn't been updated within the freshness window."""
-        max_days = int(_cfg.get("tool_freshness_days", 90) if _cfg else 90)
-        stale = [
-            {
-                "name": t.name,
-                "last_updated": getattr(t, "last_updated", None),
-                "categories": t.categories,
-            }
-            for t in TOOLS
-            if getattr(t, "is_stale", lambda d: True)(max_days)
-        ]
-        return {
-            "freshness_window_days": max_days,
-            "stale_count": len(stale),
-            "total_tools": len(TOOLS),
-            "stale_tools": stale,
-        }
-
-    # ------------------------------------------------------------------
-    # Query-failure diagnostics
-    # ------------------------------------------------------------------
-    try:
-        from .diagnostics import get_failures, get_failure_summary
-        _diag_available = True
-    except Exception:
-        try:
-            from diagnostics import get_failures, get_failure_summary
-            _diag_available = True
-        except Exception:
-            _diag_available = False
-
-    if _diag_available:
-        @app.get("/diagnostics/failures")
-        def diagnostics_failures(limit: int = 50):
-            """Return the most recent query failures."""
-            return {"failures": get_failures(limit=limit)}
-
-        @app.get("/diagnostics/summary")
-        def diagnostics_summary():
-            """Aggregate failure stats for gap analysis."""
-            return get_failure_summary()
-
-    # ==================================================================
-    # Phase 14 â€” New Feature Endpoints
-    # ==================================================================
-
-    # ------------------------------------------------------------------
-    # Workflow Suggest
-    # ------------------------------------------------------------------
-
-    if suggest_workflow:
-        @app.post("/workflow-suggest")
-        def workflow_suggest(req: WorkflowRequest):
-            """Return a sequenced multi-step workflow recommendation."""
-            profile = load_profile(req.profile_id) if req.profile_id else None
-            return suggest_workflow(
-                query=req.query,
-                profile=profile,
-                profile_id=req.profile_id,
-                existing_tools=req.existing_tools,
-                max_steps=req.max_steps,
-            )
-
-    # ------------------------------------------------------------------
-    # Tool & Stack Health Check
-    # ------------------------------------------------------------------
-
-    if tool_health:
-        @app.get("/tool-health/{tool_name}")
-        def tool_health_ep(tool_name: str):
-            """Early-warning health report for a single tool."""
-            return tool_health(tool_name)
-
-    if stack_health:
-        @app.post("/stack-health")
-        def stack_health_ep(payload: dict):
-            """Aggregate health for a list of tools. Body: {"tools": [...]}"""
-            tools = payload.get("tools", [])
-            if not tools:
-                return {"error": "Provide a 'tools' list."}
-            return stack_health(tools)
-
-    # ------------------------------------------------------------------
-    # AI Readiness Score
-    # ------------------------------------------------------------------
-
-    if score_readiness:
-        @app.get("/profile-readiness/{profile_id}")
-        def profile_readiness(profile_id: str):
-            """AI readiness score 0-100 for a saved profile."""
-            profile = load_profile(profile_id)
-            if not profile:
-                return {"error": f"Profile '{profile_id}' not found"}
-            return score_readiness(profile, profile_id)
-
-    # ------------------------------------------------------------------
-    # Compare My Stack
-    # ------------------------------------------------------------------
-
-    if compare_my_stack:
-        @app.post("/compare-stack")
-        def compare_stack_ep(req: CompareStackRequest):
-            """Current stack vs optimised alternative analysis."""
-            profile = load_profile(req.profile_id) if req.profile_id else None
-            return compare_my_stack(
-                current_tools=req.current_tools,
-                goal=req.goal,
-                profile=profile,
-                profile_id=req.profile_id,
-            )
-
-    # ------------------------------------------------------------------
-    # Community Badges
-    # ------------------------------------------------------------------
-
-    if get_badges:
-        @app.get("/badges/{tool_name}")
-        def badges_for_tool(tool_name: str):
-            """Return earned community badges for a single tool."""
-            return {"tool": tool_name, "badges": get_badges(tool_name)}
-
-    if compute_all_badges:
-        @app.get("/badges")
-        def badges_all():
-            """Return badges for every tool in the database."""
-            return compute_all_badges()
-
-    # ------------------------------------------------------------------
-    # Migration Assistant
-    # ------------------------------------------------------------------
-
-    if migration_plan:
-        @app.post("/migration-plan")
-        def migration_plan_ep(req: MigrationRequest):
-            """Step-by-step migration plan between two tools."""
-            profile = load_profile(req.profile_id) if req.profile_id else None
-            return migration_plan(
-                from_tool=req.from_tool,
-                to_tool=req.to_tool,
-                desired_outcome=req.desired_outcome,
-                profile=profile,
-                profile_id=req.profile_id,
-            )
-
-    # ------------------------------------------------------------------
-    # What-If Simulator
-    # ------------------------------------------------------------------
-
-    if whatif_simulate:
-        @app.post("/whatif")
-        def whatif_ep(req: WhatIfRequest):
-            """Simulate profile changes and compare baseline vs hypothetical."""
-            return whatif_simulate(
-                query=req.query,
-                changes=req.changes,
-                profile_id=req.profile_id,
-                top_n=req.top_n,
-            )
-
-    # ------------------------------------------------------------------
-    # Vendor Deep Dive
-    # ------------------------------------------------------------------
-
-    if vendor_deep_dive:
-        @app.get("/vendor-report/{tool_name}")
-        def vendor_report(tool_name: str):
-            """Extended vendor risk report with news, exit cost, strategy."""
-            tool = None
-            for t in TOOLS:
-                if t.name.lower() == tool_name.lower():
-                    tool = t
-                    break
-            if not tool:
-                return {"error": f"Tool '{tool_name}' not found"}
-            return vendor_deep_dive(tool)
-
-    # ------------------------------------------------------------------
-    # Integration Playground
-    # ------------------------------------------------------------------
-
-    if test_integration:
-        @app.post("/integration-test")
-        def integration_test_ep(req: IntegrationTestRequest):
-            """Test whether tool_a integrates with tool_b."""
-            return test_integration(req.tool_a, req.tool_b)
-
-    if stack_integration_map:
-        @app.post("/integration-map")
-        def integration_map_ep(req: IntegrationMapRequest):
-            """Full integration matrix for a list of tools."""
-            return stack_integration_map(req.tools)
-
-    # ------------------------------------------------------------------
-    # Monetisation â€” Affiliates, Benchmarks, Digest
-    # ------------------------------------------------------------------
-
-    if get_affiliate_info:
-        @app.get("/affiliate/{tool_name}")
-        def affiliate_ep(tool_name: str):
-            """Return affiliate/promo info for a tool."""
-            return get_affiliate_info(tool_name)
-
-    if submit_benchmark:
-        @app.post("/benchmark")
-        def benchmark_submit(req: BenchmarkRequest):
-            """Submit a user-generated benchmark for a tool."""
-            return submit_benchmark(
-                tool_name=req.tool_name,
-                user_id=req.user_id,
-                task=req.task,
-                metrics=req.metrics,
-                notes=req.notes,
-            )
-
-    if get_benchmarks:
-        @app.get("/benchmark/{tool_name}")
-        def benchmark_get(tool_name: str):
-            """Retrieve aggregated benchmarks for a tool."""
-            return get_benchmarks(tool_name)
-
-    if subscribe_digest:
-        @app.post("/digest/subscribe")
-        def digest_subscribe_ep(req: DigestSubscribeRequest):
-            """Subscribe an email to the weekly AI digest."""
-            return subscribe_digest(req.email, req.profile_id)
-
-    if unsubscribe_digest:
-        @app.post("/digest/unsubscribe")
-        def digest_unsubscribe_ep(payload: dict):
-            """Unsubscribe from the weekly digest. Body: {"email": "..."}"""
-            email = payload.get("email", "")
-            if not email:
-                return {"error": "Provide an 'email' field."}
-            return unsubscribe_digest(email)
-
-    if generate_digest:
-        @app.get("/digest/preview/{profile_id}")
-        def digest_preview(profile_id: str = "default"):
-            """Preview the weekly digest for a profile."""
-            return generate_digest(profile_id)
-
-    if subscriber_count:
-        @app.get("/digest/stats")
-        def digest_stats():
-            """Return digest subscriber count."""
-            return {"subscribers": subscriber_count()}
-
-    # ------------------------------------------------------------------
-    # Deep Reasoning endpoint
-    # ------------------------------------------------------------------
-
-    class ReasonRequest(BaseModel):
-        query: str
-        profile_id: Optional[str] = None
-        max_steps: Optional[int] = 5
-        budget_ms: Optional[int] = 15000
-        include_trace: Optional[bool] = False
-
-    if _deep_reason:
-        @app.post("/reason")
-        def reason_ep(req: ReasonRequest):
-            """Agentic deep-reasoning search.  Decomposes the query,
-            runs iterative sub-searches, applies constraints & vendor
-            intelligence, self-critiques, and synthesises a narrative."""
-            result = _deep_reason(
-                req.query,
-                profile_id=req.profile_id,
-                max_steps=min(req.max_steps or 5, 10),
-                budget_ms=min(req.budget_ms or 15000, 60000),
-            )
-            payload = {
-                "query": result.query,
-                "mode": result.mode,
-                "plan": result.plan,
-                "tools_considered": result.tools_considered,
-                "tools_recommended": result.tools_recommended,
-                "narrative": result.narrative,
-                "confidence": result.confidence,
-                "caveats": result.caveats,
-                "follow_up_questions": result.follow_up_questions,
-                "reasoning_depth": result.reasoning_depth,
-                "total_elapsed_ms": result.total_elapsed_ms,
-            }
-            if req.include_trace:
-                payload["trace"] = [
-                    {"phase": s.phase, "action": s.action,
-                     "detail": s.detail, "elapsed_ms": s.elapsed_ms}
-                    for s in result.steps
-                ]
-            return payload
+    register_core_routes(app, {
+        "get_all_categories": get_all_categories,
+        "TOOLS": TOOLS,
+        "ToolDetail": ToolDetail,
+        "SearchRequest": SearchRequest,
+        "_deep_reason": _deep_reason,
+        "_deep_reason_v2": _deep_reason_v2,
+        "interpret": interpret,
+        "load_profile": load_profile,
+        "find_tools": find_tools,
+        "explain_tool": explain_tool,
+        "get_suggestions": get_suggestions,
+        "generate_seeing": generate_seeing,
+        "StackResponse": StackResponse,
+        "StackRequest": StackRequest,
+        "compose_stack": compose_stack,
+        "StackToolEntry": StackToolEntry,
+        "CompareRequest": CompareRequest,
+        "compare_tools": compare_tools,
+        "ProfileRequest": ProfileRequest,
+        "UserProfile": UserProfile,
+        "save_profile": save_profile,
+        "list_profiles": list_profiles,
+        "FeedbackRequest": FeedbackRequest,
+        "run_learning_cycle": run_learning_cycle,
+        "compute_tool_quality": compute_tool_quality,
+        "export_tools_json": export_tools_json,
+        "import_tools_json": import_tools_json,
+        "import_tools_csv": import_tools_csv,
+        "generate_csv_template": generate_csv_template,
+        "_cfg": _cfg,
+    })
+
+    register_feature_routes(app, {
+        "TOOLS": TOOLS,
+        "get_all_categories": get_all_categories,
+        "init_intelligence": init_intelligence,
+        "generate_seeing": generate_seeing,
+        "suggest_workflow": suggest_workflow,
+        "tool_health": tool_health,
+        "stack_health": stack_health,
+        "score_readiness": score_readiness,
+        "compare_my_stack": compare_my_stack,
+        "get_badges": get_badges,
+        "compute_all_badges": compute_all_badges,
+        "migration_plan": migration_plan,
+        "whatif_simulate": whatif_simulate,
+        "vendor_deep_dive": vendor_deep_dive,
+        "test_integration": test_integration,
+        "stack_integration_map": stack_integration_map,
+        "get_affiliate_info": get_affiliate_info,
+        "submit_benchmark": submit_benchmark,
+        "get_benchmarks": get_benchmarks,
+        "subscribe_digest": subscribe_digest,
+        "unsubscribe_digest": unsubscribe_digest,
+        "generate_digest": generate_digest,
+        "subscriber_count": subscriber_count,
+        "_deep_reason": _deep_reason,
+        "load_profile": load_profile,
+        "_cfg": _cfg,
+        "WorkflowRequest": WorkflowRequest,
+        "CompareStackRequest": CompareStackRequest,
+        "MigrationRequest": MigrationRequest,
+        "WhatIfRequest": WhatIfRequest,
+        "IntegrationTestRequest": IntegrationTestRequest,
+        "IntegrationMapRequest": IntegrationMapRequest,
+        "BenchmarkRequest": BenchmarkRequest,
+        "DigestSubscribeRequest": DigestSubscribeRequest,
+        "BaseModel": BaseModel,
+    })
 
     # ------------------------------------------------------------------
     # Cognitive Search (v2) â€” Hybrid Retrieval + Graph + PRISM

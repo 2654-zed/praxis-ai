@@ -59,7 +59,6 @@ Dependencies: stdlib only (logging, re, math, dataclasses, typing).
 from __future__ import annotations
 
 import logging
-import math
 import re
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional

@@ -27,8 +27,7 @@ Every function is deterministic and stdlib-only.
 from __future__ import annotations
 
 import logging
-import re
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, asdict
 from typing import List, Dict, Any, Optional
 
 log = logging.getLogger("praxis.authorship")

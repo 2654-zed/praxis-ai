@@ -17,7 +17,7 @@ makes the system smarter.
 import json
 import os
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 try:
@@ -187,7 +187,7 @@ def apply_learned_popularity():
 def save_learned_signals():
     """Persist all computed signals to a JSON file for inspection / debugging."""
     signals = {
-        "computed_at": datetime.utcnow().isoformat() + "Z",
+        "computed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "tool_quality": compute_tool_quality(),
         "pair_affinities": [
             {"tool_a": a, "tool_b": b, "affinity": s}

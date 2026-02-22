@@ -16,7 +16,7 @@ A profile contains:
 
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 PROFILES_FILE = "profiles.json"
@@ -56,7 +56,7 @@ class UserProfile:
         self.goals = goals or []
         self.constraints = constraints or []
         self.preferences = preferences or {}
-        self.created_at = created_at or datetime.utcnow().isoformat() + "Z"
+        self.created_at = created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         self.updated_at = updated_at or self.created_at
 
     # ---- serialization ----
@@ -97,7 +97,7 @@ class UserProfile:
         for key, val in kwargs.items():
             if hasattr(self, key) and val is not None:
                 setattr(self, key, val)
-        self.updated_at = datetime.utcnow().isoformat() + "Z"
+        self.updated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     # ---- convenience queries ----
 
@@ -142,7 +142,7 @@ def _save_all(data: dict):
 def save_profile(profile: UserProfile):
     """Persist a profile (upsert by profile_id)."""
     data = _load_all()
-    profile.updated_at = datetime.utcnow().isoformat() + "Z"
+    profile.updated_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     data[profile.profile_id] = profile.to_dict()
     _save_all(data)
     return profile
