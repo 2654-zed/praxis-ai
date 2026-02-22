@@ -13,15 +13,15 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 67 files, ~36,500 lines |
+| **Python modules** | 81 files, ~43,300 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
-| **API endpoints** | 322 REST routes via FastAPI |
-| **Test coverage** | 320 tests across 9 test files, all passing |
-| **Frontend** | 8 HTML + 4 JS files (~4,400 lines), Liquid Glass UI |
+| **API endpoints** | 391 REST routes via FastAPI |
+| **Test coverage** | 557 tests across 11 test files, all passing |
+| **Frontend** | 20 HTML + 4 JS files (~7,200 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~40,900 (Python + Frontend) |
+| **Total LOC** | ~50,600 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-21 19:46 UTC |
+| **Last auto-update** | 2026-02-22 01:37 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -921,6 +921,9 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+945f1a8 v22: Cognitive Resilience Architecture  8 modules, 6 frontends, 124 tests  reasoning router, DSRP ontology, CODES resonance, CoALA memory, RepE transparency, MESIAS governance, anti-patterns, runtime protection
+1de8dd1 v21: Commercial Enterprise-Grade Frontend & Cognitive Interface  GWT workspace, IIT Phi metric, structural entropy, OpenTelemetry tracing, CoT parsing, GraphRAG knowledge graphs, EU AI Act/HIPAA/GDPR compliance, immutable audit trails, PII masking, AI economics/ROI tracking, vendor risk scoring  6 backend modules, 6 frontend pages, 113 new tests (433 total)
+748207d docs(auto): update README stats [skip ci]
 de6423c v20: Stress Testing & Architecture Hardening  6 new modules, 75 tests (320 total)
 90f6ec6 docs(auto): update README stats [skip ci]
 1c3cf42 v19: Platform Evolution  6 new modules, 43 tests (245 total)
@@ -966,10 +969,10 @@ The codebase tells a story:
 ### Current State (Post-Audit)
 <!-- AUTO:STATE:START -->
 - **246 tools**, zero duplicates, clean tag casing
-- **322 API routes**, all functional
-- **320 tests passing**
-- **67 Python modules**, ~36,500 lines
-- **12 frontend files**, ~4,400 lines
+- **391 API routes**, all functional
+- **557 tests passing**
+- **81 Python modules**, ~43,300 lines
+- **24 frontend files**, ~7,200 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
 <!-- AUTO:STATE:END -->
