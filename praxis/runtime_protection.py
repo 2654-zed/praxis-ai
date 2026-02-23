@@ -60,6 +60,10 @@ THREAT_PATTERNS = {
         r"0x(?:[0-9a-f]{2})+",
         # Stacked queries with non-whitespace separators
         r"(?:;\s*(?:select|insert|update|delete|drop|truncate|exec)\b)",
+        # Time-based blind injection (bypasses pattern-match filters via delay, not data)
+        r"(?:waitfor\s+delay\s*'|pg_sleep\s*\(|sleep\s*\(\s*\d|benchmark\s*\(\s*\d)",
+        # Boolean-based blind: conditional expressions that don't match classic or/and
+        r"(?:case\s+when\s+.+?\s+then\s+.+?\s+else|if\s*\(\s*\d\s*=\s*\d)",
     ],
     ThreatCategory.XSS: [
         r"<script[^>]*>",
@@ -86,18 +90,25 @@ THREAT_PATTERNS = {
         r"(?:__import__|os\.system|subprocess\.)",
     ],
     ThreatCategory.SSRF: [
-        # Hostname-based
+        # ── Static IP / hostname patterns ──────────────────────────────
+        # Hostname-based (direct)
         r"(?:localhost|127\.0\.0\.1|0\.0\.0\.0|169\.254\.)",
         # IPv6 loopback variants: ::1, [::1], [::ffff:127.0.0.1]
         r"(?:\[?::1\]?|\[?::ffff:(?:127\.|0:0:0:1)\]?)",
         # Decimal/octal/hex IP encoding: 2130706433, 0x7F000001, 017700000001
         r"(?:0x7[fF]0{6}[0-9a-fA-F]{2}|2130706433|017700000001)",
-        # Shorthand IPs: 127.1, 127.0.1, 0:0:0:0:0:0:0:1
+        # Shorthand IPs: 127.1, 127.0.1
         r"(?:127\.\d{1,3}(?:\.\d{1,3})?(?!\.\d)|0:0:0:0:0:0:0:1)",
         # Non-HTTP schemes used for SSRF
         r"(?:file://|gopher://|dict://|ftp://)",
-        # Cloud metadata endpoints (AWS, GCP, Azure)
-        r"(?:169\.254\.169\.254|metadata\.google\.internal|169\.254\.170\.2)",
+        # Cloud metadata hostnames (static) — NOTE: DNS rebinding can still
+        # redirect attacker.com to 169.254.169.254 at resolution time.
+        # This filter only blocks the *literal string*; for full protection
+        # use an egress allowlist or DNS pinning at the network layer.
+        r"(?:169\.254\.169\.254|169\.254\.170\.2)",
+        r"(?:metadata\.google\.internal|instance-data\.ec2\.internal)",
+        # Azure IMDS endpoint
+        r"(?:168\.63\.129\.16)",
     ],
     ThreatCategory.PROMPT_INJECTION: [
         r"(?:ignore\s+(?:previous|above|all)\s+instructions)",
