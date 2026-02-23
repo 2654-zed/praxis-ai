@@ -11,15 +11,15 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 86 files, ~44,300 lines |
+| **Python modules** | 86 files, ~44,400 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
 | **API endpoints** | 348 REST routes via FastAPI |
 | **Test coverage** | 645 tests across 13 test files, all passing |
 | **Frontend** | 21 HTML + 4 JS files (~7,700 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~52,000 (Python + Frontend) |
+| **Total LOC** | ~52,100 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-23 04:25 UTC |
+| **Last auto-update** | 2026-02-23 04:34 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -929,6 +929,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+2d9b5dc auto: 2026-02-22 22:34:08
+177e329 docs(auto): update README stats [skip ci]
 e6e3cb4 auto: 2026-02-22 22:24:51
 1a0cb19 auto: 2026-02-22 22:24:35
 afec1a5 docs(auto): update README stats [skip ci]
@@ -947,8 +949,6 @@ c5f2190 v23: public API surface, metric translator, stack advisor UX
 1de8dd1 v21: Commercial Enterprise-Grade Frontend & Cognitive Interface  GWT workspace, IIT Phi metric, structural entropy, OpenTelemetry tracing, CoT parsing, GraphRAG knowledge graphs, EU AI Act/HIPAA/GDPR compliance, immutable audit trails, PII masking, AI economics/ROI tracking, vendor risk scoring  6 backend modules, 6 frontend pages, 113 new tests (433 total)
 748207d docs(auto): update README stats [skip ci]
 de6423c v20: Stress Testing & Architecture Hardening  6 new modules, 75 tests (320 total)
-90f6ec6 docs(auto): update README stats [skip ci]
-1c3cf42 v19: Platform Evolution  6 new modules, 43 tests (245 total)
 ```
 <!-- AUTO:GIT:END -->
 
@@ -981,7 +981,7 @@ The codebase tells a story:
 - **246 tools**, zero duplicates, clean tag casing
 - **348 API routes**, all functional
 - **645 tests passing**
-- **86 Python modules**, ~44,300 lines
+- **86 Python modules**, ~44,400 lines
 - **25 frontend files**, ~7,700 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
