@@ -377,6 +377,80 @@ def _check_string_exec_patterns(node: ast.AST, report: ASTSecurityReport) -> Non
                 ))
 
 
+def _check_tainted_variable_indirection(tree: ast.Module, report: ASTSecurityReport) -> None:
+    """
+    Detect multi-step variable indirection that bypasses inline string checks.
+
+    The static inline checker catches ``getattr(obj, 'eval')`` and
+    ``obj['ev' + 'al']`` only when the key is a constant/BinOp *at the call
+    site*.  An attacker can trivially split the payload across two lines:
+
+        x = 'ev' + 'al'               # Assign — resolved here
+        f = getattr(__builtins__, x)   # Name node at call site — NOT caught
+
+    Strategy
+    --------
+    Pass 1: walk all ``Assign`` nodes.  Resolve the RHS via
+    ``_resolve_constant_str``; if it resolves to a ``FORBIDDEN_NAMES`` member,
+    mark the LHS variable name(s) as **tainted**.
+
+    Pass 2: walk all ``Call`` nodes.  Flag any call where
+        • ``getattr(obj, tainted_var)``    — second arg is a tainted Name
+        • ``obj[tainted_var](...)``        — subscript key is a tainted Name
+    """
+    tainted: set = set()
+
+    # Pass 1 — collect tainted variable names
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            resolved = _resolve_constant_str(node.value)
+            if resolved is not None and resolved in FORBIDDEN_NAMES:
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        tainted.add(target.id)
+
+    if not tainted:
+        return
+
+    # Pass 2 — flag calls that reference tainted names as keys
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+
+        # getattr(obj, tainted_var)
+        if isinstance(func, ast.Name) and func.id == "getattr" and len(node.args) >= 2:
+            second_arg = node.args[1]
+            if isinstance(second_arg, ast.Name) and second_arg.id in tainted:
+                report.add(SecurityViolation(
+                    severity="critical",
+                    category="rce",
+                    message=(
+                        f"Variable '{second_arg.id}' holds a forbidden name "
+                        f"and is passed to getattr() — variable-indirection RCE"
+                    ),
+                    line=getattr(node, "lineno", None),
+                    node_type="Call",
+                ))
+
+        # obj[tainted_var](...)
+        if isinstance(func, ast.Subscript):
+            key = func.slice
+            if isinstance(key, ast.Index):        # Python ≤ 3.8 compat
+                key = key.value                    # type: ignore[attr-defined]
+            if isinstance(key, ast.Name) and key.id in tainted:
+                report.add(SecurityViolation(
+                    severity="critical",
+                    category="rce",
+                    message=(
+                        f"Variable '{key.id}' holds a forbidden name "
+                        f"and is used as a subscript key — variable-indirection RCE"
+                    ),
+                    line=getattr(node, "lineno", None),
+                    node_type="Call",
+                ))
+
+
 def _resolve_constant_str(node: ast.AST) -> Optional[str]:
     """
     Attempt to statically resolve an AST node to a plain string.
@@ -472,6 +546,9 @@ def validate_ast(tree: ast.Module, report: Optional[ASTSecurityReport] = None) -
         _check_forbidden_imports(node, report)
         _check_forbidden_calls(node, report)
         _check_string_exec_patterns(node, report)
+
+    # Tree-wide multi-pass check (requires full tree context)
+    _check_tainted_variable_indirection(tree, report)
 
     return report
 
