@@ -1371,6 +1371,10 @@ def create_app():
         from fastapi import Depends as _Depends
         app.router.dependencies.append(_Depends(_get_current_user))
 
+    # Imports shared by async execution routes below
+    import asyncio as _asyncio_mod
+    from fastapi import HTTPException as _HTTPException
+
     # CORS
     try:
         from fastapi.middleware.cors import CORSMiddleware
@@ -3091,14 +3095,20 @@ def create_app():
 
         @app.post("/v19/connectors/execute")
         async def connectors_execute_ep(req: ConnectorExecRequest):
-            """Execute a connector action (dry-run by default)."""
-            result = await _execute_connector(
-                req.connector_id,
-                action=req.action,
-                params=req.params or {},
-                secrets=req.secrets or {},
-                dry_run=req.dry_run,
-            )
+            """Execute a connector action (dry-run by default). Hard timeout: 30 s."""
+            try:
+                result = await _asyncio_mod.wait_for(
+                    _execute_connector(
+                        req.connector_id,
+                        action=req.action,
+                        params=req.params or {},
+                        secrets=req.secrets or {},
+                        dry_run=req.dry_run,
+                    ),
+                    timeout=30.0,
+                )
+            except _asyncio_mod.TimeoutError:
+                raise _HTTPException(status_code=504, detail="Connector execution timed out (30 s)")
             return result.to_dict()
 
     # ── v19  Platform Evolution — Workflow Engine ────────────────────
@@ -3112,6 +3122,7 @@ def create_app():
             query: str
             secrets: Optional[Dict] = None
             dry_run: bool = True
+            budget_seconds: float = 300.0
 
         @app.post("/v19/workflow/decompose")
         def workflow_decompose_ep(req: WorkflowPlanRequest):
@@ -3126,12 +3137,21 @@ def create_app():
 
         @app.post("/v19/workflow/execute")
         async def workflow_execute_ep(req: WorkflowExecRequest):
-            """Execute a full workflow from natural language (plan + run)."""
-            result = await _assemble_and_run(
-                req.query,
-                secrets=req.secrets or {},
-                dry_run=req.dry_run,
-            )
+            """Execute a full workflow from natural language (plan + run).
+            Timeout is caller-controlled via ``budget_seconds`` (max 600 s).
+            """
+            timeout = min(max(req.budget_seconds, 10.0), 600.0)
+            try:
+                result = await _asyncio_mod.wait_for(
+                    _assemble_and_run(
+                        req.query,
+                        secrets=req.secrets or {},
+                        dry_run=req.dry_run,
+                    ),
+                    timeout=timeout,
+                )
+            except _asyncio_mod.TimeoutError:
+                raise _HTTPException(status_code=504, detail=f"Workflow execution timed out ({timeout:.0f} s)")
             return result.to_dict()
 
     # ── v19  Platform Evolution — Marketplace ────────────────────────
@@ -3336,11 +3356,18 @@ def create_app():
 
         @app.post("/v19/agent/execute")
         async def agent_execute_ep(req: AgentExecuteRequest):
-            """Execute a workflow plan end-to-end."""
-            return await _sdk_execute(
-                req.plan_dict or {}, secrets=req.secrets,
-                dry_run=req.dry_run, session_id=req.session_id,
-            )
+            """Execute a workflow plan end-to-end. Hard timeout: 60 s."""
+            try:
+                result = await _asyncio_mod.wait_for(
+                    _sdk_execute(
+                        req.plan_dict or {}, secrets=req.secrets,
+                        dry_run=req.dry_run, session_id=req.session_id,
+                    ),
+                    timeout=60.0,
+                )
+            except _asyncio_mod.TimeoutError:
+                raise _HTTPException(status_code=504, detail="Agent execution timed out (60 s)")
+            return result
 
         @app.post("/v19/agent/tool-call")
         def agent_tool_call_ep(req: AgentToolCallRequest):
