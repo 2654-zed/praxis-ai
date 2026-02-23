@@ -19,7 +19,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~52,100 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-23 04:34 UTC |
+| **Last auto-update** | 2026-02-23 04:37 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -929,6 +929,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+8bf876d auto: 2026-02-22 22:37:13
+562201f docs(auto): update README stats [skip ci]
 da03873 auto: 2026-02-22 22:34:41
 3401825 docs(auto): update README stats [skip ci]
 2d9b5dc auto: 2026-02-22 22:34:08
@@ -947,8 +949,6 @@ c5f2190 v23: public API surface, metric translator, stack advisor UX
 26a5fd4 docs(auto): update README stats [skip ci]
 6e31139 audit: fix knowledge graph deadlock, improve interpreter lazy imports, and refine frontend accessibility
 83b70a3 docs(auto): update README stats [skip ci]
-945f1a8 v22: Cognitive Resilience Architecture  8 modules, 6 frontends, 124 tests  reasoning router, DSRP ontology, CODES resonance, CoALA memory, RepE transparency, MESIAS governance, anti-patterns, runtime protection
-1de8dd1 v21: Commercial Enterprise-Grade Frontend & Cognitive Interface  GWT workspace, IIT Phi metric, structural entropy, OpenTelemetry tracing, CoT parsing, GraphRAG knowledge graphs, EU AI Act/HIPAA/GDPR compliance, immutable audit trails, PII masking, AI economics/ROI tracking, vendor risk scoring  6 backend modules, 6 frontend pages, 113 new tests (433 total)
 ```
 <!-- AUTO:GIT:END -->
 
