@@ -11,15 +11,15 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 86 files, ~44,200 lines |
+| **Python modules** | 86 files, ~44,300 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
 | **API endpoints** | 348 REST routes via FastAPI |
 | **Test coverage** | 645 tests across 13 test files, all passing |
 | **Frontend** | 21 HTML + 4 JS files (~7,700 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~51,900 (Python + Frontend) |
+| **Total LOC** | ~52,000 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-23 01:30 UTC |
+| **Last auto-update** | 2026-02-23 04:05 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -929,6 +929,9 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+ed1e3c7 security: fix 8 audit vulnerabilities
+b6dc0c7 docs: rewrite README as backend-focused architecture blueprint
+733d9a0 docs(auto): update README stats [skip ci]
 2d705c2 Add GitHub Actions workflow for Jekyll deployment
 e54bf60 docs(auto): update README stats [skip ci]
 234af8a Update modules and add new API routes, persistence facade, and tests
@@ -946,9 +949,6 @@ de6423c v20: Stress Testing & Architecture Hardening  6 new modules, 75 tests (3
 d8b9872 docs(auto): update README stats [skip ci]
 a422a09 v18.1: Architecture review fixes  7 production-critical issues
 b4b3c36 docs(auto): update README stats [skip ci]
-52655d6 Praxis v18  Enterprise-Grade Solidification
-46e7f5e docs(auto): update README stats [skip ci]
-f0b1db7 ci: auto-update README stats on every push via GitHub Actions
 ```
 <!-- AUTO:GIT:END -->
 
@@ -981,7 +981,7 @@ The codebase tells a story:
 - **246 tools**, zero duplicates, clean tag casing
 - **348 API routes**, all functional
 - **645 tests passing**
-- **86 Python modules**, ~44,200 lines
+- **86 Python modules**, ~44,300 lines
 - **25 frontend files**, ~7,700 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
