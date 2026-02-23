@@ -65,8 +65,14 @@ def auto_commit_push(message_prefix: str, dry_run: bool) -> bool:
 
     print(f"[auto-push] committed: {msg}", flush=True)
 
-    # Push
+    # Pull (rebase) before pushing to avoid rejection when remote is ahead
     branch = current_branch()
+    pull = run(["git", "pull", "--rebase", "origin", branch])
+    if pull.returncode != 0:
+        print(f"[auto-push] ERROR pulling (rebase): {pull.stderr.strip()}", flush=True)
+        return False
+
+    # Push
     push = run(["git", "push", "origin", branch])
     if push.returncode != 0:
         print(f"[auto-push] ERROR pushing: {push.stderr.strip()}", flush=True)
