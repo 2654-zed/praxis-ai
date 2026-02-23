@@ -17,9 +17,9 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 | **Test coverage** | 645 tests across 13 test files, all passing |
 | **Frontend** | 21 HTML + 4 JS files (~7,700 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~52,100 (Python + Frontend) |
+| **Total LOC** | ~52,200 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-23 04:44 UTC |
+| **Last auto-update** | 2026-02-23 04:54 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -929,6 +929,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+f0b1ebc auto: 2026-02-22 22:53:52
+19fa376 docs(auto): update README stats [skip ci]
 a4f57f2 security: fix auth enforcement + execution timeouts (session 4)
 120b1b0 docs(auto): update README stats [skip ci]
 52ea2ae auto: 2026-02-22 22:43:17
@@ -947,8 +949,6 @@ afec1a5 docs(auto): update README stats [skip ci]
 ed1e3c7 security: fix 8 audit vulnerabilities
 b6dc0c7 docs: rewrite README as backend-focused architecture blueprint
 733d9a0 docs(auto): update README stats [skip ci]
-2d705c2 Add GitHub Actions workflow for Jekyll deployment
-e54bf60 docs(auto): update README stats [skip ci]
 ```
 <!-- AUTO:GIT:END -->
 
