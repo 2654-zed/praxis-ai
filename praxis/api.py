@@ -3072,16 +3072,15 @@ def create_app():
             return {"connectors": _list_connectors()}
 
         @app.post("/v19/connectors/execute")
-        def connectors_execute_ep(req: ConnectorExecRequest):
+        async def connectors_execute_ep(req: ConnectorExecRequest):
             """Execute a connector action (dry-run by default)."""
-            import asyncio
-            result = asyncio.run(_execute_connector(
+            result = await _execute_connector(
                 req.connector_id,
                 action=req.action,
                 params=req.params or {},
                 secrets=req.secrets or {},
                 dry_run=req.dry_run,
-            ))
+            )
             return result.to_dict()
 
     # ── v19  Platform Evolution — Workflow Engine ────────────────────
@@ -3108,14 +3107,13 @@ def create_app():
             return plan.to_dict()
 
         @app.post("/v19/workflow/execute")
-        def workflow_execute_ep(req: WorkflowExecRequest):
+        async def workflow_execute_ep(req: WorkflowExecRequest):
             """Execute a full workflow from natural language (plan + run)."""
-            import asyncio
-            result = asyncio.run(_assemble_and_run(
+            result = await _assemble_and_run(
                 req.query,
                 secrets=req.secrets or {},
                 dry_run=req.dry_run,
-            ))
+            )
             return result.to_dict()
 
     # ── v19  Platform Evolution — Marketplace ────────────────────────
@@ -3319,13 +3317,12 @@ def create_app():
             return _sdk_plan(query=req.query, session_id=req.session_id)
 
         @app.post("/v19/agent/execute")
-        def agent_execute_ep(req: AgentExecuteRequest):
+        async def agent_execute_ep(req: AgentExecuteRequest):
             """Execute a workflow plan end-to-end."""
-            import asyncio
-            return asyncio.run(_sdk_execute(
+            return await _sdk_execute(
                 req.plan_dict or {}, secrets=req.secrets,
                 dry_run=req.dry_run, session_id=req.session_id,
-            ))
+            )
 
         @app.post("/v19/agent/tool-call")
         def agent_tool_call_ep(req: AgentToolCallRequest):
@@ -3588,10 +3585,18 @@ def create_app():
             """Full cognitive summary: workspace, Φ, entropy, reduction plan."""
             return _cognitive_summary()
 
+        _MAX_REGISTERED_AGENTS = 100
+
         @app.post("/v21/cognitive/agent")
         def cognitive_register_agent_ep(body: dict):
             """Register a new agent in the Global Workspace."""
             ws = _get_cognitive_workspace()
+            try:
+                current = len(getattr(ws, "_agents", getattr(ws, "agents", {})))
+                if current >= _MAX_REGISTERED_AGENTS:
+                    return {"error": f"Agent registration limit reached ({_MAX_REGISTERED_AGENTS} max)"}
+            except Exception:
+                pass
             ws.register_agent(body.get("agent_id", "anon"), body.get("role", "general"))
             return {"status": "registered", "agent_id": body.get("agent_id")}
 
@@ -3982,7 +3987,10 @@ def create_app():
                 mt = _MemType(type_str)
             except ValueError:
                 mt = _MemType.WORKING
+            _MAX_CONTENT_BYTES = 64 * 1024  # 64 KB per entry
             content = body.get("content", "")
+            if len(str(content).encode("utf-8", errors="replace")) > _MAX_CONTENT_BYTES:
+                return {"error": f"Content exceeds maximum allowed size ({_MAX_CONTENT_BYTES // 1024} KB)"}
             metadata = body.get("metadata", {})
             entry = _v22_memory_system.store(mt, content, metadata)
             return {"status": "stored", "memory_type": type_str, "entry_id": entry.entry_id}
