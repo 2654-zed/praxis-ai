@@ -4118,7 +4118,8 @@ def create_app():
                 return {"error": "metadata must be a JSON object"}
             if len(metadata) > _MAX_METADATA_KEYS:
                 return {"error": f"metadata exceeds maximum key count ({_MAX_METADATA_KEYS})"}
-            _meta_size = len(json.dumps(metadata, default=str).encode("utf-8", errors="replace"))
+            import json as _json_mod
+            _meta_size = len(_json_mod.dumps(metadata, default=str).encode("utf-8", errors="replace"))
             if _meta_size > _MAX_METADATA_BYTES:
                 return {"error": f"metadata exceeds maximum allowed size ({_MAX_METADATA_BYTES // 1024} KB)"}
             entry = _v22_memory_system.store(mt, content, metadata)
