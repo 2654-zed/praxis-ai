@@ -53,8 +53,13 @@ class ThreatSeverity(str, Enum):
 
 THREAT_PATTERNS = {
     ThreatCategory.SQL_INJECTION: [
-        r"(?:union\s+select|;\s*drop\s+table|'\s*or\s+'1'\s*=\s*'1|--\s*$)",
+        # Classic variants + UNION ALL and comment-bypass (UNION/**/SELECT)
+        r"(?:union(?:\s+all)?\s*(?:/\*.*?\*/)?\s*select|;\s*drop\s+table|'\s*or\s+'1'\s*=\s*'1|--\s*$)",
         r"(?:insert\s+into|update\s+\w+\s+set|delete\s+from)\s+\w+",
+        # Hex/unicode encoding bypass: 0x554e494f4e → UNION
+        r"0x(?:[0-9a-f]{2})+",
+        # Stacked queries with non-whitespace separators
+        r"(?:;\s*(?:select|insert|update|delete|drop|truncate|exec)\b)",
     ],
     ThreatCategory.XSS: [
         r"<script[^>]*>",
@@ -67,17 +72,32 @@ THREAT_PATTERNS = {
         r"(?:/etc/passwd|/proc/self|c:\\windows)",
     ],
     ThreatCategory.COMMAND_INJECTION: [
-        r"(?:;\s*(?:ls|cat|rm|wget|curl)\s)",
+        # Common shell commands — with optional /bin/ or /usr/bin/ prefix
+        r"(?:;\s*(?:(?:/(?:usr/)?bin/)?(?:ls|cat|rm|wget|curl|bash|sh|python|perl|ruby|nc|ncat|netcat))\b)",
         r"(?:\|\s*(?:sh|bash|cmd|powershell))",
         r"(?:`[^`]+`|\$\([^)]+\))",
+        # Obfuscated commands: c''at, c\at, $(echo cat)
+        r"""(?:[a-z](?:''|\\|\$\(echo\s)[a-z]+)""",
+        # Backtick and $() substitution
+        r"(?:;\s*\$\{[^}]+\})",
     ],
     ThreatCategory.DESERIALIZATION: [
         r"(?:pickle\.loads|yaml\.load\(|eval\(|exec\()",
         r"(?:__import__|os\.system|subprocess\.)",
     ],
     ThreatCategory.SSRF: [
+        # Hostname-based
         r"(?:localhost|127\.0\.0\.1|0\.0\.0\.0|169\.254\.)",
+        # IPv6 loopback variants: ::1, [::1], [::ffff:127.0.0.1]
+        r"(?:\[?::1\]?|\[?::ffff:(?:127\.|0:0:0:1)\]?)",
+        # Decimal/octal/hex IP encoding: 2130706433, 0x7F000001, 017700000001
+        r"(?:0x7[fF]0{6}[0-9a-fA-F]{2}|2130706433|017700000001)",
+        # Shorthand IPs: 127.1, 127.0.1, 0:0:0:0:0:0:0:1
+        r"(?:127\.\d{1,3}(?:\.\d{1,3})?(?!\.\d)|0:0:0:0:0:0:0:1)",
+        # Non-HTTP schemes used for SSRF
         r"(?:file://|gopher://|dict://|ftp://)",
+        # Cloud metadata endpoints (AWS, GCP, Azure)
+        r"(?:169\.254\.169\.254|metadata\.google\.internal|169\.254\.170\.2)",
     ],
     ThreatCategory.PROMPT_INJECTION: [
         r"(?:ignore\s+(?:previous|above|all)\s+instructions)",

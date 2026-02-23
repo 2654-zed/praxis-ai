@@ -33,6 +33,24 @@ def register_core_routes(app, deps):
     import_tools_csv = deps["import_tools_csv"]
     generate_csv_template = deps["generate_csv_template"]
     _cfg = deps["_cfg"]
+    _get_current_user = deps.get("get_current_user")
+
+    # Build a Depends-based admin guard if FastAPI auth is available.
+    # Routes decorated with admin_required will return 401/403 when
+    # PRAXIS_AUTH_MODE is not "none" and credentials are absent/invalid.
+    _admin_guard = None
+    if _get_current_user:
+        try:
+            from fastapi import Depends, HTTPException
+
+            async def _require_admin(user=Depends(_get_current_user)):
+                if not user.has_role("admin"):
+                    raise HTTPException(status_code=403, detail="Admin role required")
+                return user
+
+            _admin_guard = [Depends(_require_admin)]
+        except Exception:
+            pass
 
     @app.get("/categories")
     def categories():
@@ -291,7 +309,7 @@ def register_core_routes(app, deps):
             from feedback import summary
         return summary()
 
-    @app.post("/learn")
+    @app.post("/learn", dependencies=_admin_guard or [])
     def learn():
         signals = run_learning_cycle()
         return {
@@ -312,7 +330,7 @@ def register_core_routes(app, deps):
             return _json.loads(export_tools_json())
         return {"error": "Export module not available"}
 
-    @app.post("/tools/import/json")
+    @app.post("/tools/import/json", dependencies=_admin_guard or [])
     async def tools_import_json(payload: dict):
         """Import tools from JSON.  Body: {"tools": [...]} or raw array."""
         if not import_tools_json:
@@ -321,7 +339,7 @@ def register_core_routes(app, deps):
         items = payload.get("tools", payload) if isinstance(payload, dict) else payload
         return import_tools_json(_json.dumps(items))
 
-    @app.post("/tools/import/csv")
+    @app.post("/tools/import/csv", dependencies=_admin_guard or [])
     async def tools_import_csv(payload: dict):
         """Import tools from CSV string.  Body: {"csv": "name,desc,...\nrow,..."}"""
         if not import_tools_csv:

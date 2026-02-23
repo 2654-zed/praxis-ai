@@ -1402,9 +1402,10 @@ def create_app():
         except Exception:
             pass
     else:
-        # Legacy fallback â€” basic in-memory rate limiter
+        # Legacy fallback -- basic in-memory rate limiter (deque for O(1) eviction)
         import time as _time
         import logging as _logging
+        from collections import deque as _deque
         _api_log = _logging.getLogger("praxis.api")
         _rate_buckets: dict = {}
 
@@ -1415,8 +1416,11 @@ def create_app():
             async def dispatch(self, request, call_next):
                 ip = request.client.host if request.client else "unknown"
                 now = _time.time()
-                bucket = _rate_buckets.setdefault(ip, [])
-                bucket[:] = [t for t in bucket if now - t < 60]
+                cutoff = now - 60
+                bucket = _rate_buckets.setdefault(ip, _deque())
+                # O(1) left-pop instead of O(N) list-comprehension rebuild
+                while bucket and bucket[0] <= cutoff:
+                    bucket.popleft()
                 if len(bucket) >= _rpm_limit:
                     _api_log.warning("rate-limit: %s exceeded %d rpm", ip, _rpm_limit)
                     return _JSONResponse({"error": "Rate limit exceeded. Try again shortly."}, status_code=429)
@@ -1492,6 +1496,7 @@ def create_app():
         "import_tools_csv": import_tools_csv,
         "generate_csv_template": generate_csv_template,
         "_cfg": _cfg,
+        "get_current_user": _get_current_user,
     })
 
     register_feature_routes(app, {

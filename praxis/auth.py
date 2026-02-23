@@ -151,12 +151,20 @@ async def authenticate_request(
     mode = _get_auth_mode()
 
     if mode == "none":
-        return User(user_id="anonymous", roles=["admin"], auth_method="none")
+        # Warn loudly — "none" mode should NEVER be used in production.
+        log.warning(
+            "PRAXIS_AUTH_MODE=none: authentication is disabled — "
+            "granting read-only 'user' role (NOT admin). "
+            "Set PRAXIS_AUTH_MODE=api_key or oauth2 for production use."
+        )
+        return User(user_id="anonymous", roles=["user"], auth_method="none")
 
     # -- API-Key --
     if x_api_key:
         valid_keys = _get_api_keys()
-        if x_api_key in valid_keys:
+        # Constant-time comparison to prevent timing-based key enumeration
+        matched = any(hmac.compare_digest(x_api_key, k) for k in valid_keys)
+        if matched:
             return User(user_id=f"apikey:{x_api_key[:8]}...", auth_method="api_key")
         log.warning("Invalid API key presented")
         return None
@@ -228,7 +236,11 @@ def _build_fastapi_deps():
         """FastAPI dependency: authenticate or raise 401."""
         mode = _get_auth_mode()
         if mode == "none":
-            return User(user_id="anonymous", roles=["admin"], auth_method="none")
+            log.warning(
+                "PRAXIS_AUTH_MODE=none: authentication is disabled — "
+                "granting read-only 'user' role (NOT admin)."
+            )
+            return User(user_id="anonymous", roles=["user"], auth_method="none")
 
         user = await authenticate_request(authorization, x_api_key)
         if user is None:

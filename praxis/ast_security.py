@@ -60,6 +60,11 @@ MAX_AST_NODES = 10_000
 # Maximum recursion limit used during AST walk (prevents stack overflow)
 MAX_WALK_RECURSION = 200
 
+# Maximum number of binary operators before we refuse to parse.
+# Prevents `1+1+1+...` operator-chain attacks that overflow the CPython C-stack
+# inside ast.parse() *before* any bracket/nesting check would fire.
+MAX_OPERATOR_COUNT = 500
+
 # Dangerous builtins that should never appear in introspected code
 FORBIDDEN_NAMES: Set[str] = {
     "eval", "exec", "compile", "__import__",
@@ -181,6 +186,40 @@ def _check_nesting_depth(source: str, report: ASTSecurityReport) -> bool:
             severity="high",
             category="dos",
             message=f"Excessive nesting depth ({max_open} > {MAX_AST_DEPTH})",
+        ))
+        return False
+    return True
+
+
+def _check_operator_chain(source: str, report: ASTSecurityReport) -> bool:
+    """
+    Reject operator chains that would overflow the CPython C-stack inside
+    ``ast.parse()`` — e.g. ``1+1+1+...`` repeated 50,000 times.
+
+    The bracket-depth check in ``_check_nesting_depth`` does not fire on
+    pure-arithmetic chains because they contain no ``([{`` characters.
+    Each binary operator adds one level of nesting in the AST, so we cap
+    the total operator count here before ever calling the parser.
+    """
+    op_count = (
+        source.count("+")
+        + source.count("-")
+        + source.count("*")
+        + source.count("/")
+        + source.count("%")
+        + source.count("|")
+        + source.count("&")
+        + source.count("^")
+        + source.count("~")
+    )
+    if op_count > MAX_OPERATOR_COUNT:
+        report.add(SecurityViolation(
+            severity="high",
+            category="dos",
+            message=(
+                f"Operator chain exceeds limit ({op_count} > {MAX_OPERATOR_COUNT}) "
+                "— potential C-stack overflow in ast.parse()"
+            ),
         ))
         return False
     return True
@@ -308,6 +347,7 @@ def _check_string_exec_patterns(node: ast.AST, report: ASTSecurityReport) -> Non
     Detect obfuscated exec patterns such as:
         getattr(__builtins__, 'eval')('payload')
         globals()['__builtins__']['exec']('payload')
+        __builtins__['ev' + 'al']('payload')   ← subscript + BinOp bypass
     """
     if isinstance(node, ast.Call):
         func = node.func
@@ -323,6 +363,45 @@ def _check_string_exec_patterns(node: ast.AST, report: ASTSecurityReport) -> Non
                         line=getattr(node, "lineno", None),
                         node_type="Call",
                     ))
+
+        # obj['ev'+'al']('payload') — Subscript with literal or concatenated key
+        if isinstance(func, ast.Subscript):
+            key = _resolve_constant_str(func.slice)
+            if key is not None and key in FORBIDDEN_NAMES:
+                report.add(SecurityViolation(
+                    severity="critical",
+                    category="rce",
+                    message=f"Obfuscated access to forbidden builtin via subscript: '{key}'",
+                    line=getattr(node, "lineno", None),
+                    node_type="Call",
+                ))
+
+
+def _resolve_constant_str(node: ast.AST) -> Optional[str]:
+    """
+    Attempt to statically resolve an AST node to a plain string.
+
+    Handles:
+        - ``ast.Constant`` (string literal)
+        - ``ast.BinOp`` with ``ast.Add`` operator (string concatenation)
+        - ``ast.Index`` wrapper (Python ≤ 3.8 compat)
+
+    Returns the resolved string or ``None`` if it cannot be determined.
+    """
+    # Python ≤ 3.8 wraps slice in ast.Index
+    if isinstance(node, ast.Index):
+        return _resolve_constant_str(node.value)  # type: ignore[attr-defined]
+
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        left = _resolve_constant_str(node.left)
+        right = _resolve_constant_str(node.right)
+        if left is not None and right is not None:
+            return left + right
+
+    return None
 
 
 # ╔════════════════════════════════════════════════════════════════════╗
@@ -422,6 +501,9 @@ def safe_parse(source: str, *, filename: str = "<unknown>") -> ASTSecurityReport
         return report
 
     if not _check_nesting_depth(source, report):
+        return report
+
+    if not _check_operator_chain(source, report):
         return report
 
     # Parse with a reduced recursion limit to prevent stack overflow

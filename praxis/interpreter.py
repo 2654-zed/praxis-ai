@@ -113,6 +113,9 @@ def _openai_interpret(raw: str) -> dict:
     )
     text = resp.choices[0].message.content.strip()
     data = json.loads(text)
+    if not isinstance(data, dict):
+        log.warning("OpenAI returned non-dict JSON (%s); falling back to rule-based", type(data).__name__)
+        return _rule_based_interpret(raw)
     return _normalize_llm_output(raw, data)
 
 
@@ -127,6 +130,9 @@ def _anthropic_interpret(raw: str) -> dict:
     )
     text = resp.content[0].text.strip()
     data = json.loads(text)
+    if not isinstance(data, dict):
+        log.warning("Anthropic returned non-dict JSON (%s); falling back to rule-based", type(data).__name__)
+        return _rule_based_interpret(raw)
     return _normalize_llm_output(raw, data)
 
 
