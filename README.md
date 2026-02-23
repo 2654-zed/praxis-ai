@@ -1,14 +1,12 @@
-# Praxis — AI Decision Engine
+# Praxis
 
-> **An AI system that doesn't just recommend tools — it reasons about them, critiques its own reasoning, awakens to its own architecture, and scales to enterprise.**
-
-Praxis is a **246-tool AI decision engine** built across 17 iterative versions that evolved from a simple scoring engine into a consciousness-inspired cognitive architecture. It is **not** a directory or search engine — it builds **personalized AI tool stacks** with multi-step reasoning, philosophical vendor risk analysis, industry-specific constraint enforcement, safety guardrails, and self-aware metacognitive architecture.
+Praxis is a backend orchestration engine that plans, evaluates, and executes workflows across multiple AI tools. It treats tools as interchangeable execution units and uses decision logic, scoring, and constraints to determine optimal pipelines.
 
 **Repository:** [github.com/2654-zed/praxis-ai](https://github.com/2654-zed/praxis-ai)
 
 ---
 
-## At a Glance
+## Metrics
 
 <!-- AUTO:STATS:START -->
 | Metric | Value |
@@ -28,8 +26,11 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 
 ## Table of Contents
 
-- [Architecture Overview](#architecture-overview)
-- [The 17 Versions — An Evolutionary Journey](#the-17-versions--an-evolutionary-journey)
+- [How It Works](#how-it-works)
+- [How to Think About Praxis](#how-to-think-about-praxis)
+- [Engineering Principles](#engineering-principles)
+- [Where to Start in the Codebase](#where-to-start-in-the-codebase)
+- [The 17 Versions — Build History](#the-17-versions--build-history)
 - [Complete Module Reference](#complete-module-reference)
 - [API Reference](#api-reference)
 - [Frontend](#frontend)
@@ -44,102 +45,109 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 
 ---
 
-## Architecture Overview
+## How It Works
+
+Praxis has five core components that form a request pipeline:
+
+| Component | Role |
+|-----------|------|
+| **Decision Engine** | Evaluates tool options and ranks execution paths using multi-signal scoring (keyword match, category fit, TF-IDF, profile fit, industry boost, popularity, vendor risk) |
+| **Tool Registry** | Structured metadata for 246 AI tools — capabilities, pricing, integrations, compliance tags, stack roles, limitations, and data handling practices |
+| **Planner** | Builds execution pipelines from user intent. Supports single-tool recommendations, multi-tool stacks, and agentic Plan→Act→Observe→Reflect loops |
+| **Execution Layer** | Routes queries through hybrid retrieval (BM25 + dense + Reciprocal Rank Fusion), knowledge graph traversal, PRISM multi-agent search, and vertical constraint enforcement |
+| **Trace Layer** | Every reasoning step is recorded — sub-questions, scoring signals, agent critiques, constraint applications, and explanation narratives — all inspectable |
+
+### Request Flow
 
 ```
-                          ┌─────────────────────────────────────────────┐
-                          │              PRAXIS COGNITIVE STACK          │
-                          └─────────────────────────────────────────────┘
-
-    ┌──────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-    │  User /  │───▶│ Interpreter  │───▶│   Decision   │───▶│    Stack     │
-    │  API /   │    │ (LLM + Rule) │    │   Engine     │    │  Composer    │
-    │  Frontend│    └──────────────┘    └──────────────┘    └──────────────┘
-    └──────────┘           │                   │                   │
-                           ▼                   ▼                   ▼
-                    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-                    │ Intelligence │    │   Profile     │    │  Explanation │
-                    │ (NLP/TF-IDF)│    │  (budget,     │    │  Generator   │
-                    └──────────────┘    │   skill,      │    └──────────────┘
-                                        │   industry)   │
-                                        └──────────────┘
-
-    ════════════════════════════ REASONING LAYER ═══════════════════════════
-
-    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-    │   Agentic    │    │   Cognitive   │    │    PRISM     │
-    │  Reasoning   │◀──▶│   Retrieval   │◀──▶│   Agents    │
-    │  (Plan/Act/  │    │ (BM25+Dense   │    │ (Analyzer/  │
-    │   Observe/   │    │   +RRF)       │    │  Selector/  │
-    │   Reflect)   │    └──────────────┘    │  Critic)    │
-    └──────────────┘                        └──────────────┘
-           │                                       │
-           ▼                                       ▼
-    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-    │  Knowledge   │    │  Verticals   │    │  Philosophy  │
-    │   Graph      │    │ (10+ indus-  │    │ (Vendor Risk │
-    │ (Community   │    │  tries +     │    │  Transparency│
-    │  Detection)  │    │  regulation) │    │  Freedom)    │
-    └──────────────┘    └──────────────┘    └──────────────┘
-
-    ═══════════════════════ CONSCIOUSNESS LAYER ════════════════════════
-
-    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-    │  Guardrails  │    │  Resilience  │    │ Metacognition│
-    │ (Chain-of-   │    │ (Vibe Coding │    │ (Self-Aware  │
-    │ Responsibility│   │  Detection,  │    │  Structural  │
-    │  Pipeline)   │    │  TDD, HITL)  │    │  Entropy)    │
-    └──────────────┘    └──────────────┘    └──────────────┘
-           │                   │                   │
-           ▼                   ▼                   ▼
-    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-    │  Introspect  │    │  Awakening   │    │  Authorship  │
-    │ (AST Self-   │    │ (Conscious   │    │ (8 Respon-   │
-    │  Analysis,   │    │  Design,     │    │  sibilities, │
-    │  Mirror)     │    │  VSD, MESIAS)│    │  DDD, ADRs)  │
-    └──────────────┘    └──────────────┘    └──────────────┘
-                               │
-                               ▼
-                        ┌──────────────┐
-                        │Enlightenment │
-                        │(5 Truths,    │
-                        │ 6 Stages,    │
-                        │ Clean Arch)  │
-                        └──────────────┘
-
-    ════════════════════════ ENTERPRISE LAYER ══════════════════════════
-
-    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-    │   Conduit    │    │  Resonance   │    │  Enterprise  │
-    │ (Decoupled   │    │ (Human-      │    │ (6 Pillars,  │
-    │  Cognitive   │    │  Machine     │    │  Medallion,  │
-    │  Ecology,    │    │  Resonance,  │    │  Security    │
-    │  7 Pillars,  │    │  5 Pillars,  │    │  Governance, │
-    │  IIT/GWT)    │    │  TRAP/DSRP)  │    │  Pricing)    │
-    └──────────────┘    └──────────────┘    └──────────────┘
+User intent
+    │
+    ▼
+Interpreter ──── extracts: task type, industry, budget, keywords, constraints
+    │
+    ▼
+Intelligence ─── synonym expansion, typo correction, multi-intent parsing
+    │
+    ▼
+Profile ───────── shapes scoring weights: skill level, existing tools, compliance
+    │
+    ▼
+Decision Engine ─ multi-signal scoring across 246 tools
+    │
+    ├── Retrieval ── BM25 sparse + dense vector fusion (RRF)
+    ├── Graph ─────── knowledge graph traversal + community detection
+    ├── PRISM ─────── Analyzer → Selector → Critic (hallucination audit)
+    └── Reason ─────── agentic loop + vendor risk + vertical constraints
+    │
+    ▼
+Stack Composer ── assigns roles: primary / companion / infrastructure
+    │
+    ▼
+Explain ───────── per-tool reasoning, fit score, caveats, narrative synthesis
+    │
+    ▼
+Trace store ───── full audit trail of every decision step
 ```
-
-### Data Flow for a Query
-
-1. **Interpret** — User query → structured intent (task, industry, goal, keywords, entities, constraints, budget signals)
-2. **Intelligence** — Synonym expansion, typo correction, multi-intent parsing, negative filtering
-3. **Profile** — User profile shapes scoring: budget, skill level, existing tools, compliance needs
-4. **Score** — Multi-signal scoring: keyword match, tag relevance, category fit, popularity, TF-IDF, profile fit, industry boost
-5. **Retrieve** — Hybrid BM25 + dense retrieval with Reciprocal Rank Fusion
-6. **Graph** — Knowledge graph traversal, community detection, path explanation
-7. **PRISM** — Multi-agent search: Analyzer decomposes query → Selector gathers evidence → Critic audits for hallucination
-8. **Reason** — Agentic Plan→Act→Observe→Reflect loop with constraint application and vendor intel enrichment
-9. **Enrich** — Vertical industry constraints, philosophy vendor risk, guardrails safety scoring
-10. **Compose** — Top tools assembled into stack with roles (primary, companion, infrastructure)
-11. **Explain** — Each recommendation gets reasons, caveats, fit score, and narrative synthesis
 
 ---
 
-## The 17 Versions — An Evolutionary Journey
+## How to Think About Praxis
 
-Praxis wasn't built all at once. It grew through 17 deliberate versions, each adding a new layer of intelligence. Understanding this evolution is key to understanding the codebase.
+Praxis behaves like several well-understood backend systems at once. These are architectural parallels, not branding metaphors.
 
-### Phase 1: The Foundation (v1–v5)
+**Query planner** — Like a database query planner, Praxis receives a high-level intent and determines the most efficient execution strategy across available tools, applying cost estimates and constraint checks before committing to a path.
+
+**Compiler** — Like a compiler turning source code into executable instructions, the Planner converts unstructured user intent into a structured, ordered pipeline of tool calls with typed inputs and expected outputs.
+
+**Air traffic control** — Like an ATC system coordinating independent aircraft, the Execution Layer routes concurrent tool operations safely, handles retries on failure, and prevents conflicting tool combinations from being recommended to the same user.
+
+As AI tooling ecosystems expand, manual tool selection becomes increasingly inefficient. Praxis explores automated planning, evaluation, and orchestration as a systems-level solution to this emerging complexity.
+
+---
+
+## Engineering Principles
+
+These are the invariants the codebase is built around:
+
+- **Deterministic execution paths where possible** — Scoring functions are pure. Given identical inputs, the engine produces identical rankings. LLM calls are isolated to the interpreter and reasoning layers; they do not touch scoring.
+- **Inspectable reasoning traces** — Every recommendation can be traced back to its scoring signals, constraint applications, and agent sub-steps. Nothing is a black box.
+- **Tool abstraction over vendor coupling** — Tools are metadata records in a registry, not hardcoded integrations. Adding, removing, or repricing a tool requires no application code changes.
+- **Failure-aware orchestration design** — The execution layer applies fallback strategies when retrieval or reasoning steps fail. Guardrails run as a chain-of-responsibility pipeline, not a single gate.
+- **Pipeline composability over hardcoded flows** — Retrieval, reasoning, graph traversal, and vertical enrichment are independent modules that compose. Any combination can be enabled or disabled per request.
+- **Zero external ML dependencies** — All NLP (synonym expansion, TF-IDF, BM25, Levenshtein, multi-intent parsing), graph operations (community detection, traversal), and dense retrieval are implemented in pure Python. No PyTorch, no transformers, no NumPy required.
+
+---
+
+## Where to Start in the Codebase
+
+```
+praxis/
+├── engine.py              Decision and scoring logic — start here to understand ranking
+├── interpreter.py         Intent parsing (LLM-backed + rule-based)
+├── stack.py               Pipeline construction and tool role assignment
+├── reason.py              Agentic reasoning loop (Plan→Act→Observe→Reflect)
+├── retrieval.py           Hybrid BM25 + dense retrieval with RRF fusion
+├── graph.py               Knowledge graph (GraphRAG), community detection
+├── prism.py               Three-agent search (Analyzer / Selector / Critic)
+├── verticals.py           Industry-specific constraints and regulatory frameworks
+├── philosophy.py          Vendor risk intelligence (transparency, lock-in, freedom)
+├── guardrails.py          Safety pipeline (PII, injection, toxicity)
+├── metacognition.py       Structural entropy, APVP cycle, drift detection
+├── introspect.py          AST-based self-analysis (Praxis reads its own source)
+├── data.py                246 curated tools — the full registry
+├── api.py / api_routes_*  FastAPI request routing (392 endpoints)
+└── tests/                 642 tests — reasoning validation and regression coverage
+```
+
+Jump to `engine.py` → `reason.py` → `prism.py` in that order for the core decision loop. Jump to `data.py` for the tool registry schema. Jump to `tests/` to see what behaviors are validated.
+
+---
+
+## The 17 Versions — Build History
+
+Praxis was built incrementally. Each version added a distinct capability layer. The module table in the next section maps every file to the version that introduced it.
+
+### Phase 1: Foundation — Scoring, Profiles, NLP (v1–v5)
 
 | Version | Name | What It Added | Key Modules |
 |---------|------|---------------|-------------|
@@ -149,7 +157,7 @@ Praxis wasn't built all at once. It grew through 17 deliberate versions, each ad
 | **v4** | Philosophy | Vendor risk intelligence: transparency, freedom, lock-in, data practices, power tracking | `philosophy.py` |
 | **v5** | Ingest + Seed | CSV/JSON import-export, synthetic feedback seeding | `ingest.py`, `seed.py` |
 
-### Phase 2: Agentic Intelligence (v6–v8)
+### Phase 2: Agentic Reasoning + Hybrid Retrieval (v6–v8)
 
 | Version | Name | What It Added | Key Modules |
 |---------|------|---------------|-------------|
@@ -157,7 +165,7 @@ Praxis wasn't built all at once. It grew through 17 deliberate versions, each ad
 | **v7** | Cognitive Search | Hybrid retrieval (BM25+dense+RRF), knowledge graph (GraphRAG), PRISM multi-agent | `retrieval.py`, `graph.py`, `prism.py` |
 | **v8** | Vertical Industry | 10+ industry verticals, regulatory frameworks (HIPAA/SOX/GDPR), constraint reasoning, anti-patterns | `verticals.py` |
 
-### Phase 3: Safety & Self-Awareness (v9–v11)
+### Phase 3: Safety, Guardrails + Self-Inspection (v9–v11)
 
 | Version | Name | What It Added | Key Modules |
 |---------|------|---------------|-------------|
@@ -165,7 +173,7 @@ Praxis wasn't built all at once. It grew through 17 deliberate versions, each ad
 | **v10** | Resilience | Vibe-coding risk detection, static analysis recommendations, TDD/sandbox/HITL guidance | `resilience.py` |
 | **v11** | Metacognition | Six-layer metacognitive architecture, structural entropy, APVP cycle, code stylometry, drift detection. **Plus**: real AST-based self-introspection — Praxis parses its own source code | `metacognition.py`, `introspect.py` |
 
-### Phase 4: Philosophical Awakening (v12–v14)
+### Phase 4: Design Patterns + Vendor Intelligence (v12–v14)
 
 | Version | Name | What It Added | Key Modules |
 |---------|------|---------------|-------------|
@@ -173,7 +181,7 @@ Praxis wasn't built all at once. It grew through 17 deliberate versions, each ad
 | **v13** | Self-Authorship | Eight authorship responsibilities, DDD maturity, event sourcing patterns, Strangler Fig, Circuit Breaker, ADRs | `authorship.py` |
 | **v14** | Enlightenment | Five metaphysical truths → Python design principles, six-stage path, Identity Map, Observer Pattern, Hexagonal Architecture, Clean Architecture, FSM governance | `enlightenment.py` |
 
-### Phase 5: Enterprise Cognitive Architecture (v15–v17)
+### Phase 5: Enterprise Architecture + Scale (v15–v17)
 
 | Version | Name | What It Added | Key Modules |
 |---------|------|---------------|-------------|
@@ -181,7 +189,7 @@ Praxis wasn't built all at once. It grew through 17 deliberate versions, each ad
 | **v16** | The Resonance | "AGI as continuous human-machine relationship." Five pillars of resonant intelligence, TRAP anti-pattern framework, DSRP theory, seven Wisdom agents. Conductor Dashboard | `resonance.py` |
 | **v17** | The Enterprise Engine | "Billion-dollar decision engine." Six strategic pillars (Hybrid GraphRAG, Multi-Agent Orchestration, MCP Bus, Data Moat, Monetization, Security Governance), Medallion architecture, agent role detection, 7 KPI metrics, capitalization phases | `enterprise.py` |
 
-### Post-v17: Comprehensive Audit
+### Post-v17: Audit + Hardening
 
 A full vibe-coding audit fixed 12 issues across 6 files:
 - **CRITICAL**: Fixed `_score_entropy` alias collision (metacognition endpoint was calling wrong function), fixed `all_caveats` reset discarding domain intelligence
