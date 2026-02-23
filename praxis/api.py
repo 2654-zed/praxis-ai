@@ -1412,9 +1412,18 @@ def create_app():
         from starlette.middleware.base import BaseHTTPMiddleware
         from starlette.responses import JSONResponse as _JSONResponse
 
+        _TRUSTED_PROXY_IPS = {"127.0.0.1", "::1"}
+
         class RateLimitMiddleware(BaseHTTPMiddleware):
             async def dispatch(self, request, call_next):
-                ip = request.client.host if request.client else "unknown"
+                # Respect X-Forwarded-For from local/trusted proxies (load balancers, Cloudflare, AWS ALB).
+                # Only trust the header when the direct peer is a known proxy to prevent IP spoofing.
+                _direct = request.client.host if request.client else "unknown"
+                _xff = request.headers.get("x-forwarded-for", "")
+                if _direct in _TRUSTED_PROXY_IPS and _xff:
+                    ip = _xff.split(",")[0].strip() or _direct
+                else:
+                    ip = _direct
                 now = _time.time()
                 cutoff = now - 60
                 bucket = _rate_buckets.setdefault(ip, _deque())
