@@ -21,7 +21,7 @@ Praxis is a **246-tool AI decision engine** built across 17 iterative versions t
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~51,900 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-22 04:09 UTC |
+| **Last auto-update** | 2026-02-23 01:30 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -921,6 +921,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+2d705c2 Add GitHub Actions workflow for Jekyll deployment
+e54bf60 docs(auto): update README stats [skip ci]
 234af8a Update modules and add new API routes, persistence facade, and tests
 931ba7e docs(auto): update README stats [skip ci]
 c5f2190 v23: public API surface, metric translator, stack advisor UX
@@ -939,8 +941,6 @@ b4b3c36 docs(auto): update README stats [skip ci]
 52655d6 Praxis v18  Enterprise-Grade Solidification
 46e7f5e docs(auto): update README stats [skip ci]
 f0b1db7 ci: auto-update README stats on every push via GitHub Actions
-a422d95 docs: comprehensive README  full context transfer document for 17-version cognitive architecture
-f9cf543 audit: fix 12 vibe-coding issues across 6 files
 ```
 <!-- AUTO:GIT:END -->
 
