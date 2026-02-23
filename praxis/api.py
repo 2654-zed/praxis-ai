@@ -1355,6 +1355,8 @@ def create_app():
     if not FASTAPI_AVAILABLE:
         raise RuntimeError("FastAPI or Pydantic not installed. Install 'fastapi' to run the API.")
 
+    import os as _os
+
     app = FastAPI(
         title="Praxis — AI Decision Engine API",
         description="Recommend AI tool stacks based on intent, profile, and feedback.",
@@ -1362,18 +1364,35 @@ def create_app():
     )
     _install_openapi_text_sanitizer(app)
 
+    # Fail closed for production-like environments.
+    _runtime_env = _os.environ.get("PRAXIS_ENV", _os.environ.get("ENV", "development")).lower()
+    _auth_mode = _os.environ.get("PRAXIS_AUTH_MODE", "none").lower()
+    if _runtime_env in {"prod", "production", "staging"} and _auth_mode == "none":
+        raise RuntimeError(
+            "Unsafe auth configuration: PRAXIS_AUTH_MODE=none is forbidden in "
+            f"{_runtime_env!r}. Set PRAXIS_AUTH_MODE=api_key or oauth2."
+        )
+
     # ── v18  Auth: enforce authentication on every route ─────────────
     # The bank vault door is now attached to the building.
     # In PRAXIS_AUTH_MODE=none (default/dev), the dependency still runs
     # but always returns an anonymous "user"-role principal — no breakage.
     # In api_key or oauth2 mode it raises HTTP 401 on missing/invalid creds.
+    from fastapi import HTTPException as _HTTPException
+    _admin_guard_deps = []
     if _get_current_user is not None:
         from fastapi import Depends as _Depends
         app.router.dependencies.append(_Depends(_get_current_user))
 
+        async def _require_admin(user=_Depends(_get_current_user)):
+            if not user.has_role("admin"):
+                raise _HTTPException(status_code=403, detail="Admin role required")
+            return user
+
+        _admin_guard_deps = [_Depends(_require_admin)]
+
     # Imports shared by async execution routes below
     import asyncio as _asyncio_mod
-    from fastapi import HTTPException as _HTTPException
 
     # CORS
     try:
@@ -3230,12 +3249,12 @@ def create_app():
             """Get reviews for a template."""
             return {"reviews": _get_reviews(template_id)}
 
-        @app.post("/v19/marketplace/{template_id}/feature")
+        @app.post("/v19/marketplace/{template_id}/feature", dependencies=_admin_guard_deps)
         def marketplace_feature_ep(template_id: str):
             """Mark a template as featured (admin)."""
             return _feature_template(template_id)
 
-        @app.delete("/v19/marketplace/{template_id}")
+        @app.delete("/v19/marketplace/{template_id}", dependencies=_admin_guard_deps)
         def marketplace_unpublish_ep(template_id: str):
             """Unpublish a template."""
             return _unpublish_template(template_id)
@@ -3277,17 +3296,17 @@ def create_app():
                 return {"error": "Submission not found"}
             return s
 
-        @app.post("/v19/contributions/{submission_id}/approve")
+        @app.post("/v19/contributions/{submission_id}/approve", dependencies=_admin_guard_deps)
         def contributions_approve_ep(submission_id: str, req: SubmissionActionRequest):
             """Approve a submission (admin)."""
             return _approve_submission(submission_id, reviewer_notes=req.notes)
 
-        @app.post("/v19/contributions/{submission_id}/reject")
+        @app.post("/v19/contributions/{submission_id}/reject", dependencies=_admin_guard_deps)
         def contributions_reject_ep(submission_id: str, req: SubmissionActionRequest):
             """Reject a submission with reason."""
             return _reject_submission(submission_id, reason=req.notes)
 
-        @app.post("/v19/contributions/{submission_id}/request-changes")
+        @app.post("/v19/contributions/{submission_id}/request-changes", dependencies=_admin_guard_deps)
         def contributions_changes_ep(submission_id: str, req: SubmissionActionRequest):
             """Request changes on a submission."""
             return _request_changes(submission_id, req.notes)
@@ -3427,7 +3446,7 @@ def create_app():
             """Query audit log."""
             return {"entries": _get_audit_log(team=team, action=action, limit=limit)}
 
-        @app.post("/v19/governance/policies")
+        @app.post("/v19/governance/policies", dependencies=_admin_guard_deps)
         def governance_create_policy_ep(req: PolicyCreateRequest):
             """Create an organisational policy."""
             return _create_policy(
@@ -3476,7 +3495,7 @@ def create_app():
             """Comprehensive SQLite database diagnostic."""
             return _db_diagnose()
 
-        @app.post("/v20/persistence/upgrade-wal")
+        @app.post("/v20/persistence/upgrade-wal", dependencies=_admin_guard_deps)
         def persistence_upgrade_wal_ep():
             """Upgrade database to WAL journal mode."""
             return _upgrade_to_wal()
@@ -3632,7 +3651,7 @@ def create_app():
 
         _MAX_REGISTERED_AGENTS = 100
 
-        @app.post("/v21/cognitive/agent")
+        @app.post("/v21/cognitive/agent", dependencies=_admin_guard_deps)
         def cognitive_register_agent_ep(body: dict):
             """Register a new agent in the Global Workspace."""
             ws = _get_cognitive_workspace()
@@ -3645,7 +3664,7 @@ def create_app():
             ws.register_agent(body.get("agent_id", "anon"), body.get("role", "general"))
             return {"status": "registered", "agent_id": body.get("agent_id")}
 
-        @app.delete("/v21/cognitive/agent/{agent_id}")
+        @app.delete("/v21/cognitive/agent/{agent_id}", dependencies=_admin_guard_deps)
         def cognitive_unregister_agent_ep(agent_id: str):
             """Remove an agent from the workspace."""
             ws = _get_cognitive_workspace()
@@ -3659,7 +3678,7 @@ def create_app():
             ws.heartbeat(body.get("agent_id", ""))
             return {"status": "ok"}
 
-        @app.post("/v21/cognitive/broadcast")
+        @app.post("/v21/cognitive/broadcast", dependencies=_admin_guard_deps)
         def cognitive_broadcast_ep(body: dict):
             """Submit a broadcast event to the workspace."""
             ws = _get_cognitive_workspace()
@@ -4021,7 +4040,7 @@ def create_app():
                 return _v22_memory_system.status()
             return {"error": "Memory system not initialized"}
 
-        @app.post("/v22/coala/memory/store")
+        @app.post("/v22/coala/memory/store", dependencies=_admin_guard_deps)
         def v22_coala_memory_store_ep(body: dict):
             """Store an entry in a memory module."""
             if not _v22_memory_system:

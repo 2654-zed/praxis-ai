@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import threading
 import time
 import uuid
 from dataclasses import dataclass, field, asdict
@@ -77,16 +78,19 @@ class AgentSession:
     agent_name: str = "unknown"
     framework: str = "custom"              # langchain | autogen | crewai | openai | anthropic | custom
     created_at: float = field(default_factory=time.time)
+    last_touched: float = field(default_factory=time.time)
     queries: List[Dict[str, Any]] = field(default_factory=list)
     context: Dict[str, Any] = field(default_factory=dict)
 
     def record_query(self, query: str, result: Dict[str, Any]) -> None:
+        now = time.time()
         self.queries.append({
             "query": query,
             "result_summary": result.get("summary", ""),
             "tools_found": len(result.get("tools", result.get("results", []))),
-            "timestamp": time.time(),
+            "timestamp": now,
         })
+        self.last_touched = now
 
     def get_history(self) -> List[Dict[str, Any]]:
         return self.queries
@@ -97,6 +101,7 @@ class AgentSession:
             "agent_name": self.agent_name,
             "framework": self.framework,
             "created_at": self.created_at,
+            "last_touched": self.last_touched,
             "query_count": len(self.queries),
             "context": self.context,
         }
@@ -104,6 +109,29 @@ class AgentSession:
 
 # Active sessions (process-local)
 _sessions: Dict[str, AgentSession] = {}
+_session_lock = threading.Lock()
+_SESSION_TTL_SECONDS = 60 * 60          # 1 hour inactivity TTL
+_MAX_ACTIVE_SESSIONS = 1000
+
+
+def _prune_sessions(now: Optional[float] = None) -> None:
+    ts = now if now is not None else time.time()
+
+    # Remove stale sessions first.
+    expired = [
+        sid
+        for sid, session in _sessions.items()
+        if (ts - session.last_touched) > _SESSION_TTL_SECONDS
+    ]
+    for sid in expired:
+        _sessions.pop(sid, None)
+
+    # Enforce hard cap by evicting least-recently-touched sessions.
+    overflow = len(_sessions) - _MAX_ACTIVE_SESSIONS
+    if overflow > 0:
+        victim_ids = sorted(_sessions, key=lambda sid: _sessions[sid].last_touched)[:overflow]
+        for sid in victim_ids:
+            _sessions.pop(sid, None)
 
 
 def create_session(
@@ -112,25 +140,34 @@ def create_session(
     context: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Create a new agent session."""
+    now = time.time()
     session = AgentSession(
         agent_name=agent_name,
         framework=framework,
         context=context or {},
+        last_touched=now,
     )
-    _sessions[session.session_id] = session
+    with _session_lock:
+        _prune_sessions(now)
+        _sessions[session.session_id] = session
     log.info("Agent session created: %s (%s / %s)", session.session_id, agent_name, framework)
     return session.to_dict()
 
 
 def get_session(session_id: str) -> Optional[Dict[str, Any]]:
     """Retrieve session info."""
-    session = _sessions.get(session_id)
+    with _session_lock:
+        _prune_sessions()
+        session = _sessions.get(session_id)
+        if session:
+            session.last_touched = time.time()
     return session.to_dict() if session else None
 
 
 def end_session(session_id: str) -> bool:
     """End and clean up a session."""
-    return _sessions.pop(session_id, None) is not None
+    with _session_lock:
+        return _sessions.pop(session_id, None) is not None
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -242,9 +279,11 @@ def sdk_discover(
 
     # Record in session if available
     if session_id:
-        session = _sessions.get(session_id)
-        if session:
-            session.record_query(capability, response)
+        with _session_lock:
+            _prune_sessions()
+            session = _sessions.get(session_id)
+            if session:
+                session.record_query(capability, response)
 
     return response
 
@@ -273,9 +312,11 @@ def sdk_plan(
     }
 
     if session_id:
-        session = _sessions.get(session_id)
-        if session:
-            session.record_query(f"plan: {query}", response)
+        with _session_lock:
+            _prune_sessions()
+            session = _sessions.get(session_id)
+            if session:
+                session.record_query(f"plan: {query}", response)
 
     return response
 
@@ -300,9 +341,11 @@ async def sdk_execute(
     response = result.to_dict()
 
     if session_id:
-        session = _sessions.get(session_id)
-        if session:
-            session.record_query(f"execute: {plan.name}", response)
+        with _session_lock:
+            _prune_sessions()
+            session = _sessions.get(session_id)
+            if session:
+                session.record_query(f"execute: {plan.name}", response)
 
     return response
 
