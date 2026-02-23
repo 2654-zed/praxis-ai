@@ -1362,6 +1362,15 @@ def create_app():
     )
     _install_openapi_text_sanitizer(app)
 
+    # ── v18  Auth: enforce authentication on every route ─────────────
+    # The bank vault door is now attached to the building.
+    # In PRAXIS_AUTH_MODE=none (default/dev), the dependency still runs
+    # but always returns an anonymous "user"-role principal — no breakage.
+    # In api_key or oauth2 mode it raises HTTP 401 on missing/invalid creds.
+    if _get_current_user is not None:
+        from fastapi import Depends as _Depends
+        app.router.dependencies.append(_Depends(_get_current_user))
+
     # CORS
     try:
         from fastapi.middleware.cors import CORSMiddleware
