@@ -3485,12 +3485,12 @@ def create_app():
     # ── Persistence layer diagnostics ────────────────────────────────
     if _pool_stats is not None:
 
-        @app.get("/v20/persistence/stats")
+        @app.get("/v20/persistence/stats", dependencies=_admin_guard_deps)
         def persistence_stats_ep():
             """Connection pool and write queue health metrics."""
             return _pool_stats()
 
-        @app.get("/v20/persistence/diagnose")
+        @app.get("/v20/persistence/diagnose", dependencies=_admin_guard_deps)
         def persistence_diagnose_ep():
             """Comprehensive SQLite database diagnostic."""
             return _db_diagnose()
@@ -3513,7 +3513,7 @@ def create_app():
             report = _safe_parse(req.source, filename=req.filename)
             return report.to_dict()
 
-        @app.get("/v20/security/self-scan")
+        @app.get("/v20/security/self-scan", dependencies=_admin_guard_deps)
         def ast_self_scan_ep():
             """Scan the entire Praxis codebase for AST vulnerabilities."""
             return _scan_praxis_source()
@@ -3534,34 +3534,34 @@ def create_app():
     # ── Architecture governance ──────────────────────────────────────
     if _architecture_report is not None:
 
-        @app.get("/v20/architecture/report")
+        @app.get("/v20/architecture/report", dependencies=_admin_guard_deps)
         def architecture_report_ep():
             """Full architectural fitness report — layer violations, cycles, metrics."""
             return _architecture_report()
 
-        @app.get("/v20/architecture/violations")
+        @app.get("/v20/architecture/violations", dependencies=_admin_guard_deps)
         def architecture_violations_ep():
             """Check for forbidden cross-layer import violations."""
             violations = _check_layer_violations()
             return {"violations": [v.to_dict() for v in violations], "count": len(violations)}
 
-        @app.get("/v20/architecture/dependencies")
+        @app.get("/v20/architecture/dependencies", dependencies=_admin_guard_deps)
         def architecture_deps_ep():
             """Full internal dependency graph."""
             return _dependency_graph()
 
-        @app.get("/v20/architecture/cycles")
+        @app.get("/v20/architecture/cycles", dependencies=_admin_guard_deps)
         def architecture_cycles_ep():
             """Detect circular import chains."""
             cycles = _detect_cycles()
             return {"cycles": cycles, "count": len(cycles)}
 
-        @app.get("/v20/architecture/metrics")
+        @app.get("/v20/architecture/metrics", dependencies=_admin_guard_deps)
         def architecture_metrics_ep():
             """Per-module metrics — lines, fan-in, fan-out, instability."""
             return {"modules": _module_metrics()}
 
-        @app.get("/v20/architecture/entrypoints")
+        @app.get("/v20/architecture/entrypoints", dependencies=_admin_guard_deps)
         def architecture_entrypoints_ep():
             """Check for __name__ == '__main__' hygiene violations."""
             return _check_entrypoint_hygiene()
@@ -3569,12 +3569,12 @@ def create_app():
     # ── Red team / guardrail testing ─────────────────────────────────
     if _red_team_summary is not None:
 
-        @app.get("/v20/redteam/summary")
+        @app.get("/v20/redteam/summary", dependencies=_admin_guard_deps)
         def redteam_summary_ep():
             """Quick red team pass/fail assessment (CI gate)."""
             return _red_team_summary()
 
-        @app.post("/v20/redteam/run")
+        @app.post("/v20/redteam/run", dependencies=_admin_guard_deps)
         def redteam_run_ep():
             """Execute the full red team adversarial suite."""
             result = _run_red_team()
@@ -3583,12 +3583,12 @@ def create_app():
         class GuardrailTestRequest(BaseModel):
             payload: str
 
-        @app.post("/v20/redteam/test-guardrail")
+        @app.post("/v20/redteam/test-guardrail", dependencies=_admin_guard_deps)
         def redteam_test_guardrail_ep(req: GuardrailTestRequest):
             """Test a single adversarial payload against guardrails."""
             return _test_guardrail(req.payload)
 
-        @app.get("/v20/redteam/payloads")
+        @app.get("/v20/redteam/payloads", dependencies=_admin_guard_deps)
         def redteam_payloads_ep():
             """List all built-in adversarial payload categories."""
             payloads = _generate_payloads()
@@ -3603,7 +3603,7 @@ def create_app():
     # ── Stress testing ───────────────────────────────────────────────
     if _classify_routes is not None:
 
-        @app.get("/v20/stress/routes")
+        @app.get("/v20/stress/routes", dependencies=_admin_guard_deps)
         def stress_routes_ep():
             """Classify all routes by async/sync and CPU-bound risk."""
             classifications = _classify_routes(app)
@@ -3613,12 +3613,12 @@ def create_app():
                 "high_risk": sum(1 for c in classifications if c.cpu_bound_risk == "high"),
             }
 
-        @app.get("/v20/stress/schemathesis")
+        @app.get("/v20/stress/schemathesis", dependencies=_admin_guard_deps)
         def stress_schemathesis_ep():
             """Schemathesis property-based fuzzing configuration."""
             return _schemathesis_config()
 
-        @app.get("/v20/stress/report")
+        @app.get("/v20/stress/report", dependencies=_admin_guard_deps)
         def stress_report_ep():
             """Comprehensive stress-test recommendation report."""
             report = _generate_stress_report(app)
