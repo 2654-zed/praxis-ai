@@ -1394,16 +1394,72 @@ def create_app():
     # Imports shared by async execution routes below
     import asyncio as _asyncio_mod
 
-    # CORS
+    # CORS — use an explicit allowlist in production; fall back to * only in dev.
     try:
         from fastapi.middleware.cors import CORSMiddleware
+        _cors_raw = _os.environ.get("PRAXIS_CORS_ORIGINS", "")
+        _cors_origins = [o.strip() for o in _cors_raw.split(",") if o.strip()] if _cors_raw else []
+        if not _cors_origins:
+            if _runtime_env in {"prod", "production", "staging"}:
+                # Deny all cross-origin by default — force explicit config.
+                _cors_origins = []
+                import logging as _cors_log_mod
+                _cors_log_mod.getLogger("praxis.api").warning(
+                    "PRAXIS_CORS_ORIGINS not set in %s — CORS will reject all cross-origin requests. "
+                    "Set PRAXIS_CORS_ORIGINS=https://your-frontend.example.com", _runtime_env,
+                )
+            else:
+                _cors_origins = ["*"]
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],
-            allow_credentials=True,
+            allow_origins=_cors_origins,
+            allow_credentials="*" not in _cors_origins,  # credentials incompatible with wildcard
             allow_methods=["*"],
             allow_headers=["*"],
         )
+    except Exception:
+        pass
+
+    # ── RASP Enforcement Middleware ──────────────────────────────────
+    # Converts runtime_protection from diagnostic-only endpoints into an
+    # enforcing layer that scans every non-GET request body.
+    try:
+        from starlette.middleware.base import BaseHTTPMiddleware as _BaseHTTPMW
+        from starlette.responses import JSONResponse as _RASPResponse
+        from .runtime_protection import scan_input as _rasp_scan, ThreatSeverity as _TSev
+
+        _RASP_MODE = _os.environ.get("PRAXIS_RASP_MODE", "enforce").lower()  # enforce | log | off
+        _RASP_BLOCK_FLOOR = {_TSev.MEDIUM, _TSev.HIGH, _TSev.CRITICAL}
+        _RASP_MAX_SCAN_BYTES = 256 * 1024  # only scan first 256 KB
+
+        class _RASPMiddleware(_BaseHTTPMW):
+            async def dispatch(self, request, call_next):
+                if _RASP_MODE == "off" or request.method in {"GET", "HEAD", "OPTIONS"}:
+                    return await call_next(request)
+                try:
+                    body = await request.body()
+                    text = body[:_RASP_MAX_SCAN_BYTES].decode("utf-8", errors="replace")
+                except Exception:
+                    return await call_next(request)
+                detections = _rasp_scan(text)
+                blocked = [d for d in detections if d.severity in _RASP_BLOCK_FLOOR]
+                if blocked:
+                    if _RASP_MODE == "enforce":
+                        return _RASPResponse(
+                            {"error": "Request blocked by RASP",
+                             "threats": [d.to_dict() for d in blocked]},
+                            status_code=400,
+                        )
+                    else:
+                        import logging as _rasp_log_mod
+                        _rasp_log_mod.getLogger("praxis.rasp").warning(
+                            "RASP (log-only): would block %s %s — %s",
+                            request.method, request.url.path,
+                            [d.category.value for d in blocked],
+                        )
+                return await call_next(request)
+
+        app.add_middleware(_RASPMiddleware)
     except Exception:
         pass
 
@@ -4052,10 +4108,19 @@ def create_app():
             except ValueError:
                 mt = _MemType.WORKING
             _MAX_CONTENT_BYTES = 64 * 1024  # 64 KB per entry
+            _MAX_METADATA_BYTES = 8 * 1024   # 8 KB per metadata dict
+            _MAX_METADATA_KEYS = 64           # cap key count to prevent abuse
             content = body.get("content", "")
             if len(str(content).encode("utf-8", errors="replace")) > _MAX_CONTENT_BYTES:
                 return {"error": f"Content exceeds maximum allowed size ({_MAX_CONTENT_BYTES // 1024} KB)"}
             metadata = body.get("metadata", {})
+            if not isinstance(metadata, dict):
+                return {"error": "metadata must be a JSON object"}
+            if len(metadata) > _MAX_METADATA_KEYS:
+                return {"error": f"metadata exceeds maximum key count ({_MAX_METADATA_KEYS})"}
+            _meta_size = len(json.dumps(metadata, default=str).encode("utf-8", errors="replace"))
+            if _meta_size > _MAX_METADATA_BYTES:
+                return {"error": f"metadata exceeds maximum allowed size ({_MAX_METADATA_BYTES // 1024} KB)"}
             entry = _v22_memory_system.store(mt, content, metadata)
             return {"status": "stored", "memory_type": type_str, "entry_id": entry.entry_id}
 

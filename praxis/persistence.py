@@ -224,9 +224,13 @@ class WriteQueue:
     The queue also supports batch operations via ``submit_many()``.
     """
 
+    _MAX_PENDING = 10_000  # back-pressure cap — reject writes beyond this
+
     def __init__(self, db_path: Path = _DEFAULT_DB):
         self._db_path = db_path
-        self._queue: queue.Queue[Tuple[str, tuple, _WriteResult, bool]] = queue.Queue()
+        self._queue: queue.Queue[Tuple[str, tuple, _WriteResult, bool]] = queue.Queue(
+            maxsize=self._MAX_PENDING
+        )
         self._running = False
         self._thread: Optional[threading.Thread] = None
         self._total_writes = 0
@@ -253,17 +257,39 @@ class WriteQueue:
             self._thread.join(timeout=10)
 
     def submit(self, sql: str, params: tuple = ()) -> _WriteResult:
-        """Enqueue a single write operation.  Returns a future."""
+        """Enqueue a single write operation.  Returns a future.
+
+        Raises ``queue.Full`` if the back-pressure cap is reached.
+        """
         self._ensure_running()
         future = _WriteResult()
-        self._queue.put((sql, params, future, False))
+        try:
+            self._queue.put((sql, params, future, False), timeout=5.0)
+        except queue.Full:
+            future.set_error(
+                RuntimeError(
+                    f"Write queue full ({self._MAX_PENDING} pending). "
+                    "The database writer cannot keep up — back-pressure applied."
+                )
+            )
         return future
 
     def submit_many(self, sql: str, params_list: List[tuple]) -> _WriteResult:
-        """Enqueue a batch write (executemany).  Returns a future."""
+        """Enqueue a batch write (executemany).  Returns a future.
+
+        Raises ``queue.Full`` if the back-pressure cap is reached.
+        """
         self._ensure_running()
         future = _WriteResult()
-        self._queue.put((sql, params_list, future, True))
+        try:
+            self._queue.put((sql, params_list, future, True), timeout=5.0)
+        except queue.Full:
+            future.set_error(
+                RuntimeError(
+                    f"Write queue full ({self._MAX_PENDING} pending). "
+                    "The database writer cannot keep up — back-pressure applied."
+                )
+            )
         return future
 
     def stats(self) -> Dict[str, Any]:

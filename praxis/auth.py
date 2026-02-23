@@ -200,6 +200,22 @@ async def authenticate_request(
         if secret:
             claims = _decode_jwt_hs256(token, secret)
             if claims:
+                # Validate issuer and audience even on the stdlib path.
+                expected_iss = _get_jwt_issuer()
+                expected_aud = _get_jwt_audience()
+                if expected_iss and claims.get("iss") != expected_iss:
+                    log.warning("JWT issuer mismatch: got %r, expected %r", claims.get("iss"), expected_iss)
+                    return None
+                if expected_aud:
+                    _aud = claims.get("aud")
+                    # aud may be a string or a list of strings (RFC 7519 §4.1.3)
+                    if isinstance(_aud, list):
+                        if expected_aud not in _aud:
+                            log.warning("JWT audience mismatch: %r not in %r", expected_aud, _aud)
+                            return None
+                    elif _aud != expected_aud:
+                        log.warning("JWT audience mismatch: got %r, expected %r", _aud, expected_aud)
+                        return None
                 return User(
                     user_id=claims.get("sub", "unknown"),
                     roles=claims.get("roles", ["user"]),

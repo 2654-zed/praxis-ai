@@ -135,6 +135,31 @@ class Contributor:
 #  PERSISTENCE
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# ── Cross-platform file-locking primitive ──────────────────────────
+import tempfile
+import sys as _sys
+
+def _lock_file(fp):
+    """Advisory exclusive lock — Windows (msvcrt) or POSIX (fcntl)."""
+    if _sys.platform == "win32":
+        import msvcrt
+        msvcrt.locking(fp.fileno(), msvcrt.LK_NBLCK, 1)
+    else:
+        import fcntl
+        fcntl.flock(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+def _unlock_file(fp):
+    if _sys.platform == "win32":
+        import msvcrt
+        try:
+            msvcrt.locking(fp.fileno(), msvcrt.LK_UNLCK, 1)
+        except OSError:
+            pass
+    else:
+        import fcntl
+        fcntl.flock(fp, fcntl.LOCK_UN)
+
+
 def _load_json(path: Path) -> Dict[str, Any]:
     if path.exists():
         try:
@@ -145,8 +170,37 @@ def _load_json(path: Path) -> Dict[str, Any]:
 
 
 def _save_json(path: Path, data: Any) -> None:
+    """Atomic-ish write with advisory file lock.
+
+    1. Acquire an exclusive lock via a sidecar ``.lock`` file.
+    2. Write to a temp file in the same directory.
+    3. Rename (atomic on POSIX, near-atomic on Windows NTFS) over the target.
+    4. Release the lock.
+    """
+    lock_path = path.with_suffix(path.suffix + ".lock")
     try:
-        path.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+        lock_path.touch(exist_ok=True)
+        with open(lock_path, "r+b") as lock_fp:
+            try:
+                _lock_file(lock_fp)
+            except (OSError, IOError):
+                log.warning("Could not acquire lock for %s — writing without lock", path)
+            fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
+            try:
+                import os as _os_mod
+                _os_mod.write(fd, json.dumps(data, indent=2, default=str).encode("utf-8"))
+                _os_mod.close(fd)
+                import shutil
+                shutil.move(tmp, str(path))
+            except Exception:
+                try:
+                    import os as _os_mod2
+                    _os_mod2.unlink(tmp)
+                except OSError:
+                    pass
+                raise
+            finally:
+                _unlock_file(lock_fp)
     except OSError as exc:
         log.warning("Failed to save %s: %s", path, exc)
 
