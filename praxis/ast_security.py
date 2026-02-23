@@ -398,21 +398,94 @@ def _check_tainted_variable_indirection(tree: ast.Module, report: ASTSecurityRep
         • ``getattr(obj, tainted_var)``    — second arg is a tainted Name
         • ``obj[tainted_var](...)``        — subscript key is a tainted Name
     """
-    tainted: set = set()
+    tainted_names: set = set()
+    tainted_callables: set = set()
 
-    # Pass 1 — collect tainted variable names
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Assign):
-            resolved = _resolve_constant_str(node.value)
+    def _target_names(target: ast.AST) -> List[str]:
+        if isinstance(target, ast.Name):
+            return [target.id]
+        if isinstance(target, (ast.Tuple, ast.List)):
+            names: List[str] = []
+            for el in target.elts:
+                names.extend(_target_names(el))
+            return names
+        return []
+
+    def _subscript_key_name(expr: ast.Subscript) -> Optional[str]:
+        key = expr.slice
+        if isinstance(key, ast.Index):
+            key = key.value  # type: ignore[attr-defined]
+        if isinstance(key, ast.Name):
+            return key.id
+        return None
+
+    def _is_builtins_ref(expr: ast.AST) -> bool:
+        return isinstance(expr, ast.Name) and expr.id == "__builtins__"
+
+    assigns = [n for n in ast.walk(tree) if isinstance(n, ast.Assign)]
+
+    # Fixed-point propagation across assignment chains:
+    #   x='ev'+'al'; y=x; f=__builtins__[y]; g=f; g(...)
+    changed = True
+    while changed:
+        changed = False
+        for node in assigns:
+            value = node.value
+            targets: List[str] = []
+            for target in node.targets:
+                targets.extend(_target_names(target))
+            if not targets:
+                continue
+
+            # Case 1: direct/concatenated forbidden string literal
+            resolved = _resolve_constant_str(value)
             if resolved is not None and resolved in FORBIDDEN_NAMES:
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        tainted.add(target.id)
+                for name in targets:
+                    if name not in tainted_names:
+                        tainted_names.add(name)
+                        changed = True
 
-    if not tainted:
+            # Case 2: name-alias of tainted forbidden name (y = x)
+            if isinstance(value, ast.Name) and value.id in tainted_names:
+                for name in targets:
+                    if name not in tainted_names:
+                        tainted_names.add(name)
+                        changed = True
+
+            # Case 3: callable alias propagation (g = f)
+            if isinstance(value, ast.Name) and value.id in tainted_callables:
+                for name in targets:
+                    if name not in tainted_callables:
+                        tainted_callables.add(name)
+                        changed = True
+
+            # Case 4: __builtins__[tainted_name] assigned to variable
+            if isinstance(value, ast.Subscript):
+                key_name = _subscript_key_name(value)
+                if key_name in tainted_names and _is_builtins_ref(value.value):
+                    for name in targets:
+                        if name not in tainted_callables:
+                            tainted_callables.add(name)
+                            changed = True
+
+            # Case 5: getattr(__builtins__, tainted_name) assigned to variable
+            if isinstance(value, ast.Call):
+                if (
+                    isinstance(value.func, ast.Name)
+                    and value.func.id == "getattr"
+                    and len(value.args) >= 2
+                ):
+                    second = value.args[1]
+                    if isinstance(second, ast.Name) and second.id in tainted_names:
+                        for name in targets:
+                            if name not in tainted_callables:
+                                tainted_callables.add(name)
+                                changed = True
+
+    if not tainted_names and not tainted_callables:
         return
 
-    # Pass 2 — flag calls that reference tainted names as keys
+    # Pass 2 — flag calls that reference tainted names / callables
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
@@ -421,7 +494,7 @@ def _check_tainted_variable_indirection(tree: ast.Module, report: ASTSecurityRep
         # getattr(obj, tainted_var)
         if isinstance(func, ast.Name) and func.id == "getattr" and len(node.args) >= 2:
             second_arg = node.args[1]
-            if isinstance(second_arg, ast.Name) and second_arg.id in tainted:
+            if isinstance(second_arg, ast.Name) and second_arg.id in tainted_names:
                 report.add(SecurityViolation(
                     severity="critical",
                     category="rce",
@@ -438,7 +511,7 @@ def _check_tainted_variable_indirection(tree: ast.Module, report: ASTSecurityRep
             key = func.slice
             if isinstance(key, ast.Index):        # Python ≤ 3.8 compat
                 key = key.value                    # type: ignore[attr-defined]
-            if isinstance(key, ast.Name) and key.id in tainted:
+            if isinstance(key, ast.Name) and key.id in tainted_names:
                 report.add(SecurityViolation(
                     severity="critical",
                     category="rce",
@@ -449,6 +522,19 @@ def _check_tainted_variable_indirection(tree: ast.Module, report: ASTSecurityRep
                     line=getattr(node, "lineno", None),
                     node_type="Call",
                 ))
+
+        # f(...), where f = __builtins__[tainted_name] or getattr(..., tainted_name)
+        if isinstance(func, ast.Name) and func.id in tainted_callables:
+            report.add(SecurityViolation(
+                severity="critical",
+                category="rce",
+                message=(
+                    f"Variable '{func.id}' is a tainted callable alias of a forbidden builtin "
+                    "— variable-indirection RCE"
+                ),
+                line=getattr(node, "lineno", None),
+                node_type="Call",
+            ))
 
 
 def _resolve_constant_str(node: ast.AST) -> Optional[str]:
