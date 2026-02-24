@@ -1171,16 +1171,17 @@
       } catch (e) { console.warn('chips', e); }
     })();
 
-    /* ── Autocomplete ── */
+    /* ── Autocomplete (Bento Grid Engine) ── */
     queryInput.addEventListener('input', () => {
       clearTimeout(acTimer);
       const q = queryInput.value.trim();
       if (q.length < 2) { closeAC(); return; }
-      acTimer = setTimeout(() => fetchSuggestions(q), 200);
+      acTimer = setTimeout(() => fetchSuggestions(q), 280);
     });
 
     queryInput.addEventListener('keydown', e => {
       const items = acDropdown.querySelectorAll('.ac-item');
+      if (!items.length) return;
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         acIndex = Math.min(acIndex + 1, items.length - 1);
@@ -1189,6 +1190,10 @@
         e.preventDefault();
         acIndex = Math.max(acIndex - 1, -1);
         highlightAC(items);
+      } else if (e.key === 'Tab' && acIndex >= 0 && items[acIndex]) {
+        e.preventDefault();
+        queryInput.value = items[acIndex].dataset.value;
+        closeAC();
       } else if (e.key === 'Enter') {
         if (acIndex >= 0 && items[acIndex]) {
           queryInput.value = items[acIndex].dataset.value;
@@ -1201,75 +1206,172 @@
     });
 
     queryInput.addEventListener('focus', () => {
-      if (acDropdown.children.length > 0) acDropdown.classList.add('open');
+      if (queryInput.value.trim().length >= 2 && acDropdown.children.length > 0) {
+        acDropdown.classList.add('open');
+      } else if (queryInput.value.trim().length < 2) {
+        fetchFocusSuggestions();
+      }
     });
     document.addEventListener('click', e => {
       if (!e.target.closest('.search-input-wrap')) closeAC();
     });
+
+    async function fetchFocusSuggestions() {
+      try {
+        const res = await fetch('/suggest?q=');
+        if (!res.ok) return;
+        const data = await res.json();
+        renderBentoAC(data);
+      } catch (e) { console.warn('focus-suggest', e); }
+    }
 
     async function fetchSuggestions(q) {
       try {
         const res = await fetch('/suggest?q=' + encodeURIComponent(q));
         if (!res.ok) return;
         const data = await res.json();
-        renderAC(data);
+        renderBentoAC(data);
       } catch (e) { console.warn('suggest', e); }
     }
 
-    function renderAC(data) {
+    function renderBentoAC(data) {
       acDropdown.innerHTML = '';
       acIndex = -1;
       let hasContent = false;
 
+      // ── Did-you-mean correction strip ──
       if (data.did_you_mean && data.did_you_mean.length) {
         hasContent = true;
-        acDropdown.innerHTML += '<div class="ac-section">Did you mean</div>';
+        const strip = document.createElement('div');
+        strip.className = 'ac-correction-strip';
+        strip.innerHTML = '<span style="font-size:0.62rem;color:var(--text-dim);margin-right:0.2rem;">Did you mean:</span>';
         data.did_you_mean.forEach(w => {
-          acDropdown.innerHTML += `<div class="ac-item" data-value="${w}" onclick="pickAC(this)">
-            <span class="ac-icon">✦</span><span class="ac-label">${w}</span></div>`;
+          const chip = document.createElement('span');
+          chip.className = 'ac-correction-chip';
+          chip.textContent = w;
+          chip.addEventListener('click', () => { queryInput.value = w; closeAC(); doSearch(); });
+          strip.appendChild(chip);
         });
+        acDropdown.appendChild(strip);
       }
 
-      if (data.tool_matches && data.tool_matches.length) {
+      // ── Intent badge (shown when intent is detected) ──
+      const intentTag = data.intent_detected
+        ? `<span class="intent-badge">${data.intent_detected}</span>` : '';
+
+      // ── Bento Grid container ──
+      const hasPrimary = data.primary_completions && data.primary_completions.length;
+      const hasTools = data.tool_matches && data.tool_matches.length;
+      const hasWorkflows = data.workflow_templates && data.workflow_templates.length;
+
+      if (hasPrimary || hasTools || hasWorkflows) {
         hasContent = true;
-        acDropdown.innerHTML += '<div class="ac-section">Tools</div>';
-        data.tool_matches.slice(0, 5).forEach(t => {
-          acDropdown.innerHTML += `<div class="ac-item" data-value="${t}" onclick="pickAC(this)">
-            <span class="ac-icon">◆</span><span class="ac-label">${t}</span><span class="ac-hint">tool</span></div>`;
-        });
+        const grid = document.createElement('div');
+        grid.className = 'bento-grid';
+
+        // PRIMARY CARD (left, tall)
+        if (hasPrimary) {
+          const card = document.createElement('div');
+          card.className = 'bento-card bento-primary';
+          card.innerHTML = `<div class="bento-card-header">Completions ${intentTag}</div>`;
+          data.primary_completions.forEach(c => {
+            card.innerHTML += `<div class="ac-item" data-value="${escAC(c.text)}" onclick="pickAC(this)">
+              <span class="ac-icon">${c.icon || '✦'}</span>
+              <span class="ac-label">${escAC(c.text)}</span>
+            </div>`;
+          });
+          grid.appendChild(card);
+        }
+
+        // TOOLS CARD (top-right)
+        if (hasTools) {
+          const card = document.createElement('div');
+          card.className = 'bento-card bento-tools';
+          card.innerHTML = '<div class="bento-card-header">Tools</div>';
+          data.tool_matches.slice(0, 5).forEach(t => {
+            const name = typeof t === 'string' ? t : t.name;
+            const desc = (typeof t === 'object' && t.description) ? t.description : '';
+            card.innerHTML += `<div class="ac-item" data-value="${escAC(name)}" onclick="pickAC(this)">
+              <span class="ac-icon">◆</span>
+              <span class="ac-label">${escAC(name)}${desc ? '<div class="ac-desc">' + escAC(desc) + '</div>' : ''}</span>
+              <span class="ac-hint">tool</span>
+            </div>`;
+          });
+          grid.appendChild(card);
+        }
+
+        // WORKFLOWS CARD (bottom-right)
+        if (hasWorkflows) {
+          const card = document.createElement('div');
+          card.className = 'bento-card bento-workflows';
+          card.innerHTML = '<div class="bento-card-header">Workflows</div>';
+          data.workflow_templates.slice(0, 4).forEach(w => {
+            card.innerHTML += `<div class="ac-item" data-value="${escAC(w.title)}" onclick="pickAC(this)">
+              <span class="ac-icon">${w.icon || '⚡'}</span>
+              <span class="ac-label">${escAC(w.title)}<div class="ac-desc">${escAC(w.desc || '')}</div></span>
+            </div>`;
+          });
+          grid.appendChild(card);
+        }
+
+        acDropdown.appendChild(grid);
       }
 
+      // ── Category matches (flat list below grid) ──
       if (data.category_matches && data.category_matches.length) {
         hasContent = true;
-        acDropdown.innerHTML += '<div class="ac-section">Categories</div>';
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'margin-top:0.35rem;';
+        wrap.innerHTML = '<div class="bento-card-header" style="padding:0.3rem 0.2rem 0.15rem;">Categories</div>';
         data.category_matches.slice(0, 4).forEach(c => {
-          acDropdown.innerHTML += `<div class="ac-item" data-value="${c} tools" onclick="pickAC(this)">
-            <span class="ac-icon">▣</span><span class="ac-label">${c}</span><span class="ac-hint">category</span></div>`;
+          wrap.innerHTML += `<div class="ac-item" data-value="${escAC(c)} tools" onclick="pickAC(this)">
+            <span class="ac-icon">▣</span><span class="ac-label">${escAC(c)}</span><span class="ac-hint">category</span>
+          </div>`;
         });
+        acDropdown.appendChild(wrap);
       }
 
-      if (data.popular_queries && data.popular_queries.length) {
+      // ── Trending strip at bottom ──
+      if (data.trending && data.trending.length) {
         hasContent = true;
-        acDropdown.innerHTML += '<div class="ac-section">Trending</div>';
-        data.popular_queries.slice(0, 3).forEach(p => {
-          acDropdown.innerHTML += `<div class="ac-item" data-value="${p}" onclick="pickAC(this)">
-            <span class="ac-icon">↗</span><span class="ac-label">${p}</span></div>`;
+        const strip = document.createElement('div');
+        strip.className = 'ac-trending-strip';
+        data.trending.slice(0, 5).forEach(t => {
+          const text = typeof t === 'string' ? t : t.text;
+          const pill = document.createElement('span');
+          pill.className = 'ac-trending-pill';
+          pill.textContent = text;
+          pill.addEventListener('click', () => { queryInput.value = text; closeAC(); doSearch(); });
+          strip.appendChild(pill);
         });
+        acDropdown.appendChild(strip);
       }
 
       if (hasContent) acDropdown.classList.add('open');
       else closeAC();
     }
 
+    function escAC(s) { return s ? s.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+
     function pickAC(el) {
-      queryInput.value = el.dataset.value;
+      const val = el.dataset.value;
+      queryInput.value = val;
       kineticEl.classList.add('hidden');
       closeAC();
+      // Record click for popularity tracking
+      fetch('/suggest/click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: val }),
+      }).catch(() => {});
       doSearch();
     }
 
     function highlightAC(items) {
       items.forEach((it, i) => it.classList.toggle('active', i === acIndex));
+      if (acIndex >= 0 && items[acIndex]) {
+        items[acIndex].scrollIntoView({ block: 'nearest' });
+      }
     }
 
     function closeAC() {
