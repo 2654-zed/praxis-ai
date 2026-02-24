@@ -11,7 +11,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 88 files, ~45,900 lines |
+| **Python modules** | 88 files, ~46,000 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
 | **API endpoints** | 349 REST routes via FastAPI |
 | **Test coverage** | 645 tests across 13 test files, all passing |
@@ -19,7 +19,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~53,900 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-24 19:05 UTC |
+| **Last auto-update** | 2026-02-24 19:06 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -929,6 +929,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+8d12296 auto: 2026-02-24 13:06:02
+fa6a0fc docs(auto): update README stats [skip ci]
 06d38c4 auto: 2026-02-24 13:05:28
 695bb8e docs(auto): update README stats [skip ci]
 bd81ddb auto: 2026-02-24 12:59:23
@@ -947,8 +949,6 @@ d20b175 auto: 2026-02-23 23:59:35
 8ee6192 docs(auto): update README stats [skip ci]
 45d18b5 auto: 2026-02-23 23:56:33
 8b5b233 docs(auto): update README stats [skip ci]
-dcfba03 auto: 2026-02-23 23:56:00
-700bb3b docs(auto): update README stats [skip ci]
 ```
 <!-- AUTO:GIT:END -->
 
@@ -981,7 +981,7 @@ The codebase tells a story:
 - **246 tools**, zero duplicates, clean tag casing
 - **349 API routes**, all functional
 - **645 tests passing**
-- **88 Python modules**, ~45,900 lines
+- **88 Python modules**, ~46,000 lines
 - **25 frontend files**, ~7,900 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
