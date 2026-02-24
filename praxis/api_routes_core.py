@@ -478,3 +478,107 @@ def register_core_routes(app, deps):
             tools_list=TOOLS,
         )
         return rfp
+
+    # ══════════════════════════════════════════════════════════════════
+    # PHASE 2 — Tiered Directory, Category Pages, Comparison
+    # ══════════════════════════════════════════════════════════════════
+
+    @app.get("/tools/tiered")
+    def tools_tiered():
+        """Return tools grouped by resilience tier with full tool data.
+        Used by the Curated Swimlane view and Homepage Sovereign Showcase."""
+        score_tool_fn, score_all_fn, *_ = _import_verification()
+        reports = score_all_fn(TOOLS)
+        by_name = {t.name: t for t in TOOLS}
+        tiers = {"sovereign": [], "durable": [], "moderate": [], "fragile": [], "wrapper": []}
+        for r in reports:
+            t = by_name.get(r.tool_name)
+            if not t:
+                continue
+            entry = {
+                "name": t.name,
+                "description": t.description,
+                "url": t.url,
+                "categories": t.categories[:5],
+                "tags": t.tags[:5],
+                "pricing": t.pricing,
+                "integrations": t.integrations[:6],
+                "compliance": t.compliance,
+                "skill_level": t.skill_level,
+                "use_cases": t.use_cases[:4],
+                "resilience_score": r.score,
+                "grade": r.grade,
+                "tier": r.tier,
+                "dimensions": r.dimensions,
+                "flags": r.flags[:3],
+                "summary": r.summary,
+            }
+            if r.tier in tiers:
+                tiers[r.tier].append(entry)
+        return {
+            "tiers": tiers,
+            "counts": {k: len(v) for k, v in tiers.items()},
+            "total": len(TOOLS),
+        }
+
+    @app.get("/tools/category/{category}")
+    def tools_by_category(category: str):
+        """Return tools filtered by category, enriched with resilience data."""
+        score_tool_fn = _import_verification()[0]
+        matches = [t for t in TOOLS if category.lower() in [c.lower() for c in t.categories]]
+        results = []
+        for t in matches:
+            r = score_tool_fn(t)
+            results.append({
+                "name": t.name,
+                "description": t.description,
+                "url": t.url,
+                "categories": t.categories[:5],
+                "tags": t.tags[:5],
+                "pricing": t.pricing,
+                "integrations": t.integrations[:6],
+                "compliance": t.compliance,
+                "skill_level": t.skill_level,
+                "use_cases": t.use_cases[:4],
+                "resilience_score": r.score,
+                "grade": r.grade,
+                "tier": r.tier,
+                "flags": r.flags[:3],
+            })
+        results.sort(key=lambda x: x["resilience_score"], reverse=True)
+        return {
+            "category": category,
+            "total": len(results),
+            "tools": results,
+        }
+
+    @app.post("/tools/compare")
+    def tools_compare(body: dict):
+        """Side-by-side comparison of up to 4 tools with full resilience data."""
+        score_tool_fn = _import_verification()[0]
+        names = body.get("tools", [])[:4]
+        by_name = {t.name.lower(): t for t in TOOLS}
+        comparisons = []
+        for name in names:
+            t = by_name.get(name.lower())
+            if not t:
+                continue
+            r = score_tool_fn(t)
+            comparisons.append({
+                "name": t.name,
+                "description": t.description,
+                "url": t.url,
+                "categories": t.categories,
+                "pricing": t.pricing,
+                "integrations": t.integrations,
+                "compliance": t.compliance,
+                "skill_level": t.skill_level,
+                "use_cases": t.use_cases[:6],
+                "resilience_score": r.score,
+                "grade": r.grade,
+                "tier": r.tier,
+                "dimensions": r.dimensions,
+                "flags": r.flags,
+                "summary": r.summary,
+            })
+        return {"tools": comparisons}
