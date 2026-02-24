@@ -161,40 +161,80 @@
   (async function() {
     const el = document.getElementById('tools');
     if (!el) return;
-    el.innerHTML = '<p style="color:rgba(255,255,255,0.4)">Loading tools\u2026</p>';
+    el.innerHTML = '<p style="color:rgba(255,255,255,0.4)">Loading tools &amp; resilience scores\u2026</p>';
     try {
-      let allTools = [];
-      let skip = 0;
-      const limit = 50;
+      /* Fetch paginated tools + resilience in parallel */
+      var allTools = [];
+      var skip = 0;
+      var limit = 50;
       while (true) {
-        const res = await fetch('/tools?skip=' + skip + '&limit=' + limit);
+        var res = await fetch('/tools?skip=' + skip + '&limit=' + limit);
         if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        const items = Array.isArray(data) ? data : (data.items || []);
+        var data = await res.json();
+        var items = Array.isArray(data) ? data : (data.items || []);
         allTools = allTools.concat(items);
         if (items.length < limit) break;
         skip += limit;
       }
+      /* Fetch resilience scores */
+      var resilienceMap = {};
+      try {
+        var rRes = await fetch('/tools/resilience');
+        if (rRes.ok) {
+          var rData = await rRes.json();
+          (rData.tools || []).forEach(function(r) { resilienceMap[r.tool_name] = r; });
+        }
+      } catch(e) { console.warn('resilience fetch failed', e); }
+
       el.innerHTML = '';
       if (!allTools.length) { el.textContent = 'No tools available.'; return; }
+
       allTools.forEach(function(t) {
         var d = document.createElement('div');
         d.className = 'tool';
+
+        /* Resilience badge */
+        var r = resilienceMap[t.name];
+        if (r) {
+          var tierColors = {sovereign:'#50e3c2',durable:'#7c6aef',moderate:'#f5a623',fragile:'#e74c3c',wrapper:'#ff4757'};
+          var badge = document.createElement('div');
+          badge.className = 'resilience-badge';
+          badge.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;';
+          badge.innerHTML = '<span style="display:inline-block;padding:0.15rem 0.5rem;border-radius:4px;font-size:0.65rem;font-weight:700;letter-spacing:0.5px;background:'
+            + (tierColors[r.tier]||'#999') + '20;color:' + (tierColors[r.tier]||'#999') + ';border:1px solid ' + (tierColors[r.tier]||'#999') + '40;">'
+            + r.grade + ' \u00B7 ' + r.tier.toUpperCase()
+            + '</span><span style="font-size:0.65rem;color:rgba(255,255,255,0.35);">Resilience: ' + r.resilience_score + '/100</span>';
+          d.appendChild(badge);
+        }
+
         var h = document.createElement('h3');
         h.textContent = t.name || 'Unnamed';
         d.appendChild(h);
+
         if (t.description) {
           var desc = document.createElement('p');
           desc.className = 'desc';
           desc.textContent = t.description;
           d.appendChild(desc);
         }
+
         var meta = document.createElement('div');
         meta.className = 'meta';
         var cats = (t.categories || []).join(', ');
         var tags = (t.tags || []).slice(0, 5).join(', ');
         meta.textContent = cats + (tags ? ' \u00B7 ' + tags : '');
         d.appendChild(meta);
+
+        /* Flags */
+        if (r && r.flags && r.flags.length) {
+          var flagsDiv = document.createElement('div');
+          flagsDiv.style.cssText = 'margin-top:0.4rem;font-size:0.72rem;color:rgba(255,255,255,0.35);line-height:1.5;';
+          r.flags.forEach(function(f) {
+            flagsDiv.innerHTML += '<div>' + f + '</div>';
+          });
+          d.appendChild(flagsDiv);
+        }
+
         if (t.url) {
           var a = document.createElement('a');
           a.href = t.url;
@@ -206,8 +246,25 @@
         }
         el.appendChild(d);
       });
+
+      /* Update heading */
       var heading = document.querySelector('.content h2');
       if (heading) heading.textContent = 'All Tools (' + allTools.length + ')';
+
+      /* Tier summary bar */
+      try {
+        var summRes = await fetch('/tools/resilience-summary');
+        if (summRes.ok) {
+          var dist = await summRes.json();
+          var bar = document.createElement('div');
+          bar.style.cssText = 'display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;';
+          var tierColors = {sovereign:'#50e3c2',durable:'#7c6aef',moderate:'#f5a623',fragile:'#e74c3c',wrapper:'#ff4757'};
+          Object.keys(dist).forEach(function(tier) {
+            bar.innerHTML += '<span style="padding:0.3rem 0.7rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:' + (tierColors[tier]||'#999') + '18;color:' + (tierColors[tier]||'#999') + ';border:1px solid ' + (tierColors[tier]||'#999') + '30;">' + tier.charAt(0).toUpperCase() + tier.slice(1) + ': ' + dist[tier] + '</span>';
+          });
+          el.parentNode.insertBefore(bar, el);
+        }
+      } catch(e) {}
     } catch (e) {
       console.error('Tools load failed:', e);
       el.innerHTML = '<p style="color:#f66">Failed to load tools: ' + e.message + '</p>';
