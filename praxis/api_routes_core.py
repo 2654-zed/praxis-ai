@@ -387,3 +387,82 @@ def register_core_routes(app, deps):
         """Return current scoring weights for transparency / tuning."""
         weight_keys = [k for k in (_cfg.DEFAULTS if _cfg else {}) if k.startswith("weight_")]
         return {k: _cfg.get(k) for k in weight_keys} if _cfg else {}
+
+    # ══════════════════════════════════════════════════════════════════
+    # PHASE 1 — Anti-Wrapper Shield, Tuesday Test, RFP Generator
+    # ══════════════════════════════════════════════════════════════════
+
+    def _import_verification():
+        try:
+            from .verification import score_tool, score_all_tools, tier_distribution, tuesday_test, generate_rfp
+        except ImportError:
+            from verification import score_tool, score_all_tools, tier_distribution, tuesday_test, generate_rfp
+        return score_tool, score_all_tools, tier_distribution, tuesday_test, generate_rfp
+
+    @app.get("/tools/resilience")
+    def tools_resilience():
+        """Score every tool with the Anti-Wrapper Verification Shield.
+        Returns resilience scores sorted highest-first."""
+        score_tool, score_all_tools, *_ = _import_verification()
+        reports = score_all_tools(TOOLS)
+        return {
+            "total": len(reports),
+            "tools": [r.to_dict() for r in reports],
+        }
+
+    @app.get("/tools/resilience/{tool_name}")
+    def tool_resilience(tool_name: str):
+        """Resilience report for a single tool."""
+        score_tool_fn = _import_verification()[0]
+        tool = next((t for t in TOOLS if t.name.lower() == tool_name.lower()), None)
+        if not tool:
+            return {"error": f"Tool '{tool_name}' not found"}
+        return score_tool_fn(tool).to_dict()
+
+    @app.get("/tools/resilience-summary")
+    def tools_resilience_summary():
+        """Tier distribution across all tools."""
+        *_, tier_dist_fn, _, _ = _import_verification()
+        return tier_dist_fn(TOOLS)
+
+    @app.post("/tuesday-test")
+    def tuesday_test_endpoint(body: dict):
+        """Run the 'Tuesday Test' ROI simulation.
+
+        Body:
+            region, role, task_description, hours_per_week_manual,
+            error_rate_manual, tool_category, tool_cost_override
+        """
+        *_, tuesday_fn, _ = _import_verification()
+        result = tuesday_fn(
+            region=body.get("region", "midwest"),
+            role=body.get("role", "admin"),
+            task_description=body.get("task_description", "manual data entry"),
+            hours_per_week_manual=float(body.get("hours_per_week_manual", 8)),
+            error_rate_manual=float(body.get("error_rate_manual", 0.05)),
+            tool_category=body.get("tool_category", "automation"),
+            tool_cost_override=body.get("tool_cost_override"),
+        )
+        return result.to_dict()
+
+    @app.post("/rfp/generate")
+    def rfp_generate(body: dict):
+        """Generate a neutral vendor RFP document.
+
+        Body:
+            business_name, industry, team_size, workflow_description,
+            selected_tools, budget_tier, compliance_requirements, constraints
+        """
+        *_, rfp_fn = _import_verification()
+        rfp = rfp_fn(
+            business_name=body.get("business_name", "My Business"),
+            industry=body.get("industry", "general"),
+            team_size=body.get("team_size", "small"),
+            workflow_description=body.get("workflow_description", ""),
+            selected_tools=body.get("selected_tools", []),
+            budget_tier=body.get("budget_tier", "medium"),
+            compliance_requirements=body.get("compliance_requirements"),
+            constraints=body.get("constraints"),
+            tools_list=TOOLS,
+        )
+        return rfp
