@@ -11,15 +11,15 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 86 files, ~44,800 lines |
+| **Python modules** | 87 files, ~45,300 lines |
 | **Tool catalog** | 246 curated AI tools with rich metadata |
 | **API endpoints** | 349 REST routes via FastAPI |
 | **Test coverage** | 645 tests across 13 test files, all passing |
 | **Frontend** | 21 HTML + 4 JS files (~7,700 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~52,500 (Python + Frontend) |
+| **Total LOC** | ~53,000 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-02-24 05:33 UTC |
+| **Last auto-update** | 2026-02-24 05:56 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -929,6 +929,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+dcfba03 auto: 2026-02-23 23:56:00
+700bb3b docs(auto): update README stats [skip ci]
 1c6e92f auto: 2026-02-23 23:32:55
 d34d665 docs(auto): update README stats [skip ci]
 1f41f2d auto: 2026-02-23 23:30:51
@@ -947,8 +949,6 @@ f0b1ebc auto: 2026-02-22 22:53:52
 19fa376 docs(auto): update README stats [skip ci]
 a4f57f2 security: fix auth enforcement + execution timeouts (session 4)
 120b1b0 docs(auto): update README stats [skip ci]
-52ea2ae auto: 2026-02-22 22:43:17
-040f548 docs(auto): update README stats [skip ci]
 ```
 <!-- AUTO:GIT:END -->
 
@@ -981,7 +981,7 @@ The codebase tells a story:
 - **246 tools**, zero duplicates, clean tag casing
 - **349 API routes**, all functional
 - **645 tests passing**
-- **86 Python modules**, ~44,800 lines
+- **87 Python modules**, ~45,300 lines
 - **25 frontend files**, ~7,700 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
