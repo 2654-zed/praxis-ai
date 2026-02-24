@@ -465,21 +465,35 @@ def _generate_smart_completions(core: str, category: str) -> List[Dict[str, str]
     Phase 1: static template expansion.
     Phase 2+: swap in Gemini Flash call.
     """
-    templates = [
-        "Automate {cat} workflows",
-        "Find the best {cat} tools for SMBs",
-        "Compare top {cat} platforms",
-        "Build a {cat} pipeline for my team",
-        "Set up AI-powered {cat}",
-        "Free {cat} tools for startups",
-    ]
-
     # Make category human-readable
     cat_display = category.replace("_", " ").replace("-", " ")
 
+    # Category-specific templates avoid redundant phrasing like "automate automation"
+    _CATEGORY_TEMPLATES: Dict[str, List[str]] = {
+        "automation": [
+            "Set up automated workflows for your team",
+            "Find the best automation tools for SMBs",
+            "Compare workflow automation platforms",
+            "Build an end-to-end automation pipeline",
+            "Connect your apps with no-code automation",
+            "Free automation tools for startups",
+        ],
+    }
+
+    if category in _CATEGORY_TEMPLATES:
+        templates = _CATEGORY_TEMPLATES[category]
+    else:
+        templates = [
+            f"Automate {cat_display} workflows",
+            f"Find the best {cat_display} tools for SMBs",
+            f"Compare top {cat_display} platforms",
+            f"Build a {cat_display} pipeline for my team",
+            f"Set up AI-powered {cat_display}",
+            f"Free {cat_display} tools for startups",
+        ]
+
     completions = []
-    for tmpl in templates:
-        text = tmpl.format(cat=cat_display)
+    for text in templates:
         completions.append({
             "text": text,
             "type": "intent_completion",
