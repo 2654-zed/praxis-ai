@@ -348,9 +348,13 @@ def smart_suggest(
     intent_type, core = classify_intent(q)
     category = resolve_intent_category(core) if intent_type == "conversational" else None
 
-    # ── Branch: conversational intent ──
+    # ── Branch: conversational intent with resolved category ──
     if intent_type == "conversational" and category:
         return _conversational_payload(q, core, category, tools_list)
+
+    # ── Branch: conversational intent but NO category yet (mid-sentence) ──
+    if intent_type == "conversational" and not category:
+        return _incomplete_intent_payload(q, core, tools_list)
 
     # ── Branch: direct query (tool name / category / keyword) ──
     return _direct_payload(q, tools_list)
@@ -405,6 +409,61 @@ def _conversational_payload(
     }
 
 
+def _incomplete_intent_payload(
+    raw_query: str,
+    core: str,
+    tools_list: list,
+) -> Dict[str, Any]:
+    """Handle 'i need help with…' before a category word is typed.
+
+    Shows prompt completions for every major category so the user
+    can pick a direction, plus trending queries.
+    """
+    # Offer one completion per popular category
+    top_categories = [
+        ("automation", "⚡"), ("marketing", "📅"), ("writing", "📝"),
+        ("design", "🎨"), ("coding", "🔬"), ("analytics", "📈"),
+        ("sales", "🎯"), ("support", "🤖"),
+    ]
+    completions = []
+    for cat, icon in top_categories:
+        completions.append({
+            "text": f"{raw_query} {cat}",
+            "type": "intent_completion",
+            "icon": icon,
+        })
+
+    # Pick 4 diverse representative tools
+    seen_cats: Set[str] = set()
+    featured = []
+    for t in tools_list:
+        primary = t.categories[0].lower() if t.categories else "other"
+        if primary not in seen_cats and len(featured) < 4:
+            featured.append({
+                "name": t.name,
+                "description": (t.description or "")[:80],
+                "categories": t.categories[:3],
+                "url": t.url or "",
+            })
+            seen_cats.add(primary)
+
+    trending = _popularity.top_k(k=5)
+
+    return {
+        "layout": "bento_grid",
+        "intent_detected": "exploring",
+        "primary_completions": completions,
+        "tool_matches": featured,
+        "workflow_templates": [
+            {"title": "Take the guided quiz", "desc": "Not sure what you need? We'll figure it out.", "icon": "🧭"},
+            {"title": "Browse all tools", "desc": f"{len(tools_list)} AI tools indexed and reviewed", "icon": "📚"},
+        ],
+        "category_matches": [],
+        "did_you_mean": [],
+        "trending": [{"text": t, "score": s} for t, s in trending],
+    }
+
+
 def _direct_payload(query: str, tools_list: list) -> Dict[str, Any]:
     """Build the Bento payload for a direct/explicit query."""
     q = query.lower()
@@ -435,8 +494,9 @@ def _direct_payload(query: str, tools_list: list) -> Dict[str, Any]:
     category = resolve_intent_category(q)
     workflows = _WORKFLOW_TEMPLATES.get(category, [])[:2] if category else []
 
-    # Trending
-    trending = _popularity.top_k(prefix=q[:3] if len(q) >= 3 else None, k=3)
+    # Trending — use first meaningful word as prefix filter, not raw query
+    prefix_token = next((w for w in q.split() if w not in _STOPWORDS and len(w) >= 3), None)
+    trending = _popularity.top_k(prefix=prefix_token, k=3)
 
     # Smart completions based on what partial text maps to
     completions = []
