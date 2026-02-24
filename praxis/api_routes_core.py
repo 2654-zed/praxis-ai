@@ -451,16 +451,28 @@ def register_core_routes(app, deps):
 
         Body:
             business_name, industry, team_size, workflow_description,
-            selected_tools, budget_tier, compliance_requirements, constraints
+            tools_to_evaluate (or selected_tools), monthly_budget, pain_points,
+            budget_tier, compliance_requirements, constraints
         """
         *_, rfp_fn = _import_verification()
+        # Accept either key name from frontend
+        tools = body.get("tools_to_evaluate") or body.get("selected_tools", [])
+        # Derive budget tier from monthly_budget if provided
+        budget = body.get("monthly_budget")
+        budget_tier = body.get("budget_tier", "medium")
+        if budget is not None:
+            budget = float(budget)
+            if budget <= 0: budget_tier = "free"
+            elif budget <= 100: budget_tier = "low"
+            elif budget <= 500: budget_tier = "medium"
+            else: budget_tier = "high"
         rfp = rfp_fn(
             business_name=body.get("business_name", "My Business"),
             industry=body.get("industry", "general"),
             team_size=body.get("team_size", "small"),
             workflow_description=body.get("workflow_description", ""),
-            selected_tools=body.get("selected_tools", []),
-            budget_tier=body.get("budget_tier", "medium"),
+            selected_tools=tools,
+            budget_tier=budget_tier,
             compliance_requirements=body.get("compliance_requirements"),
             constraints=body.get("constraints"),
             tools_list=TOOLS,
