@@ -245,7 +245,6 @@ def _build_fastapi_deps():
         return None, None, None
 
     async def get_current_user(
-        request: Request,
         authorization: Optional[str] = Header(default=None),
         x_api_key: Optional[str] = Header(default=None, alias="X-Api-Key"),
     ) -> User:
