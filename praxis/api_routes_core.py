@@ -174,9 +174,33 @@ def register_core_routes(app, deps):
 
     @app.get("/suggest")
     def suggest(q: str = ""):
-        if get_suggestions:
-            return get_suggestions(q, TOOLS, limit=8)
-        return {"tool_matches": [], "category_matches": [], "did_you_mean": None, "popular_queries": []}
+        """Smart autocomplete — returns a Bento Grid payload with
+        intent detection, semantic completions, and tool matches."""
+        try:
+            from .smart_suggest import smart_suggest
+        except ImportError:
+            from smart_suggest import smart_suggest
+        if q and len(q.strip()) >= 2:
+            return smart_suggest(q, TOOLS, limit=8)
+        # Show-on-focus: return pre-populated suggestions for empty query
+        try:
+            from .smart_suggest import focus_suggestions
+        except ImportError:
+            from smart_suggest import focus_suggestions
+        return focus_suggestions(TOOLS)
+
+    @app.post("/suggest/click")
+    def suggest_click(body: dict):
+        """Record a click on an autocomplete suggestion for popularity tracking."""
+        text = body.get("text", "").strip()
+        if not text:
+            return {"status": "ignored"}
+        try:
+            from .smart_suggest import record_suggestion_click
+        except ImportError:
+            from smart_suggest import record_suggestion_click
+        record_suggestion_click(text)
+        return {"status": "recorded", "text": text}
 
     @app.get("/intelligence/{tool_name}")
     def intelligence(tool_name: str):
