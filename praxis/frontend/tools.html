@@ -157,6 +157,62 @@
     <div id="tools"></div>
   </div>
 
-  <script src="/static/tools-script.js"></script>
+  <script>
+  (async function() {
+    const el = document.getElementById('tools');
+    if (!el) return;
+    el.innerHTML = '<p style="color:rgba(255,255,255,0.4)">Loading tools\u2026</p>';
+    try {
+      let allTools = [];
+      let skip = 0;
+      const limit = 50;
+      while (true) {
+        const res = await fetch('/tools?skip=' + skip + '&limit=' + limit);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : (data.items || []);
+        allTools = allTools.concat(items);
+        if (items.length < limit) break;
+        skip += limit;
+      }
+      el.innerHTML = '';
+      if (!allTools.length) { el.textContent = 'No tools available.'; return; }
+      allTools.forEach(function(t) {
+        var d = document.createElement('div');
+        d.className = 'tool';
+        var h = document.createElement('h3');
+        h.textContent = t.name || 'Unnamed';
+        d.appendChild(h);
+        if (t.description) {
+          var desc = document.createElement('p');
+          desc.className = 'desc';
+          desc.textContent = t.description;
+          d.appendChild(desc);
+        }
+        var meta = document.createElement('div');
+        meta.className = 'meta';
+        var cats = (t.categories || []).join(', ');
+        var tags = (t.tags || []).slice(0, 5).join(', ');
+        meta.textContent = cats + (tags ? ' \u00B7 ' + tags : '');
+        d.appendChild(meta);
+        if (t.url) {
+          var a = document.createElement('a');
+          a.href = t.url;
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.className = 'btn';
+          a.textContent = 'Visit \u2192';
+          d.appendChild(a);
+        }
+        el.appendChild(d);
+      });
+      var heading = document.querySelector('.content h2');
+      if (heading) heading.textContent = 'All Tools (' + allTools.length + ')';
+    } catch (e) {
+      console.error('Tools load failed:', e);
+      el.innerHTML = '<p style="color:#f66">Failed to load tools: ' + e.message + '</p>';
+    }
+  })();
+  </script>
 </body>
 </html>
