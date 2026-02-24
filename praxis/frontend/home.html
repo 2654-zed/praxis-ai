@@ -966,6 +966,265 @@
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
     /* ══════════════════════════════════════════════
+       EXECUTIVE BENTO HUB — Strategic Command Center
+       ══════════════════════════════════════════════ */
+    .exec-hub {
+      position: relative;
+      z-index: 2;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 1rem 2rem;
+      transition: opacity var(--transition-smooth), max-height var(--transition-smooth);
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.8s;
+    }
+    body.has-results .exec-hub { display: none; }
+
+    .exec-bento {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto auto auto;
+      gap: 0.75rem;
+    }
+
+    .eb-cell {
+      background: rgba(255,255,255,0.035);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 1.4rem;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition-smooth);
+    }
+    .eb-cell::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    }
+    .eb-cell:hover {
+      background: rgba(255,255,255,0.055);
+      border-color: rgba(255,255,255,0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+
+    /* Hero Cell (2x2) */
+    .eb-hero {
+      grid-column: 1 / 3;
+      grid-row: 1 / 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(124,106,239,0.08), rgba(80,227,194,0.04));
+      border-color: rgba(124,106,239,0.12);
+    }
+    .eb-hero-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .eb-hero-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      line-height: 1.25;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+    .eb-accent-num {
+      background: linear-gradient(135deg, var(--accent-secondary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+    }
+    .eb-hero-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 1rem;
+    }
+    .eb-link {
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color var(--transition-fast);
+    }
+    .eb-link:hover { color: var(--accent-secondary); }
+
+    /* Sovereign Showcase (2x1 wide) */
+    .eb-showcase {
+      grid-column: 3 / 5;
+      grid-row: 1 / 3;
+    }
+    .eb-cell-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .eb-cell-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-dim);
+    }
+    .eb-tier-badge {
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .eb-tier-sovereign {
+      background: rgba(80,227,194,0.15);
+      color: #50e3c2;
+      border: 1px solid rgba(80,227,194,0.3);
+    }
+    .eb-showcase-scroll {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 260px;
+      overflow-y: auto;
+      margin-bottom: 0.75rem;
+      padding-right: 0.25rem;
+    }
+    .eb-showcase-scroll::-webkit-scrollbar { width: 4px; }
+    .eb-showcase-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
+    .eb-showcase-loading {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      padding: 1rem 0;
+    }
+
+    .eb-sov-card {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.6rem 0.7rem;
+      background: rgba(80,227,194,0.04);
+      border: 1px solid rgba(80,227,194,0.08);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .eb-sov-card:hover {
+      background: rgba(80,227,194,0.08);
+      border-color: rgba(80,227,194,0.18);
+      transform: translateX(2px);
+    }
+    .eb-sov-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, #50e3c2, #7c6aef);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .eb-sov-info { flex: 1; min-width: 0; }
+    .eb-sov-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .eb-sov-meta {
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .eb-sov-score {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #50e3c2;
+      flex-shrink: 0;
+    }
+
+    /* Action Cells */
+    .eb-action {
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: rgba(124,106,239,0.04);
+      border-color: rgba(124,106,239,0.08);
+    }
+    .eb-action:hover {
+      background: rgba(124,106,239,0.10);
+      border-color: rgba(124,106,239,0.22);
+      box-shadow: 0 8px 32px var(--accent-glow);
+    }
+    .eb-action-icon { font-size: 1.6rem; margin-bottom: 0.1rem; }
+    .eb-action-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+    .eb-action-desc {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+      max-width: 180px;
+    }
+
+    /* Category Portals */
+    .eb-portal {
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      padding: 1rem;
+    }
+    .eb-portal:hover {
+      box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+    }
+    .eb-portal-icon { font-size: 1.4rem; }
+    .eb-portal-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+    }
+    .eb-portal-count {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      .exec-bento {
+        grid-template-columns: 1fr 1fr;
+      }
+      .eb-hero { grid-column: 1 / -1; grid-row: auto; }
+      .eb-showcase { grid-column: 1 / -1; grid-row: auto; }
+      .eb-hero-title { font-size: 1.25rem; }
+    }
+    @media (max-width: 480px) {
+      .exec-bento {
+        grid-template-columns: 1fr;
+      }
+      .eb-portal { grid-column: 1; }
+    }
+
+    /* ══════════════════════════════════════════════
        RESPONSIVE
        ══════════════════════════════════════════════ */
     @media (max-width: 768px) {
@@ -1735,6 +1994,56 @@
       const y = (e.clientY / window.innerHeight - 0.5) * 20;
       document.querySelector('.aurora').style.transform = `translate(${x}px, ${y}px)`;
     });
+
+    /* ══════════════════════════════════════════════
+       EXECUTIVE BENTO HUB — Load live data
+       ══════════════════════════════════════════════ */
+    (async function loadExecHub() {
+      try {
+        const res = await fetch('/tools/tiered');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        // Update sovereign count in hero
+        const sovCount = document.getElementById('hub-sov-count');
+        if (sovCount && data.counts) sovCount.textContent = data.counts.sovereign || 20;
+
+        // Populate Sovereign Showcase
+        const scroll = document.getElementById('sovereign-scroll');
+        if (scroll && data.tiers && data.tiers.sovereign) {
+          scroll.innerHTML = '';
+          data.tiers.sovereign.forEach(t => {
+            const card = document.createElement('div');
+            card.className = 'eb-sov-card';
+            card.onclick = () => { window.open(t.url, '_blank'); };
+            const cats = (t.categories || []).slice(0, 2).join(', ');
+            card.innerHTML = `
+              <div class="eb-sov-icon">${t.name.charAt(0)}</div>
+              <div class="eb-sov-info">
+                <div class="eb-sov-name">${t.name}</div>
+                <div class="eb-sov-meta">${cats}${t.compliance && t.compliance.length ? ' · ' + t.compliance.slice(0,2).join(', ') : ''}</div>
+              </div>
+              <div class="eb-sov-score">${t.grade} · ${t.resilience_score}</div>
+            `;
+            scroll.appendChild(card);
+          });
+        }
+
+        // Populate category portal counts
+        const catCounts = {};
+        for (const [tier, tools] of Object.entries(data.tiers || {})) {
+          tools.forEach(t => {
+            (t.categories || []).forEach(c => {
+              catCounts[c.toLowerCase()] = (catCounts[c.toLowerCase()] || 0) + 1;
+            });
+          });
+        }
+        document.querySelectorAll('.eb-portal-count').forEach(el => {
+          const cat = el.dataset.cat;
+          if (cat && catCounts[cat]) el.textContent = catCounts[cat] + ' tools';
+        });
+      } catch(e) { console.warn('exec-hub load failed', e); }
+    })();
   </script>
 </body>
 </html>
