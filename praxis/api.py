@@ -1546,6 +1546,18 @@ def create_app():
             def stack_advisor():
                 """Core product — AI Stack Advisor landing page."""
                 return FileResponse(frontend_dir / "stack-advisor.html")
+        else:
+            @app.get("/")
+            def root_info():
+                """API root — service discovery."""
+                return {
+                    "service": "Praxis AI Decision Engine",
+                    "version": "2.0.0",
+                    "docs": "/docs",
+                    "openapi": "/openapi.json",
+                    "health": "/healthcheck",
+                    "status": "operational",
+                }
     except Exception:
         pass
 
