@@ -19,17 +19,17 @@
   },
   "journey": {
     "profile_id": "journey",
-    "industry": "saas",
-    "budget": "low",
+    "industry": "e-commerce",
+    "budget": "medium",
     "team_size": "solo",
     "skill_level": "intermediate",
     "existing_tools": [],
     "goals": [
-      "design"
+      "coding"
     ],
     "constraints": [],
     "preferences": {},
-    "created_at": "2026-02-21T22:20:00.930950Z",
-    "updated_at": "2026-02-21T22:20:00.965260Z"
+    "created_at": "2026-02-24T18:50:15.948786Z",
+    "updated_at": "2026-02-24T18:50:15.965815Z"
   }
 }
