@@ -64,11 +64,21 @@ def interpret(user_input: str) -> dict:
     # Attempt LLM interpretation if configured
     if _cfg and _cfg.llm_available():
         try:
-            return _llm_interpret(raw)
+            result = _llm_interpret(raw)
         except Exception as exc:
             log.warning("LLM interpretation failed, falling back to rules: %s", exc)
+            result = _rule_based_interpret(raw)
+    else:
+        result = _rule_based_interpret(raw)
 
-    return _rule_based_interpret(raw)
+    # ── 2026 Security Blueprint: Sensitive Query Detection ──
+    result["sensitive_context"] = detect_sensitive_context(raw)
+    if result["sensitive_context"]["is_sensitive"]:
+        log.info("sensitive query detected: domains=%s severity=%s",
+                 result["sensitive_context"]["domains_detected"],
+                 result["sensitive_context"]["severity"])
+
+    return result
 
 
 # ======================================================================
@@ -399,6 +409,99 @@ _COMPLIANCE_KEYWORDS = {
     "hipaa", "soc2", "soc 2", "gdpr", "iso27001", "iso 27001",
     "pci-dss", "pci", "ferpa", "ccpa", "fedramp",
 }
+
+# ── Sensitive Query Detection (2026 Security Blueprint) ──
+# Queries touching these domains auto-escalate to strict privacy mode
+# and mandate US-controlled / allied sovereignty tiers.
+
+_SENSITIVE_DOMAINS = {
+    "healthcare": {
+        "keywords": {"patient", "hipaa", "ehr", "phi", "medical", "diagnosis", "clinical",
+                      "prescription", "health record", "protected health", "hospital"},
+        "severity": "high",
+        "mandate_sovereignty": True,
+    },
+    "legal": {
+        "keywords": {"attorney", "legal", "lawsuit", "litigation", "court", "subpoena",
+                      "privilege", "deposition", "compliance", "regulatory filing",
+                      "confidential legal", "nda", "contract review"},
+        "severity": "high",
+        "mandate_sovereignty": True,
+    },
+    "financial": {
+        "keywords": {"pci", "credit card", "bank account", "ssn", "social security",
+                      "tax return", "financial statement", "account number", "routing number",
+                      "investment portfolio", "trading", "audit financials"},
+        "severity": "high",
+        "mandate_sovereignty": True,
+    },
+    "government": {
+        "keywords": {"classified", "secret", "top secret", "cui", "fouo",
+                      "government contract", "fedramp", "itar", "export control",
+                      "defense", "military", "clearance", "dod"},
+        "severity": "critical",
+        "mandate_sovereignty": True,
+    },
+    "pii": {
+        "keywords": {"personal data", "pii", "date of birth", "passport", "driver license",
+                      "biometric", "fingerprint", "face recognition", "identity",
+                      "home address", "phone number", "email address"},
+        "severity": "medium",
+        "mandate_sovereignty": False,
+    },
+}
+
+
+def detect_sensitive_context(query: str) -> dict:
+    """
+    Scan a query for sensitive-domain indicators.
+
+    Returns:
+        {
+            "is_sensitive": bool,
+            "domains_detected": [str],       # healthcare, legal, financial, etc.
+            "severity": "none"|"medium"|"high"|"critical",
+            "mandate_sovereignty": bool,     # True → force US-controlled tier
+            "mandate_zdr": bool,             # True → force zero data retention
+            "privacy_escalation": str,       # "none"|"elevated"|"strict"
+        }
+    """
+    q_lower = query.lower()
+    detected = []
+    max_severity = "none"
+    mandate_sov = False
+    severity_order = {"none": 0, "medium": 1, "high": 2, "critical": 3}
+
+    for domain, cfg in _SENSITIVE_DOMAINS.items():
+        for kw in cfg["keywords"]:
+            if kw in q_lower:
+                if domain not in detected:
+                    detected.append(domain)
+                sev = cfg["severity"]
+                if severity_order.get(sev, 0) > severity_order.get(max_severity, 0):
+                    max_severity = sev
+                if cfg.get("mandate_sovereignty"):
+                    mandate_sov = True
+                break
+
+    is_sensitive = len(detected) > 0
+    if max_severity == "critical":
+        escalation = "strict"
+    elif max_severity == "high":
+        escalation = "strict"
+    elif max_severity == "medium":
+        escalation = "elevated"
+    else:
+        escalation = "none"
+
+    return {
+        "is_sensitive": is_sensitive,
+        "domains_detected": detected,
+        "severity": max_severity,
+        "mandate_sovereignty": mandate_sov,
+        "mandate_zdr": is_sensitive,  # Any sensitive context → ZDR
+        "privacy_escalation": escalation,
+    }
 
 
 def extract_structured_intents(user_query: str) -> dict:
