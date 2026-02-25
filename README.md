@@ -929,6 +929,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+2719ec6 auto: 2026-02-25 12:36:45
+4450594 docs(auto): update README stats [skip ci]
 f792fe3 auto: 2026-02-25 12:36:13
 011d8db docs(auto): update README stats [skip ci]
 ee60538 auto: 2026-02-25 12:35:10
@@ -947,8 +949,6 @@ cc35c18 docs(auto): update README stats [skip ci]
 f8ea65a docs(auto): update README stats [skip ci]
 1bb27f7 auto: 2026-02-25 12:21:54
 f0632cb auto: 2026-02-25 12:21:22
-97abe97 docs(auto): update README stats [skip ci]
-d481a3b auto: 2026-02-25 12:20:19
 ```
 <!-- AUTO:GIT:END -->
 
