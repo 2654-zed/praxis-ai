@@ -801,3 +801,213 @@ def register_core_routes(app, deps):
         """
         _, get_efficacy = _import_learning_overrides()
         return get_efficacy()
+
+    # ==================================================================
+    # 2026 Security Blueprint: Sovereignty, Nutrition, Outcomes, Prompts
+    # ==================================================================
+
+    def _import_sovereignty():
+        from praxis.sovereignty import (
+            assess_sovereignty, get_trust_badge, filter_by_sovereignty,
+            assess_all_tools, get_sovereignty_intel,
+        )
+        return assess_sovereignty, get_trust_badge, filter_by_sovereignty, assess_all_tools, get_sovereignty_intel
+
+    def _import_nutrition():
+        from praxis.nutrition import generate_nutrition_label, generate_all_labels, praxis_self_label
+        return generate_nutrition_label, generate_all_labels, praxis_self_label
+
+    def _import_outcomes():
+        from praxis.outcomes import (
+            detect_outcome_intent, assemble_outcome_results,
+            get_outcome_pills, get_outcome_detail,
+        )
+        return detect_outcome_intent, assemble_outcome_results, get_outcome_pills, get_outcome_detail
+
+    def _import_prompt_assist():
+        from praxis.prompt_assist import (
+            generate_optimized_prompt, bridge_prompt, decompose_intent,
+            get_available_workflows, get_available_models,
+        )
+        return generate_optimized_prompt, bridge_prompt, decompose_intent, get_available_workflows, get_available_models
+
+    # ── Sovereignty Routes ──
+
+    @app.get("/sovereignty/assess/{tool_name}")
+    def sovereignty_assess(tool_name: str):
+        """Assess sovereignty risk for a specific tool."""
+        assess, badge, *_ = _import_sovereignty()
+        tool = next((t for t in TOOLS if t.name.lower() == tool_name.lower()), None)
+        if not tool:
+            return {"error": f"Tool '{tool_name}' not found"}
+        return {
+            "tool": tool_name,
+            "assessment": assess(tool),
+            "badge": badge(tool),
+        }
+
+    @app.get("/sovereignty/dashboard")
+    def sovereignty_dashboard_data():
+        """
+        Return sovereignty assessment for all tools.
+        Powers the Sovereignty Dashboard UI.
+        """
+        *_, assess_all, _ = _import_sovereignty()
+        data = assess_all(TOOLS)
+        return data
+
+    @app.get("/sovereignty/intel/{tool_name}")
+    def sovereignty_intel(tool_name: str):
+        """Get raw sovereignty intelligence for a tool."""
+        *_, get_intel = _import_sovereignty()
+        intel = get_intel(tool_name)
+        if not intel:
+            return {"error": f"No sovereignty intel for '{tool_name}'", "tool": tool_name}
+        return {"tool": tool_name, "intel": intel}
+
+    # ── Nutrition Label Routes ──
+
+    @app.get("/nutrition/{tool_name}")
+    def nutrition_label(tool_name: str):
+        """Generate AI Nutrition Label for a specific tool."""
+        gen_label, _, _ = _import_nutrition()
+        assess, *_ = _import_sovereignty()
+        tool = next((t for t in TOOLS if t.name.lower() == tool_name.lower()), None)
+        if not tool:
+            return {"error": f"Tool '{tool_name}' not found"}
+        sov_data = assess(tool)
+        return gen_label(tool, sov_data)
+
+    @app.get("/nutrition/all")
+    def nutrition_all():
+        """Generate AI Nutrition Labels for all tools (batch)."""
+        _, gen_all, _ = _import_nutrition()
+        *_, assess_all, _ = _import_sovereignty()
+        sov_data = assess_all(TOOLS)
+        assessments = {
+            item["tool_name"]: item["assessment"]
+            for item in sov_data.get("tools", [])
+        }
+        return gen_all(TOOLS, assessments)
+
+    @app.get("/nutrition/self-label")
+    def nutrition_self():
+        """Show Praxis platform's own AI Nutrition Label."""
+        _, _, self_label = _import_nutrition()
+        return self_label()
+
+    # ── Outcome Routes ──
+
+    @app.post("/outcomes/recommend")
+    def outcomes_recommend(body: dict):
+        """
+        Outcome-oriented recommendation.
+
+        Body: {
+            "query": str,
+            "force_outcome": str | null,  // time_saved, cost_reduction, revenue_growth, compliance
+            "profile_id": str | null,
+        }
+        """
+        _, assemble, _, _ = _import_outcomes()
+        query = body.get("query", "")
+        force = body.get("force_outcome")
+        profile = None
+        pid = body.get("profile_id")
+        if pid:
+            profile = load_profile(pid)
+
+        tools = find_tools(query, top_n=20, profile=profile)
+        result = assemble(tools, query, profile=profile, force_outcome=force)
+        # Serialize tool objects in ranked_results
+        for entry in result.get("ranked_results", []):
+            t = entry.pop("tool", None)
+            if t:
+                entry["tool_name"] = t.name
+                entry["tool_description"] = t.description
+        return result
+
+    @app.get("/outcomes/pills")
+    def outcomes_pills():
+        """Return outcome navigation pills for the UI."""
+        _, _, get_pills, _ = _import_outcomes()
+        return {"pills": get_pills()}
+
+    @app.get("/outcomes/{outcome_id}")
+    def outcomes_detail(outcome_id: str):
+        """Get details for a specific outcome pillar."""
+        _, _, _, get_detail = _import_outcomes()
+        detail = get_detail(outcome_id)
+        if not detail:
+            return {"error": f"Unknown outcome pillar '{outcome_id}'"}
+        return detail
+
+    # ── Prompt Assistance Routes ──
+
+    @app.post("/prompt-assist/generate")
+    def prompt_generate(body: dict):
+        """
+        Generate an optimized prompt for a tool/model.
+
+        Body: {
+            "query": str,
+            "tool_name": str | null,
+            "target_model": str | null,
+            "workflow_id": str | null,
+            "step_answers": { step_id: chosen_option } | null,
+        }
+        """
+        gen_prompt, _, _, _, _ = _import_prompt_assist()
+        return gen_prompt(
+            query=body.get("query", ""),
+            tool_name=body.get("tool_name"),
+            target_model=body.get("target_model"),
+            workflow_id=body.get("workflow_id"),
+            step_answers=body.get("step_answers"),
+        )
+
+    @app.post("/prompt-assist/bridge")
+    def prompt_bridge(body: dict):
+        """
+        Transfer a prompt between model dialects.
+
+        Body: {
+            "source_prompt": str,
+            "source_model": str,
+            "target_model": str,
+        }
+        """
+        _, bridge, _, _, _ = _import_prompt_assist()
+        return bridge(
+            source_prompt=body.get("source_prompt", ""),
+            source_model=body.get("source_model", "gpt-4"),
+            target_model=body.get("target_model", "claude"),
+        )
+
+    @app.post("/prompt-assist/decompose")
+    def prompt_decompose(body: dict):
+        """
+        Decompose a query into DMN decision steps.
+
+        Body: {
+            "query": str,
+            "workflow_id": str | null,
+        }
+        """
+        _, _, decompose, _, _ = _import_prompt_assist()
+        return decompose(
+            query=body.get("query", ""),
+            workflow_id=body.get("workflow_id"),
+        )
+
+    @app.get("/prompt-assist/workflows")
+    def prompt_workflows():
+        """List available DMN workflow templates."""
+        _, _, _, get_wf, _ = _import_prompt_assist()
+        return {"workflows": get_wf()}
+
+    @app.get("/prompt-assist/models")
+    def prompt_models():
+        """List available model dialects for PromptBridge."""
+        _, _, _, _, get_models = _import_prompt_assist()
+        return {"models": get_models()}
