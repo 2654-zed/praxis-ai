@@ -1033,3 +1033,152 @@ def register_core_routes(app, deps):
         """List available model dialects for PromptBridge."""
         _, _, _, _, get_models = _import_prompt_assist()
         return {"models": get_models()}
+
+    # ==================================================================
+    # 2026 Trust Badge Architecture Routes
+    # ==================================================================
+
+    def _import_trust_badges():
+        from . import trust_badges
+        return (
+            trust_badges.calculate_all_badges,
+            trust_badges.calculate_all_tools_badges,
+            trust_badges.get_badge_categories,
+            trust_badges.get_badge_intel,
+            trust_badges.generate_stat_bar,
+        )
+
+    def _import_portability():
+        from . import portability
+        return (
+            portability.calculate_exit_portability,
+            portability.calculate_all_portability,
+            portability.compare_portability,
+        )
+
+    def _import_learning_psr():
+        from . import learning
+        return (
+            learning.compute_psr_scores,
+            learning.compute_roi_metrics,
+            learning.apply_psr_to_tools,
+        )
+
+    def _import_philosophy_badge():
+        from . import philosophy
+        return philosophy.assess_trust_badge_risk
+
+    # ── Trust Badge Routes ──
+
+    @app.get("/trust-badges/categories")
+    def badge_categories():
+        """Return all 9 badge category definitions with visual system."""
+        _, _, get_cats, _, _ = _import_trust_badges()
+        return {"categories": get_cats()}
+
+    @app.get("/trust-badges/tool/{tool_name}")
+    def badge_tool(tool_name: str):
+        """Calculate all trust badges for a specific tool."""
+        calc_badges, _, _, _, _ = _import_trust_badges()
+        tool = _find_tool(tool_name)
+        if not tool:
+            return {"error": f"Tool '{tool_name}' not found"}
+        return calc_badges(tool)
+
+    @app.get("/trust-badges/dashboard")
+    def badge_dashboard():
+        """Full trust badge dashboard with all tools and aggregate statistics."""
+        _, calc_all, _, _, _ = _import_trust_badges()
+        result = calc_all(TOOLS)
+        return {
+            "summary": result["summary"],
+            "tools": [
+                {
+                    "tool_name": name,
+                    "trust_score": profile["trust_score"],
+                    "trust_grade": profile["trust_grade"],
+                    "badge_count": profile["badge_count"],
+                    "has_risk_flag": profile["has_risk_flag"],
+                    "risk_flag_count": profile["risk_flag_count"],
+                    "primary_badges": profile["primary_badges"],
+                    "summary": profile["summary"],
+                }
+                for name, profile in result["tools"].items()
+            ],
+            "total_tools": result["summary"]["total"],
+        }
+
+    @app.get("/trust-badges/stat-bar")
+    def badge_stat_bar():
+        """Generate the Dynamic Results Stat Bar for the current tool set."""
+        _, _, _, _, gen_stat = _import_trust_badges()
+        return gen_stat(TOOLS)
+
+    @app.get("/trust-badges/intel/{tool_name}")
+    def badge_intel(tool_name: str):
+        """Return raw badge intelligence data for a tool."""
+        _, _, _, get_intel, _ = _import_trust_badges()
+        intel = get_intel(tool_name)
+        if not intel:
+            return {"error": f"No badge intelligence for '{tool_name}'", "tool_name": tool_name}
+        return {"tool_name": tool_name, "intel": intel}
+
+    # ── Portability Routes ──
+
+    @app.get("/portability/tool/{tool_name}")
+    def portability_tool(tool_name: str):
+        """Calculate exit portability score for a specific tool."""
+        calc_port, _, _ = _import_portability()
+        tool = _find_tool(tool_name)
+        if not tool:
+            return {"error": f"Tool '{tool_name}' not found"}
+        return calc_port(tool)
+
+    @app.get("/portability/all")
+    def portability_all():
+        """Calculate portability scores for all tools."""
+        _, calc_all, _ = _import_portability()
+        return calc_all(TOOLS)
+
+    @app.post("/portability/compare")
+    def portability_compare(body: dict):
+        """
+        Compare portability for multiple tools side-by-side.
+
+        Body: { "tools": ["ChatGPT", "Notion AI", "Salesforce"] }
+        """
+        _, _, compare = _import_portability()
+        tool_names = body.get("tools", [])
+        return {"comparisons": compare(tool_names, TOOLS)}
+
+    # ── PSR Telemetry Routes ──
+
+    @app.get("/telemetry/psr")
+    def telemetry_psr():
+        """Compute Prompt Success Rate scores from verified telemetry."""
+        compute_psr, _, _ = _import_learning_psr()
+        return {"psr_scores": compute_psr()}
+
+    @app.get("/telemetry/roi")
+    def telemetry_roi():
+        """Compute verified ROI metrics from user feedback."""
+        _, compute_roi, _ = _import_learning_psr()
+        return {"roi_metrics": compute_roi()}
+
+    @app.post("/telemetry/apply-psr")
+    def telemetry_apply():
+        """Apply computed PSR/OQS scores to in-memory tools (admin)."""
+        _, _, apply_psr = _import_learning_psr()
+        scores = apply_psr()
+        return {"applied": len(scores), "scores": scores}
+
+    # ── Badge-Aware Risk Assessment ──
+
+    @app.get("/risk/badge-assessment/{tool_name}")
+    def risk_badge_assessment(tool_name: str):
+        """Extended risk assessment incorporating trust badge data."""
+        assess = _import_philosophy_badge()
+        tool = _find_tool(tool_name)
+        if not tool:
+            return {"error": f"Tool '{tool_name}' not found"}
+        return assess(tool)
