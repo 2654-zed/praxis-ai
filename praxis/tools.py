@@ -174,6 +174,18 @@ class Tool:
             "stack_roles": self.stack_roles,
             "languages": self.languages,
             "last_updated": self.last_updated,
+            # Phase 3: Sovereignty & Privacy
+            "country_of_origin": self.country_of_origin,
+            "is_us_controlled": self.is_us_controlled,
+            "high_risk_backend": self.high_risk_backend,
+            "zdr_compliant": self.zdr_compliant,
+            "training_data_usage": self.training_data_usage,
+            "base_model": self.base_model,
+            "data_jurisdiction": self.data_jurisdiction,
+            # Phase 3: Outcome Metrics
+            "target_outcome_kpi": self.target_outcome_kpi,
+            "verified_roi_score": self.verified_roi_score,
+            "outcome_metrics": self.outcome_metrics,
         }
 
     @classmethod
@@ -195,6 +207,17 @@ class Tool:
             stack_roles=d.get("stack_roles"),
             languages=d.get("languages"),
             last_updated=d.get("last_updated"),
+            # Phase 3
+            country_of_origin=d.get("country_of_origin"),
+            is_us_controlled=d.get("is_us_controlled"),
+            high_risk_backend=d.get("high_risk_backend"),
+            zdr_compliant=d.get("zdr_compliant"),
+            training_data_usage=d.get("training_data_usage"),
+            base_model=d.get("base_model"),
+            data_jurisdiction=d.get("data_jurisdiction"),
+            target_outcome_kpi=d.get("target_outcome_kpi"),
+            verified_roi_score=d.get("verified_roi_score"),
+            outcome_metrics=d.get("outcome_metrics"),
         )
 
     def is_stale(self, max_days: int = 90) -> bool:
