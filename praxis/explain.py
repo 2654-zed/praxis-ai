@@ -50,6 +50,17 @@ except Exception:
     except Exception:
         _NUTRITION_AVAILABLE = False
 
+# ── 2026 Trust Badge Architecture ──
+try:
+    from .trust_badges import calculate_all_badges as _calc_all_badges
+    _TRUST_BADGES_AVAILABLE = True
+except Exception:
+    try:
+        from trust_badges import calculate_all_badges as _calc_all_badges
+        _TRUST_BADGES_AVAILABLE = True
+    except Exception:
+        _TRUST_BADGES_AVAILABLE = False
+
 
 # Budget-related keywords that signal the user cares about pricing
 _BUDGET_SIGNALS = {"budget", "price", "pricing", "cost", "cheap", "free",
@@ -568,6 +579,8 @@ def explain_tool(tool: Tool, intent: dict, profile: Optional[UserProfile] = None
         # ── 2026 Security Blueprint: Sovereignty & Nutrition ──
         "sovereignty": _get_sovereignty_data(tool),
         "nutrition_label": _get_nutrition_data(tool),
+        # ── 2026 Trust Badge Architecture ──
+        "trust_badges": _get_trust_badge_data(tool),
     }
 
 
@@ -600,6 +613,16 @@ def _get_nutrition_data(tool) -> dict:
         if _SOVEREIGNTY_AVAILABLE:
             sov_data = assess_sovereignty(tool)
         return generate_nutrition_label(tool, sov_data)
+    except Exception:
+        return {}
+
+
+def _get_trust_badge_data(tool) -> dict:
+    """Generate trust badge profile for a tool explanation."""
+    if not _TRUST_BADGES_AVAILABLE:
+        return {}
+    try:
+        return _calc_all_badges(tool)
     except Exception:
         return {}
 

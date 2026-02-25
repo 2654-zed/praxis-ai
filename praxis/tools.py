@@ -47,6 +47,11 @@ class Tool:
         target_outcome_kpi=None,      # Primary KPI: "time_saved", "cost_reduction", etc.
         verified_roi_score=None,      # 0.0-1.0 empirical outcome confidence
         outcome_metrics=None,         # dict: {"time_saved_pct": 40, "error_reduction_pct": 25, ...}
+        # --- Phase 4: Trust Badge Architecture (2026) ---
+        uptime_tier=None,             # Uptime Institute tier 1-4
+        psr_score=None,               # Prompt Success Rate 0.0-1.0
+        oqs_score=None,               # Output Quality Score 0.0-1.0
+        portability_score_val=None,   # Exit portability 1-10
     ):
         acronym_map = {
             "api": "API",
@@ -100,6 +105,12 @@ class Tool:
         self.target_outcome_kpi = target_outcome_kpi
         self.verified_roi_score = float(verified_roi_score) if verified_roi_score else 0.0
         self.outcome_metrics = outcome_metrics or {}
+
+        # Phase 4: Trust Badge Architecture
+        self.uptime_tier = int(uptime_tier) if uptime_tier else 0
+        self.psr_score = float(psr_score) if psr_score else 0.0
+        self.oqs_score = float(oqs_score) if oqs_score else 0.0
+        self.portability_score_val = int(portability_score_val) if portability_score_val else 0
 
     # ------------------------------------------------------------------
     # Helpers
@@ -186,6 +197,11 @@ class Tool:
             "target_outcome_kpi": self.target_outcome_kpi,
             "verified_roi_score": self.verified_roi_score,
             "outcome_metrics": self.outcome_metrics,
+            # Phase 4: Trust Badge Architecture
+            "uptime_tier": self.uptime_tier,
+            "psr_score": self.psr_score,
+            "oqs_score": self.oqs_score,
+            "portability_score_val": self.portability_score_val,
         }
 
     @classmethod
@@ -218,6 +234,11 @@ class Tool:
             target_outcome_kpi=d.get("target_outcome_kpi"),
             verified_roi_score=d.get("verified_roi_score"),
             outcome_metrics=d.get("outcome_metrics"),
+            # Phase 4
+            uptime_tier=d.get("uptime_tier"),
+            psr_score=d.get("psr_score"),
+            oqs_score=d.get("oqs_score"),
+            portability_score_val=d.get("portability_score_val"),
         )
 
     def is_stale(self, max_days: int = 90) -> bool:

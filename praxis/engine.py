@@ -82,6 +82,17 @@ except ImportError:
     except ImportError:
         _SOVEREIGNTY_AVAILABLE = False
 
+# ── 2026 Trust Badge Architecture: Badge-aware scoring ──
+try:
+    from .trust_badges import calculate_all_badges as _calc_badges
+    _BADGES_AVAILABLE = True
+except ImportError:
+    try:
+        from trust_badges import calculate_all_badges as _calc_badges
+        _BADGES_AVAILABLE = True
+    except ImportError:
+        _BADGES_AVAILABLE = False
+
 
 def normalize(text: str) -> str:
     """Lowercase + basic cleanup."""
@@ -162,6 +173,29 @@ def score_tool(tool, keywords):
             score += _sov_mod(tool)
         except Exception as exc:
             log.debug("Sovereignty scoring failed for %s: %s", tool.name, exc)
+
+    # ── 2026 Trust Badge Architecture: Badge-aware scoring ──
+    if _BADGES_AVAILABLE and _w("enable_badge_scoring", True):
+        try:
+            badges = _calc_badges(tool)
+            trust_score = badges.get("trust_score", 50)
+            # Trust score modifier: scale 0-100 into -3..+5 engine points
+            if trust_score >= 80:
+                score += 5
+            elif trust_score >= 65:
+                score += 3
+            elif trust_score >= 50:
+                score += 1
+            elif trust_score < 35:
+                score -= 3
+            # PSR bonus: high prompt success rate boosts utility signal
+            psr = badges.get("badges", {}).get("psr_metric", {}).get("psr", 0)
+            if psr >= 85:
+                score += 2
+            elif psr >= 70:
+                score += 1
+        except Exception as exc:
+            log.debug("Badge scoring failed for %s: %s", tool.name, exc)
 
     return score
 
