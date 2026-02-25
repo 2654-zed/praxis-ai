@@ -35,6 +35,18 @@ class Tool:
         languages=None,
         # --- Phase 2 additions ---
         last_updated=None,
+        # --- Phase 3: Sovereignty & Privacy (2026) ---
+        country_of_origin=None,       # ISO 3166-1 alpha-3 (e.g. "USA", "GBR", "CHN")
+        is_us_controlled=None,        # True if >51% US UBO + domestic infra
+        high_risk_backend=None,       # True if deps on sanctioned/flagged entities
+        zdr_compliant=None,           # True if Zero Data Retention enforced
+        training_data_usage=None,     # "never" | "opt_out" | "opt_in"
+        base_model=None,              # e.g. "GPT-4o", "Claude 3.5", "Llama 3", "proprietary"
+        data_jurisdiction=None,       # Where user data is processed/stored
+        # --- Phase 3: Outcome Metrics ---
+        target_outcome_kpi=None,      # Primary KPI: "time_saved", "cost_reduction", etc.
+        verified_roi_score=None,      # 0.0-1.0 empirical outcome confidence
+        outcome_metrics=None,         # dict: {"time_saved_pct": 40, "error_reduction_pct": 25, ...}
     ):
         acronym_map = {
             "api": "API",
@@ -74,6 +86,20 @@ class Tool:
 
         # Freshness tracking — ISO date string "2026-02-20" or None
         self.last_updated = last_updated
+
+        # Phase 3: Sovereignty & Privacy
+        self.country_of_origin = country_of_origin or "USA"
+        self.is_us_controlled = is_us_controlled if is_us_controlled is not None else True
+        self.high_risk_backend = high_risk_backend if high_risk_backend is not None else False
+        self.zdr_compliant = zdr_compliant if zdr_compliant is not None else False
+        self.training_data_usage = training_data_usage or "opt_out"
+        self.base_model = base_model
+        self.data_jurisdiction = data_jurisdiction or "US"
+
+        # Phase 3: Outcome Metrics
+        self.target_outcome_kpi = target_outcome_kpi
+        self.verified_roi_score = float(verified_roi_score) if verified_roi_score else 0.0
+        self.outcome_metrics = outcome_metrics or {}
 
     # ------------------------------------------------------------------
     # Helpers
