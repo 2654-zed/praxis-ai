@@ -635,3 +635,242 @@ def explain_stack(
         "total_monthly_cost": cost_str,
         "stack_fit_score": avg_fit,
     }
+
+
+# ======================================================================
+# Differential Diagnosis — Counterfactual "Why Not" Explanations
+# ======================================================================
+
+# Stage labels for human-readable output
+_STAGE_LABELS = {
+    2: "Deterministic Pruning (Hard Constraint)",
+    3: "Probabilistic Penalisation (Soft Penalty)",
+}
+
+# Templates for generating natural-language elimination explanations
+_ELIMINATION_TEMPLATES = {
+    "BUDGET_EXCEEDED": (
+        "🚨 {name} was considered but eliminated.\n"
+        "Primary Reason: {explanation}\n"
+        "This is a hard budget constraint — no configuration of {name} "
+        "can deliver the required capabilities within your stated budget ceiling."
+    ),
+    "COMPLIANCE_FAILURE": (
+        "🚨 {name} was considered but eliminated.\n"
+        "Primary Reason: {explanation}\n"
+        "This is a non-negotiable compliance requirement. Deploying {name} "
+        "without {mandate} certification would expose your organisation to "
+        "significant legal and financial risk."
+    ),
+    "NEGATIVE_INTENT_MATCH": (
+        "🚫 {name} was excluded by your explicit request.\n"
+        "Reason: {explanation}\n"
+        "Praxis respects your direct exclusions as absolute filters."
+    ),
+    "STACK_CONFLICT": (
+        "♻️ {name} is already in your stack.\n"
+        "Reason: {explanation}\n"
+        "We focus on discovering tools you haven't yet adopted."
+    ),
+    "DEPLOYMENT_CONFLICT": (
+        "🏢 {name} was eliminated due to deployment incompatibility.\n"
+        "Reason: {explanation}\n"
+        "Your infrastructure requirements mandate deployment options "
+        "this tool does not support."
+    ),
+    "ARCHITECTURAL_REDUNDANCY": (
+        "📋 {name} was eliminated to prevent shadow IT.\n"
+        "Reason: {explanation}\n"
+        "Adding redundant tools increases operational complexity and cost "
+        "without proportional benefit."
+    ),
+    "CUMULATIVE_PENALTY": (
+        "⚠️ {name} survived hard constraints but failed probabilistic review.\n"
+        "Reason: {explanation}\n"
+        "While technically eligible, cumulative risk factors made this tool "
+        "a suboptimal choice for your specific organisational profile."
+    ),
+}
+
+
+def explain_elimination(eliminated_entry: dict) -> dict:
+    """
+    Generate a rich, human-readable counterfactual explanation for
+    why a specific tool was eliminated from the recommendation set.
+
+    Args:
+        eliminated_entry: dict from DifferentialResult.eliminated
+            {name, reason_type, code, explanation, stage, stage_label}
+
+    Returns:
+        {
+            "tool_name": str,
+            "headline": str,          # One-line summary
+            "full_explanation": str,   # Multi-line natural-language explanation
+            "stage": str,              # "Hard Constraint" or "Soft Penalty"
+            "severity": str,           # "critical" | "warning" | "info"
+            "code": str,
+            "can_challenge": bool,     # Whether user can flag this as incorrect
+        }
+    """
+    name = eliminated_entry.get("name", "Unknown Tool")
+    code = eliminated_entry.get("code", "UNKNOWN")
+    explanation = eliminated_entry.get("explanation", "No details available.")
+    stage = eliminated_entry.get("stage", 2)
+    stage_label = eliminated_entry.get("stage_label", _STAGE_LABELS.get(stage, "Unknown"))
+
+    # Generate headline
+    reason_type = eliminated_entry.get("reason_type", "HARD_CONSTRAINT")
+    if reason_type == "HARD_CONSTRAINT":
+        headline = f"{name} eliminated — fails mandatory requirement"
+        severity = "critical"
+    else:
+        headline = f"{name} deprioritised — cumulative risk factors"
+        severity = "warning"
+
+    # Use template if available
+    template = _ELIMINATION_TEMPLATES.get(code, "{name} was eliminated. Reason: {explanation}")
+    full_text = template.format(
+        name=name,
+        explanation=explanation,
+        mandate=explanation.split("mandated ")[-1].split(" ")[0] if "mandated" in explanation else "required",
+    )
+
+    return {
+        "tool_name": name,
+        "headline": headline,
+        "full_explanation": full_text,
+        "stage": stage_label,
+        "severity": severity,
+        "code": code,
+        "can_challenge": True,  # All eliminations can be challenged
+    }
+
+
+def explain_survival(survivor_entry: dict) -> dict:
+    """
+    Generate a plain-language summary of why a tool survived the
+    differential diagnosis pipeline.
+
+    Args:
+        survivor_entry: dict from DifferentialResult.survivors
+
+    Returns:
+        {
+            "tool_name": str,
+            "headline": str,
+            "survival_narrative": str,
+            "resilience_badge": str | None,
+            "confidence": str,
+        }
+    """
+    name = survivor_entry.get("name", "Unknown Tool")
+    reasons = survivor_entry.get("survival_reasons", [])
+    penalties = survivor_entry.get("penalties_applied", [])
+    resilience = survivor_entry.get("resilience") or {}
+    score = survivor_entry.get("final_score", 0)
+
+    tier = resilience.get("tier", "unknown")
+    grade = resilience.get("grade", "?")
+
+    # Headline
+    if tier in ("sovereign", "durable"):
+        badge = f"🛡️ {tier.title()} Architecture (Grade {grade})"
+        headline = f"{name} — Resilient, verified fit"
+    elif tier == "moderate":
+        badge = f"✅ Moderate Architecture (Grade {grade})"
+        headline = f"{name} — Solid functional match"
+    else:
+        badge = f"⚡ {tier.title()} (Grade {grade})" if tier != "unknown" else None
+        headline = f"{name} — Functional match with caveats"
+
+    # Narrative
+    parts = []
+    if reasons:
+        parts.append("Survives your constraints: " + "; ".join(reasons[:4]))
+    if penalties:
+        parts.append("Risk factors noted: " + "; ".join(penalties[:2]))
+    if not parts:
+        parts.append(f"Matched your query with a viability score of {score:.0%}.")
+
+    narrative = " ".join(parts)
+
+    # Confidence level
+    if score >= 0.7:
+        confidence = "high"
+    elif score >= 0.4:
+        confidence = "moderate"
+    else:
+        confidence = "low"
+
+    return {
+        "tool_name": name,
+        "headline": headline,
+        "survival_narrative": narrative,
+        "resilience_badge": badge,
+        "confidence": confidence,
+    }
+
+
+def assemble_presentation(survivors: list, eliminated: list) -> dict:
+    """
+    Master assembly function for the differential diagnosis UI.
+    Produces a complete presentation payload with explained survivors,
+    explained eliminations, and a summary narrative.
+
+    Args:
+        survivors:  list of survivor dicts from DifferentialResult
+        eliminated: list of eliminated dicts from DifferentialResult
+
+    Returns:
+        {
+            "survivor_cards": [explained survivor dicts],
+            "elimination_cards": [explained elimination dicts],
+            "summary": str,
+            "total_survivors": int,
+            "total_eliminated": int,
+            "notable_eliminations": [dicts for well-known tools only],
+        }
+    """
+    survivor_cards = [explain_survival(s) for s in survivors]
+    elimination_cards = [explain_elimination(e) for e in eliminated]
+
+    # Identify "notable" eliminations — well-known tools users might expect
+    _NOTABLE_TOOLS = {
+        "chatgpt", "salesforce", "hubspot", "slack", "jira", "asana",
+        "notion ai", "zapier", "monday", "trello", "figma ai", "canva ai",
+        "copilot", "gemini", "claude", "stripe", "shopify", "mailchimp",
+        "zendesk", "intercom", "amplitude", "mixpanel", "datadog",
+    }
+
+    notable = [
+        c for c in elimination_cards
+        if c["tool_name"].lower() in _NOTABLE_TOOLS
+    ]
+
+    # Summary
+    s_count = len(survivors)
+    e_count = len(eliminated)
+    hard_count = sum(1 for e in eliminated if e.get("reason_type") == "HARD_CONSTRAINT")
+    soft_count = e_count - hard_count
+
+    summary = (
+        f"Differential diagnosis complete: {s_count} optimal survivors "
+        f"from {s_count + e_count} candidates evaluated. "
+    )
+    if hard_count:
+        summary += f"{hard_count} tools eliminated by hard constraints. "
+    if soft_count:
+        summary += f"{soft_count} tools deprioritised by risk penalties. "
+    if notable:
+        notable_names = ", ".join(c["tool_name"] for c in notable[:3])
+        summary += f"Notable exclusions: {notable_names}."
+
+    return {
+        "survivor_cards": survivor_cards,
+        "elimination_cards": elimination_cards,
+        "summary": summary,
+        "total_survivors": s_count,
+        "total_eliminated": e_count,
+        "notable_eliminations": notable,
+    }
