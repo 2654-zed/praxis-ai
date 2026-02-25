@@ -853,8 +853,29 @@ def register_core_routes(app, deps):
         Powers the Sovereignty Dashboard UI.
         """
         *_, assess_all, _ = _import_sovereignty()
-        data = assess_all(TOOLS)
-        return data
+        raw = assess_all(TOOLS)
+        # Reshape for frontend consumption
+        by_tier = raw.get("by_tier", {})
+        return {
+            "summary": {
+                "us_controlled": by_tier.get("us_controlled", 0),
+                "allied": by_tier.get("allied", 0),
+                "high_risk": by_tier.get("high_risk", 0),
+                "unknown": by_tier.get("unknown", 0),
+                "total": raw.get("total", 0),
+                "zdr_percentage": raw.get("zdr_percentage", 0),
+                "average_risk_score": raw.get("average_risk_score", 0),
+            },
+            "tools": [
+                {
+                    "tool_name": a["tool_name"],
+                    "assessment": a,
+                    "badge": a.get("badge", {}),
+                }
+                for a in raw.get("assessments", [])
+            ],
+            "high_risk_tools": raw.get("high_risk_tools", []),
+        }
 
     @app.get("/sovereignty/intel/{tool_name}")
     def sovereignty_intel(tool_name: str):
