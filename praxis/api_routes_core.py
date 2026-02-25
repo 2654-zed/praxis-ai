@@ -1038,6 +1038,10 @@ def register_core_routes(app, deps):
     # 2026 Trust Badge Architecture Routes
     # ==================================================================
 
+    def _find_tool(tool_name: str):
+        """Lookup a tool by name (case-insensitive)."""
+        return next((t for t in TOOLS if t.name.lower() == tool_name.lower()), None)
+
     def _import_trust_badges():
         from . import trust_badges
         return (
