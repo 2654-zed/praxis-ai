@@ -375,3 +375,153 @@ def _empty_result(raw: str) -> dict:
         "suggested_questions": ["Please describe the task you need help with."],
     }
 
+
+# ======================================================================
+# Differential Diagnosis — Structured Intent Extraction
+# ======================================================================
+
+# Negation patterns for advanced dependency parsing
+_NEGATION_TRIGGERS = {
+    "no", "not", "without", "excluding", "except", "avoid",
+    "never", "don't", "dont", "doesn't", "doesnt", "isn't", "isnt",
+    "won't", "wont", "refuse", "skip", "ban", "block", "remove",
+    "absolutely no", "definitely not", "nothing like",
+}
+
+# Deployment / environment keywords
+_DEPLOYMENT_CONSTRAINTS = {
+    "self-hosted", "on-premise", "on-prem", "air-gapped",
+    "sovereign", "private cloud", "vpc", "local", "docker",
+}
+
+# Compliance keywords
+_COMPLIANCE_KEYWORDS = {
+    "hipaa", "soc2", "soc 2", "gdpr", "iso27001", "iso 27001",
+    "pci-dss", "pci", "ferpa", "ccpa", "fedramp",
+}
+
+
+def extract_structured_intents(user_query: str) -> dict:
+    """
+    Advanced intent extraction for the differential diagnosis pipeline.
+
+    Produces a richer output than the standard `interpret()` function,
+    with explicit separation of positive intents, negative constraints,
+    and ambiguity assessment.
+
+    Returns:
+        {
+            "raw": str,
+            "positive_intents": [str],      # what the user WANTS
+            "negative_constraints": [str],   # what the user REJECTS
+            "compliance_requirements": [str], # detected compliance mandates
+            "deployment_preferences": [str], # deployment env requirements
+            "entities_mentioned": [str],     # specific tool/vendor names
+            "ambiguity_flags": {
+                "severity": float,           # 0.0 (clear) – 1.0 (opaque)
+                "missing_axes": [str],
+                "is_vague": bool,
+            },
+            "multi_intents": [str],          # if compound query detected
+            "interpreted": dict,             # full output from interpret()
+        }
+    """
+    interpreted = interpret(user_query)
+    raw_lower = user_query.lower()
+
+    # ── Positive Intents ──
+    positives = []
+    for key in ("intent", "industry", "goal"):
+        val = interpreted.get(key)
+        if val:
+            positives.append(str(val).lower())
+    positives.extend([k.lower() for k in interpreted.get("keywords", [])])
+    positives = list(dict.fromkeys(positives))  # dedupe preserving order
+
+    # ── Negative Constraints (enhanced) ──
+    negatives = list(interpreted.get("negatives", []))
+
+    # Deep scan for negation patterns not caught by basic extraction
+    for trigger in _NEGATION_TRIGGERS:
+        idx = raw_lower.find(trigger)
+        if idx >= 0:
+            # Extract the object of negation (next 1-3 words)
+            remainder = raw_lower[idx + len(trigger):].strip()
+            words = [w for w in re.split(r'\W+', remainder) if w and w not in _STOP_WORDS]
+            for w in words[:3]:
+                # Check if it's a known tool or meaningful noun
+                if w in _KNOWN_TOOLS and w not in negatives:
+                    negatives.append(w)
+                elif w in _INTENTS and w not in negatives:
+                    negatives.append(w)
+            break  # avoid double-counting overlapping triggers
+
+    negatives = list(dict.fromkeys(negatives))
+
+    # ── Compliance Requirements (auto-detect from raw query) ──
+    compliance = []
+    for kw in _COMPLIANCE_KEYWORDS:
+        if kw in raw_lower:
+            canonical = kw.upper().replace(" ", "").replace("-", "")
+            # Normalise
+            mapping = {
+                "SOC2": "SOC2", "HIPAA": "HIPAA", "GDPR": "GDPR",
+                "ISO27001": "ISO27001", "PCIDSS": "PCI-DSS", "PCI": "PCI-DSS",
+                "FERPA": "FERPA", "CCPA": "CCPA", "FEDRAMP": "FedRAMP",
+            }
+            norm = mapping.get(canonical, canonical)
+            if norm not in compliance:
+                compliance.append(norm)
+
+    # ── Deployment Preferences ──
+    deployment = []
+    for dp in _DEPLOYMENT_CONSTRAINTS:
+        if dp in raw_lower:
+            deployment.append(dp)
+
+    # ── Entities ──
+    entities = list(interpreted.get("entities", []))
+
+    # ── Ambiguity Assessment ──
+    keyword_count = len(positives)
+    has_intent = bool(interpreted.get("intent"))
+    has_industry = bool(interpreted.get("industry"))
+
+    if keyword_count == 0:
+        severity = 1.0
+    elif not has_intent and keyword_count < 2:
+        severity = 0.85
+    elif not has_intent:
+        severity = 0.6
+    elif not has_industry and keyword_count < 3:
+        severity = 0.4
+    else:
+        severity = 0.1
+
+    missing_axes = []
+    if not has_intent:
+        missing_axes.append("task_category")
+    if not has_industry:
+        missing_axes.append("industry_vertical")
+    if keyword_count < 2:
+        missing_axes.append("specific_requirements")
+
+    # ── Multi-intents ──
+    multi = interpreted.get("multi_intents", [])
+
+    return {
+        "raw": user_query,
+        "positive_intents": positives,
+        "negative_constraints": negatives,
+        "compliance_requirements": compliance,
+        "deployment_preferences": deployment,
+        "entities_mentioned": entities,
+        "ambiguity_flags": {
+            "severity": severity,
+            "missing_axes": missing_axes,
+            "is_vague": severity >= 0.7,
+        },
+        "multi_intents": multi,
+        "interpreted": interpreted,
+    }
+
