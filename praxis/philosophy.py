@@ -1221,3 +1221,123 @@ def assess_elimination_risk(tool) -> Dict:
         "warnings": warnings,
         "mitigations": mitigations,
     }
+
+
+# ======================================================================
+# 2026 Trust Badge Architecture — Badge-Aware Elimination
+# ======================================================================
+
+def assess_trust_badge_risk(tool) -> Dict:
+    """Extended risk assessment incorporating trust badge data.
+
+    Evaluates a tool against the 9-category Trust Badge system and
+    triggers elimination flags for critical deficiencies.
+
+    Returns:
+        {
+            "tool_name": str,
+            "risk_level": "low" | "medium" | "high" | "critical",
+            "risk_score": float (0-1),
+            "penalty_codes": [str],
+            "warnings": [str],
+            "mitigations": [str],
+            "badge_summary": { "trust_score": int, "trust_grade": str },
+        }
+    """
+    # Start with base assessment
+    base = assess_elimination_risk(tool)
+    risk_score = base["risk_score"]
+    codes = list(base["penalty_codes"])
+    warnings = list(base["warnings"])
+    mitigations = list(base["mitigations"])
+
+    # Trust badge integration
+    try:
+        from . import trust_badges
+    except ImportError:
+        try:
+            import trust_badges
+        except ImportError:
+            base["badge_summary"] = {}
+            return base
+
+    try:
+        badge_profile = trust_badges.calculate_all_badges(tool)
+    except Exception:
+        base["badge_summary"] = {}
+        return base
+
+    trust_score = badge_profile.get("trust_score", 50)
+    badges = badge_profile.get("badges", {})
+
+    # Foreign jurisdiction check
+    sov = badges.get("sovereignty_tier", {})
+    if sov.get("tier") == "high_risk":
+        risk_score += 0.3
+        codes.append("FOREIGN_JURISDICTION")
+        warnings.append(f"High-risk jurisdiction: {sov.get('country', 'Unknown')}")
+
+    # Training data risk
+    train = badges.get("training_privacy", {})
+    if train.get("policy") == "opt_in":
+        risk_score += 0.15
+        codes.append("TRAINING_DATA_RISK")
+        warnings.append("Customer data used for model training by default")
+
+    # Portability risk
+    port = badges.get("portability_score", {})
+    if port.get("score", 10) <= 3:
+        risk_score += 0.25
+        codes.append("HIGH_LOCK_IN_PORTABILITY")
+        for p in port.get("penalties", [])[:2]:
+            warnings.append(p)
+
+    # Undisclosed model
+    intel = trust_badges.get_badge_intel(tool.name)
+    if intel and not intel.get("base_model_disclosed", True):
+        risk_score += 0.05
+        codes.append("UNDISCLOSED_MODEL")
+
+    # Low PSR
+    psr = badges.get("psr_metric", {})
+    if 0 < psr.get("psr", 100) < 70:
+        risk_score += 0.10
+        codes.append("LOW_PSR")
+        warnings.append(f"Prompt Success Rate: {psr['psr']}% (below 70% threshold)")
+
+    # Risk flag penalties
+    risk_flag = badges.get("risk_flag")
+    if risk_flag:
+        risk_score += 0.1 * risk_flag.get("flag_count", 1)
+        for f in risk_flag.get("flags", [])[:3]:
+            warnings.append(f)
+
+    # High trust score mitigations
+    if trust_score >= 80:
+        mitigations.append(f"Trust Score: {trust_score}/100 (Grade A) — low overall risk")
+    elif trust_score >= 65:
+        mitigations.append(f"Trust Score: {trust_score}/100 (Grade B) — moderate safety")
+
+    risk_score = min(1.0, round(risk_score, 2))
+
+    if risk_score >= 0.5:
+        level = "critical"
+    elif risk_score >= 0.3:
+        level = "high"
+    elif risk_score >= 0.15:
+        level = "medium"
+    else:
+        level = "low"
+
+    return {
+        "tool_name": getattr(tool, "name", "Unknown"),
+        "risk_level": level,
+        "risk_score": risk_score,
+        "penalty_codes": list(set(codes)),
+        "warnings": warnings,
+        "mitigations": mitigations,
+        "badge_summary": {
+            "trust_score": trust_score,
+            "trust_grade": badge_profile.get("trust_grade", "?"),
+        },
+    }
