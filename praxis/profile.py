@@ -219,3 +219,133 @@ def build_profile_interactive(profile_id: str = "default") -> UserProfile:
     save_profile(profile)
     print(f"\nProfile saved: {profile}")
     return profile
+
+
+# ======================================================================
+# Differential Diagnosis — Constraint Matrix
+# ======================================================================
+
+# Compliance mandates that serve as hard elimination filters
+_COMPLIANCE_MANDATES = {"HIPAA", "SOC2", "GDPR", "ISO27001", "PCI-DSS",
+                        "FERPA", "CCPA", "FedRAMP"}
+
+# Deployment constraints that serve as hard elimination filters
+_DEPLOYMENT_HARD = {"self-hosted", "on-premise", "air-gapped", "sovereign-vpc"}
+
+# Industries that auto-escalate risk tolerance to "low"
+_REGULATED_INDUSTRIES = {"healthcare", "finance", "legal", "defense",
+                         "government", "insurance", "banking", "pharma"}
+
+# Budget tier → maximum monthly spend ($)
+_BUDGET_CEILINGS = {
+    "free": 0,
+    "low": 50,
+    "medium": 500,
+    "high": float("inf"),
+}
+
+VALID_RISK_TOLERANCES = {"low", "medium", "high"}
+
+
+def build_constraint_matrix(profile: UserProfile) -> dict:
+    """
+    Transform a UserProfile into an executable Constraint Matrix for
+    the differential diagnosis pipeline.
+
+    The matrix separates hard constraints (Boolean eliminators) from
+    soft preferences (penalty modifiers), enabling the engine to
+    apply deterministic pruning first, then probabilistic penalisation.
+
+    Returns:
+        {
+            "profile_id": str,
+            "risk_tolerance": "low" | "medium" | "high",
+            "hard_constraints": {
+                "budget_ceiling": float | None,
+                "compliance_mandates": [str],
+                "deployment_requirements": [str],
+                "existing_tools": [str],
+                "excluded_tools": [str],
+            },
+            "soft_preferences": {
+                "preferred_skill_level": str,
+                "team_size": str,
+                "industry": str,
+                "goals": [str],
+                "resilience_floor": str | None,
+                "max_acceptable_lock_in": str | None,
+            },
+            "inferred_flags": {
+                "is_regulated": bool,
+                "is_mission_critical": bool,
+                "is_cost_sensitive": bool,
+                "auto_escalated_risk": bool,
+            },
+        }
+    """
+    prefs = profile.preferences or {}
+    constraints = [c.upper() for c in profile.constraints]
+    constraints_lower = [c.lower() for c in profile.constraints]
+    industry = (profile.industry or "").lower()
+
+    # ── Risk Tolerance ──
+    explicit_risk = prefs.get("risk_tolerance", "medium")
+    if explicit_risk not in VALID_RISK_TOLERANCES:
+        explicit_risk = "medium"
+
+    auto_escalated = False
+
+    # Auto-escalate for regulated industries
+    if industry in _REGULATED_INDUSTRIES:
+        if explicit_risk != "low":
+            explicit_risk = "low"
+            auto_escalated = True
+
+    # Auto-escalate for compliance-heavy profiles
+    compliance_mandates = [c for c in constraints if c in _COMPLIANCE_MANDATES]
+    if len(compliance_mandates) >= 2 and explicit_risk != "low":
+        explicit_risk = "low"
+        auto_escalated = True
+
+    # ── Hard Constraints ──
+    budget_ceiling = _BUDGET_CEILINGS.get(profile.budget, 500)
+    deployment_reqs = [c for c in constraints_lower if c in _DEPLOYMENT_HARD]
+    excluded = [t.lower() for t in prefs.get("excluded_tools", [])]
+
+    # ── Soft Preferences ──
+    resilience_floor = prefs.get("resilience_floor")  # e.g. "durable"
+    max_lock_in = prefs.get("max_lock_in")  # e.g. "medium"
+
+    # ── Inferred Flags ──
+    is_regulated = industry in _REGULATED_INDUSTRIES or len(compliance_mandates) > 0
+    is_mission_critical = any(
+        g.lower() in {"uptime", "reliability", "mission-critical", "compliance"}
+        for g in profile.goals
+    )
+    is_cost_sensitive = profile.budget in ("free", "low")
+
+    return {
+        "profile_id": profile.profile_id,
+        "risk_tolerance": explicit_risk,
+        "hard_constraints": {
+            "budget_ceiling": budget_ceiling if budget_ceiling < float("inf") else None,
+            "compliance_mandates": compliance_mandates,
+            "deployment_requirements": deployment_reqs,
+            "existing_tools": [t.lower() for t in profile.existing_tools],
+            "excluded_tools": excluded,
+        },
+        "soft_preferences": {
+            "preferred_skill_level": profile.skill_level,
+            "team_size": profile.team_size,
+            "industry": industry,
+            "goals": profile.goals,
+            "resilience_floor": resilience_floor,
+            "max_acceptable_lock_in": max_lock_in,
+        },
+        "inferred_flags": {
+            "is_regulated": is_regulated,
+            "is_mission_critical": is_mission_critical,
+            "is_cost_sensitive": is_cost_sensitive,
+            "auto_escalated_risk": auto_escalated,
+        },
+    }
