@@ -362,4 +362,11 @@ def build_constraint_matrix(profile: UserProfile) -> dict:
             "is_cost_sensitive": is_cost_sensitive,
             "auto_escalated_risk": auto_escalated,
         },
+        # ── 2026 Security Blueprint: Sovereignty Constraints ──
+        "sovereignty": {
+            "requires_us_sovereignty": getattr(profile, "requires_us_sovereignty", False),
+            "strict_privacy_mode": getattr(profile, "strict_privacy_mode", False),
+            "sovereignty_tier_preference": getattr(profile, "sovereignty_tier_preference", None),
+            "mandate_zdr": getattr(profile, "strict_privacy_mode", False) or is_regulated,
+        },
     }
