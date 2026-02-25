@@ -1057,6 +1057,75 @@ _PENALTY_RATIONALES = {
             "hidden costs, and compliance exposure."
         ),
     },
+
+    # 2026 Trust Badge Architecture — additional penalty codes
+    "FOREIGN_JURISDICTION": {
+        "severity": "critical",
+        "headline": "Foreign Jurisdiction — Data Sovereignty Risk",
+        "advisory": (
+            "This vendor operates from a high-risk jurisdiction that may be "
+            "subject to foreign government data access laws. Under the US "
+            "CLOUD Act and EU Data Governance Act, data processed by this "
+            "vendor may not be protected from foreign intelligence access."
+        ),
+        "risk_scenario": (
+            "Sensitive business data, customer PII, and proprietary workflows "
+            "could be legally compelled for disclosure under foreign law."
+        ),
+    },
+    "TRAINING_DATA_RISK": {
+        "severity": "warning",
+        "headline": "Customer Data Used for Model Training",
+        "advisory": (
+            "This vendor trains or fine-tunes their AI models using customer "
+            "inputs by default. Proprietary workflows, strategy documents, "
+            "and confidential data may be absorbed into the vendor's model."
+        ),
+        "risk_scenario": (
+            "Competitive intelligence extracted from your prompts could "
+            "surface in other customers' outputs."
+        ),
+    },
+    "HIGH_LOCK_IN_PORTABILITY": {
+        "severity": "critical",
+        "headline": "Extreme Exit Barriers — Lock-In Risk",
+        "advisory": (
+            "This vendor scores ≤3/10 on exit portability. Proprietary data "
+            "formats, punitive cancellation fees, or extended notice periods "
+            "create severe vendor dependency."
+        ),
+        "risk_scenario": (
+            "Migrating away will require 3-6 months of engineering effort, "
+            "potential data loss, and significant financial penalties."
+        ),
+    },
+    "UNDISCLOSED_MODEL": {
+        "severity": "advisory",
+        "headline": "Base Model Architecture Undisclosed",
+        "advisory": (
+            "The vendor's base model architecture is proprietary and not "
+            "publicly disclosed. This prevents independent evaluation of "
+            "model capabilities, biases, and safety characteristics."
+        ),
+        "risk_scenario": (
+            "Without model transparency, you cannot assess whether the "
+            "AI's training data, bias profile, or safety mechanisms meet "
+            "your industry's regulatory requirements."
+        ),
+    },
+    "LOW_PSR": {
+        "severity": "advisory",
+        "headline": "Below-Average Prompt Success Rate",
+        "advisory": (
+            "Verified telemetry indicates this tool's Prompt Success Rate "
+            "falls below 70%. Users frequently need to rephrase or iterate "
+            "to receive accurate, usable outputs."
+        ),
+        "risk_scenario": (
+            "Low PSR translates directly into wasted time and reduced "
+            "productivity for your team."
+        ),
+    },
 }
 
 
