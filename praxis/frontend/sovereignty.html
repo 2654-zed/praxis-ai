@@ -455,9 +455,9 @@ async function loadSelfLabel() {
     const data = await resp.json();
     const el = document.getElementById('self-label');
     el.innerHTML = `
-      <div class="banner">🏷 ${data.banner || 'Praxis AI Nutrition Label'}</div>
-      <p>${data.provenance?.tool_name || 'Praxis'} — ${data.provenance?.data_jurisdiction || 'US'}</p>
-      <p style="margin-top:.5rem;color:var(--tier-us)">${data.data_usage?.training_use || 'never'} training data usage · ${data.retention?.policy || 'ephemeral'} retention</p>
+      <div class="banner">🏷 ${data.banner_text || data.title || 'Praxis AI Nutrition Label'}</div>
+      <p>${data.tool_name || 'Praxis'} — ${data.compliance_posture || ''}</p>
+      <p style="margin-top:.5rem;color:var(--tier-us)">${data.training_data_usage || 'never'} training data usage · ${data.data_retention_ttl || 'ephemeral'} retention</p>
     `;
   } catch (e) { /* silent */ }
 }
