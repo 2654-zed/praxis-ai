@@ -941,3 +941,214 @@ def _estimate_exit_cost(tool, lock_in: str) -> str:
     elif lock_in == "high":
         return f"~${monthly * 6:.0f}–${monthly * 12:.0f} (significant data migration + workflow rebuild)"
     return f"~${monthly * 12:.0f}+ (critical dependency — plan extensively)"
+
+
+# ======================================================================
+# Differential Diagnosis — Penalty Rationale Engine
+# ======================================================================
+
+# Maps penalty codes to structured advisory warnings
+_PENALTY_RATIONALES = {
+    # Resilience tier penalties
+    "WRAPPER_TIER": {
+        "severity": "critical",
+        "headline": "Wrapper Architecture — High Upstream Dependency",
+        "advisory": (
+            "This tool is built primarily as an API wrapper around a third-party "
+            "foundation model (e.g., OpenAI, Anthropic). It adds a user interface "
+            "but possesses minimal proprietary technology. If the upstream provider "
+            "changes pricing, deprecates APIs, or experiences outages, this tool's "
+            "functionality may be severely degraded or entirely unavailable."
+        ),
+        "risk_scenario": (
+            "If the upstream AI provider increases API costs by 300% or restricts "
+            "context windows, the tool operator must either absorb the cost increase "
+            "(threatening viability) or pass it to you (threatening budget)."
+        ),
+    },
+    "FRAGILE_TIER": {
+        "severity": "warning",
+        "headline": "Fragile Architecture — Limited Structural Resilience",
+        "advisory": (
+            "This tool demonstrates limited proprietary intellectual property and "
+            "relies significantly on external services. While functional today, its "
+            "long-term viability depends on continued access to upstream APIs and "
+            "favorable pricing from its technology providers."
+        ),
+        "risk_scenario": (
+            "Market consolidation or upstream pricing changes could force this "
+            "vendor to pivot, sunset features, or increase costs substantially."
+        ),
+    },
+
+    # Vendor lock-in penalties
+    "HIGH_LOCK_IN": {
+        "severity": "critical",
+        "headline": "Severe Vendor Lock-In Risk",
+        "advisory": (
+            "This tool uses proprietary data formats, offers limited export "
+            "capabilities, and may impose punitive contract terms that make "
+            "switching costly. Your organisational data and workflows become "
+            "deeply embedded in this vendor's ecosystem."
+        ),
+        "risk_scenario": (
+            "Migrating away from this tool will require significant engineering "
+            "effort for data extraction, format conversion, and workflow "
+            "reconstruction. Budget 3-6 months for a clean exit."
+        ),
+    },
+    "MEDIUM_LOCK_IN": {
+        "severity": "advisory",
+        "headline": "Moderate Vendor Lock-In — Plan Exit Strategy",
+        "advisory": (
+            "While data export is available, some workflow configurations and "
+            "integrations are platform-specific. Switching is feasible but "
+            "requires planning."
+        ),
+        "risk_scenario": (
+            "Budget 1-2 months for migration with partial workflow rebuild."
+        ),
+    },
+
+    # Skill mismatch penalties
+    "SKILL_MISMATCH": {
+        "severity": "warning",
+        "headline": "Technical Complexity Exceeds Team Capability",
+        "advisory": (
+            "This tool's implementation and ongoing maintenance require technical "
+            "expertise beyond your team's stated skill level. Deployment friction "
+            "and underutilisation are likely without additional training or "
+            "external IT support."
+        ),
+        "risk_scenario": (
+            "Enterprise-grade tools frequently fail in SMB environments due to "
+            "the gap between available features and the team's ability to "
+            "configure and maintain them."
+        ),
+    },
+
+    # Telemetry penalties
+    "DECLINING_SATISFACTION": {
+        "severity": "advisory",
+        "headline": "Declining User Satisfaction Trend",
+        "advisory": (
+            "Aggregate telemetry from similar SMB cohorts indicates a recent "
+            "decline in user satisfaction with this tool. This may be due to "
+            "UI changes, pricing adjustments, feature removals, or support "
+            "quality degradation."
+        ),
+        "risk_scenario": (
+            "Adopting a tool on a downward trajectory increases the likelihood "
+            "of forced migration within 12-18 months."
+        ),
+    },
+
+    # Transparency penalties
+    "LOW_TRANSPARENCY": {
+        "severity": "warning",
+        "headline": "Opaque Vendor Practices",
+        "advisory": (
+            "This vendor scores poorly on transparency metrics: limited "
+            "disclosure of data handling, unclear training data policies, "
+            "or opaque pricing structures."
+        ),
+        "risk_scenario": (
+            "Low transparency correlates with unexpected policy changes, "
+            "hidden costs, and compliance exposure."
+        ),
+    },
+}
+
+
+def get_penalty_rationale(penalty_code: str) -> Optional[Dict]:
+    """
+    Retrieve the structured advisory rationale for a specific penalty code.
+    Used by explain.py to generate 'why not' counterfactual explanations.
+
+    Args:
+        penalty_code: One of the keys in _PENALTY_RATIONALES
+
+    Returns:
+        Dict with severity, headline, advisory, risk_scenario — or None
+    """
+    return _PENALTY_RATIONALES.get(penalty_code)
+
+
+def get_all_penalty_rationales() -> Dict:
+    """Return the complete penalty rationale catalog."""
+    return dict(_PENALTY_RATIONALES)
+
+
+def assess_elimination_risk(tool) -> Dict:
+    """
+    Comprehensive risk assessment for the elimination pipeline.
+    Combines transparency, freedom, and dependency analysis into a
+    single risk profile suitable for differential diagnosis scoring.
+
+    Returns:
+        {
+            "tool_name": str,
+            "risk_level": "low" | "medium" | "high" | "critical",
+            "risk_score": float (0-1, higher = riskier),
+            "penalty_codes": [str],
+            "warnings": [str],
+            "mitigations": [str],
+        }
+    """
+    name = getattr(tool, "name", "Unknown")
+    risk_score = 0.0
+    codes = []
+    warnings = []
+    mitigations = []
+
+    # Transparency
+    try:
+        t = assess_transparency(tool)
+        t_score = t.get("score", 50)
+        if t_score < 35:
+            risk_score += 0.3
+            codes.append("LOW_TRANSPARENCY")
+            for c in t.get("concerns", [])[:2]:
+                warnings.append(c)
+        elif t_score < 50:
+            risk_score += 0.1
+        for s in t.get("signals", [])[:2]:
+            mitigations.append(s)
+    except Exception:
+        pass
+
+    # Freedom / Lock-in
+    try:
+        f = assess_freedom(tool)
+        f_score = f.get("score", 50)
+        if f_score < 35:
+            risk_score += 0.3
+            codes.append("HIGH_LOCK_IN")
+            for r in f.get("risk_factors", [])[:2]:
+                warnings.append(r)
+        elif f_score < 50:
+            risk_score += 0.15
+            codes.append("MEDIUM_LOCK_IN")
+        for a in f.get("advantages", [])[:2]:
+            mitigations.append(a)
+    except Exception:
+        pass
+
+    # Infer risk level
+    if risk_score >= 0.5:
+        level = "critical"
+    elif risk_score >= 0.3:
+        level = "high"
+    elif risk_score >= 0.15:
+        level = "medium"
+    else:
+        level = "low"
+
+    return {
+        "tool_name": name,
+        "risk_level": level,
+        "risk_score": round(risk_score, 2),
+        "penalty_codes": codes,
+        "warnings": warnings,
+        "mitigations": mitigations,
+    }
