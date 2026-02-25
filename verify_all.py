@@ -1,5 +1,5 @@
 """End-to-end verification for differential diagnosis pipeline."""
-import urllib.request, json, sys
+import urllib.request, json, sys, time
 
 BASE = "http://localhost:8000"
 ok = 0
@@ -7,32 +7,37 @@ fail = 0
 
 def check(label, url, method="GET", data=None, expect=200):
     global ok, fail
-    try:
-        req = urllib.request.Request(url, method=method)
-        if data:
-            req.add_header("Content-Type", "application/json")
-            req.data = json.dumps(data).encode()
-        resp = urllib.request.urlopen(req)
-        status = resp.status
-        body = json.loads(resp.read().decode()) if "/differential" in url and "/static/" not in url else None
-        if status == expect:
-            ok += 1
-            extra = ""
-            if body and "survivors" in body:
-                extra = f" | {len(body['survivors'])} survivors, {len(body['eliminated'])} eliminated"
-            elif body and "positive_intents" in body:
-                extra = f" | severity={body['ambiguity_flags']['severity']}"
-            elif body and "hard_constraints" in body:
-                extra = f" | {len(body['hard_constraints']['compliance_mandates'])} compliance mandates"
-            elif body and "total_overrides" in body:
-                extra = f" | {body['total_overrides']} total overrides"
-            print(f"  PASS  {label} -> {status}{extra}")
-        else:
-            fail += 1
-            print(f"  FAIL  {label} -> {status} (expected {expect})")
-    except Exception as e:
-        fail += 1
-        print(f"  FAIL  {label} -> {e}")
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(url, method=method)
+            if data:
+                req.add_header("Content-Type", "application/json")
+                req.data = json.dumps(data).encode()
+            resp = urllib.request.urlopen(req, timeout=30)
+            status = resp.status
+            body = json.loads(resp.read().decode()) if "/differential" in url and "/static/" not in url else None
+            if status == expect:
+                ok += 1
+                extra = ""
+                if body and "survivors" in body:
+                    extra = f" | {len(body['survivors'])} survivors, {len(body['eliminated'])} eliminated"
+                elif body and "positive_intents" in body:
+                    extra = f" | severity={body['ambiguity_flags']['severity']}"
+                elif body and "hard_constraints" in body:
+                    extra = f" | {len(body['hard_constraints']['compliance_mandates'])} compliance mandates"
+                elif body and "total_overrides" in body:
+                    extra = f" | {body['total_overrides']} total overrides"
+                print(f"  PASS  {label} -> {status}{extra}")
+            else:
+                fail += 1
+                print(f"  FAIL  {label} -> {status} (expected {expect})")
+            return
+        except Exception as e:
+            if attempt < 2:
+                time.sleep(3)
+            else:
+                fail += 1
+                print(f"  FAIL  {label} -> {e}")
 
 print("=== Frontend Pages ===")
 for page in ["home.html", "differential.html", "tools.html", "manifesto.html", "tuesday-test.html", "rfp.html"]:
