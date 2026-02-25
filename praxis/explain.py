@@ -29,6 +29,27 @@ except Exception:
     except Exception:
         _PHILOSOPHY_AVAILABLE = False
 
+# ── 2026 Security Blueprint: Sovereignty & Nutrition Label integration ──
+try:
+    from .sovereignty import assess_sovereignty, get_trust_badge
+    _SOVEREIGNTY_AVAILABLE = True
+except Exception:
+    try:
+        from sovereignty import assess_sovereignty, get_trust_badge
+        _SOVEREIGNTY_AVAILABLE = True
+    except Exception:
+        _SOVEREIGNTY_AVAILABLE = False
+
+try:
+    from .nutrition import generate_nutrition_label
+    _NUTRITION_AVAILABLE = True
+except Exception:
+    try:
+        from nutrition import generate_nutrition_label
+        _NUTRITION_AVAILABLE = True
+    except Exception:
+        _NUTRITION_AVAILABLE = False
+
 
 # Budget-related keywords that signal the user cares about pricing
 _BUDGET_SIGNALS = {"budget", "price", "pricing", "cost", "cheap", "free",
@@ -544,6 +565,9 @@ def explain_tool(tool: Tool, intent: dict, profile: Optional[UserProfile] = None
         "transparency_grade": transparency.get("grade"),
         "freedom_score": freedom.get("score"),
         "freedom_grade": freedom.get("grade"),
+        # ── 2026 Security Blueprint: Sovereignty & Nutrition ──
+        "sovereignty": _get_sovereignty_data(tool),
+        "nutrition_label": _get_nutrition_data(tool),
     }
 
 
