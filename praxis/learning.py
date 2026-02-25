@@ -220,3 +220,136 @@ def run_learning_cycle() -> dict:
     apply_learned_popularity()
     signals = save_learned_signals()
     return signals
+
+
+# ======================================================================
+# Differential Diagnosis — Override Tracking & Filter Calibration
+# ======================================================================
+
+OVERRIDE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "override_log.json")
+
+# Threshold: if a filter is overridden this many times, recommend downgrade
+OVERRIDE_ALERT_THRESHOLD = 5
+
+
+def _load_overrides() -> list:
+    """Load the override log."""
+    if not os.path.exists(OVERRIDE_FILE):
+        return []
+    try:
+        with open(OVERRIDE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def compute_override_rate() -> dict:
+    """
+    Analyse the override log to determine filter calibration health.
+
+    The Override Rate measures how often users manually select tools
+    that the differential engine explicitly eliminated. A high rate
+    for a specific filter signals it is too aggressive.
+
+    Returns:
+        {
+            "total_overrides": int,
+            "by_reason_code": { code: count },
+            "by_tool": { tool_name: count },
+            "filter_health": [
+                {
+                    "code": str,
+                    "override_count": int,
+                    "status": "healthy" | "needs_review" | "critical",
+                    "recommendation": str,
+                }
+            ],
+            "computed_at": str,
+        }
+    """
+    overrides = _load_overrides()
+
+    by_code = defaultdict(int)
+    by_tool = defaultdict(int)
+
+    for entry in overrides:
+        code = entry.get("reason_code", "UNKNOWN")
+        tool = entry.get("tool", "unknown")
+        by_code[code] += 1
+        by_tool[tool] += 1
+
+    # Filter health assessment
+    health = []
+    for code, count in sorted(by_code.items(), key=lambda x: x[1], reverse=True):
+        if count >= OVERRIDE_ALERT_THRESHOLD * 2:
+            status = "critical"
+            rec = (
+                f"Filter '{code}' has been overridden {count} times. "
+                f"STRONGLY recommend downgrading from hard constraint to "
+                f"soft penalty to prevent user frustration."
+            )
+        elif count >= OVERRIDE_ALERT_THRESHOLD:
+            status = "needs_review"
+            rec = (
+                f"Filter '{code}' has been overridden {count} times. "
+                f"Review whether this filter's threshold is calibrated "
+                f"correctly for your user base."
+            )
+        else:
+            status = "healthy"
+            rec = f"Filter '{code}' override rate is within acceptable bounds."
+
+        health.append({
+            "code": code,
+            "override_count": count,
+            "status": status,
+            "recommendation": rec,
+        })
+
+    return {
+        "total_overrides": len(overrides),
+        "by_reason_code": dict(by_code),
+        "by_tool": dict(by_tool),
+        "filter_health": health,
+        "computed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+
+
+def get_elimination_efficacy() -> dict:
+    """
+    Cross-reference override data with tool quality data to assess
+    whether eliminations are helping or hurting user outcomes.
+
+    Returns:
+        {
+            "overridden_tools_quality": { tool: quality_metrics },
+            "vindicated_eliminations": int,  # overridden tools that later declined
+            "questionable_eliminations": int,  # overridden tools that stayed strong
+        }
+    """
+    overrides = _load_overrides()
+    quality = compute_tool_quality()
+
+    overridden_tools = set(e.get("tool", "") for e in overrides)
+
+    result = {}
+    vindicated = 0
+    questionable = 0
+
+    for tool_name in overridden_tools:
+        if not tool_name:
+            continue
+        q = quality.get(tool_name, {})
+        result[tool_name] = q
+
+        # If the overridden tool is declining, the elimination was justified
+        if q.get("recent_trend") == "declining" or q.get("avg_rating", 5) < 3:
+            vindicated += 1
+        elif q.get("avg_rating", 0) >= 4 and q.get("accept_rate", 0) > 0.7:
+            questionable += 1
+
+    return {
+        "overridden_tools_quality": result,
+        "vindicated_eliminations": vindicated,
+        "questionable_eliminations": questionable,
+    }
