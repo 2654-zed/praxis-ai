@@ -582,3 +582,222 @@ def register_core_routes(app, deps):
                 "summary": r.summary,
             })
         return {"tools": comparisons}
+
+    # ==================================================================
+    # Differential Diagnosis Engine Routes
+    # ==================================================================
+
+    def _import_differential():
+        """Lazy import to avoid circular dependency."""
+        try:
+            from . import differential
+            return differential
+        except ImportError:
+            import differential
+            return differential
+
+    def _import_explain_diff():
+        try:
+            from .explain import explain_elimination, explain_survival, assemble_presentation
+            return explain_elimination, explain_survival, assemble_presentation
+        except ImportError:
+            from explain import explain_elimination, explain_survival, assemble_presentation
+            return explain_elimination, explain_survival, assemble_presentation
+
+    def _import_profile_matrix():
+        try:
+            from .profile import build_constraint_matrix
+            return build_constraint_matrix
+        except ImportError:
+            from profile import build_constraint_matrix
+            return build_constraint_matrix
+
+    def _import_learning_overrides():
+        try:
+            from .learning import compute_override_rate, get_elimination_efficacy
+            return compute_override_rate, get_elimination_efficacy
+        except ImportError:
+            from learning import compute_override_rate, get_elimination_efficacy
+            return compute_override_rate, get_elimination_efficacy
+
+    def _import_interpreter_structured():
+        try:
+            from .interpreter import extract_structured_intents
+            return extract_structured_intents
+        except ImportError:
+            from interpreter import extract_structured_intents
+            return extract_structured_intents
+
+    @app.post("/differential")
+    def differential_diagnosis(body: dict):
+        """
+        Execute the full differential diagnosis pipeline.
+
+        Body:
+            {
+                "query": str (required),
+                "profile_id": str (optional — loads saved profile),
+                "profile": { ... } (optional — inline profile override),
+                "top_n": int (optional, default 5)
+            }
+
+        Returns the complete DifferentialResult with survivors,
+        eliminated tools, funnel narrative, and stage metadata.
+        """
+        diff = _import_differential()
+        query = body.get("query", "").strip()
+        if not query:
+            return {"error": "Query is required", "detail": "Provide a 'query' field."}
+
+        top_n = body.get("top_n", 5)
+
+        # Load or construct profile
+        profile = None
+        profile_id = body.get("profile_id")
+        if profile_id:
+            profile = load_profile(profile_id)
+
+        inline = body.get("profile")
+        if inline and not profile:
+            profile = UserProfile(
+                profile_id=inline.get("profile_id", "inline"),
+                industry=inline.get("industry", ""),
+                budget=inline.get("budget", "medium"),
+                team_size=inline.get("team_size", "solo"),
+                skill_level=inline.get("skill_level", "beginner"),
+                existing_tools=inline.get("existing_tools", []),
+                goals=inline.get("goals", []),
+                constraints=inline.get("constraints", []),
+                preferences=inline.get("preferences", {}),
+            )
+
+        result = diff.generate_differential(query, profile=profile, top_n=top_n)
+
+        # Enrich with explain layer
+        explain_elim, explain_surv, assemble = _import_explain_diff()
+        presentation = assemble(result.survivors, result.eliminated)
+
+        return {
+            "query": result.query,
+            "profile_id": result.profile_id,
+            "clarification_needed": result.clarification_needed,
+            "clarification": result.clarification,
+            "funnel_narrative": result.funnel_narrative,
+            "stages": result.stages,
+            "survivors": result.survivors,
+            "eliminated": result.eliminated,
+            "presentation": {
+                "summary": presentation["summary"],
+                "survivor_cards": presentation["survivor_cards"],
+                "elimination_cards": presentation["elimination_cards"],
+                "notable_eliminations": presentation["notable_eliminations"],
+                "total_survivors": presentation["total_survivors"],
+                "total_eliminated": presentation["total_eliminated"],
+            },
+        }
+
+    @app.post("/differential/intent")
+    def differential_intent(body: dict):
+        """
+        Parse a query through the structured intent extractor.
+        Useful for previewing how the pipeline will interpret a query
+        before running the full diagnosis.
+
+        Body: { "query": str }
+        """
+        extract = _import_interpreter_structured()
+        query = body.get("query", "").strip()
+        if not query:
+            return {"error": "Query is required"}
+        return extract(query)
+
+    @app.post("/differential/constraint-matrix")
+    def differential_constraint_matrix(body: dict):
+        """
+        Generate a Constraint Matrix from a profile.
+        Shows the executable elimination rules derived from user context.
+
+        Body: { "profile_id": str } or { "profile": { inline profile } }
+        """
+        build_matrix = _import_profile_matrix()
+
+        profile = None
+        profile_id = body.get("profile_id")
+        if profile_id:
+            profile = load_profile(profile_id)
+
+        inline = body.get("profile")
+        if inline and not profile:
+            profile = UserProfile(
+                profile_id=inline.get("profile_id", "inline"),
+                industry=inline.get("industry", ""),
+                budget=inline.get("budget", "medium"),
+                team_size=inline.get("team_size", "solo"),
+                skill_level=inline.get("skill_level", "beginner"),
+                existing_tools=inline.get("existing_tools", []),
+                goals=inline.get("goals", []),
+                constraints=inline.get("constraints", []),
+                preferences=inline.get("preferences", {}),
+            )
+
+        if not profile:
+            return {"error": "No profile found", "detail": "Provide profile_id or inline profile."}
+
+        return build_matrix(profile)
+
+    @app.post("/differential/challenge")
+    def differential_challenge(body: dict):
+        """
+        Challenge an elimination result.
+        Records an override and returns acknowledgement.
+
+        Body: {
+            "query": str,
+            "tool_name": str,
+            "reason_code": str,
+            "profile_id": str (optional),
+            "comment": str (optional)
+        }
+        """
+        diff = _import_differential()
+        query = body.get("query", "")
+        tool_name = body.get("tool_name", "")
+        reason_code = body.get("reason_code", "UNKNOWN")
+        profile_id = body.get("profile_id")
+
+        if not tool_name:
+            return {"error": "tool_name is required"}
+
+        entry = diff.record_override(
+            query=query,
+            eliminated_tool=tool_name,
+            reason_code=reason_code,
+            profile_id=profile_id,
+        )
+
+        return {
+            "status": "recorded",
+            "message": (
+                f"Your challenge of {tool_name}'s elimination has been recorded. "
+                f"This feedback helps calibrate our filters."
+            ),
+            "entry": entry,
+        }
+
+    @app.get("/differential/override-stats")
+    def differential_override_stats():
+        """
+        Return override statistics for monitoring filter accuracy.
+        High override rates signal aggressive filters that need recalibration.
+        """
+        compute_rate, _ = _import_learning_overrides()
+        return compute_rate()
+
+    @app.get("/differential/filter-health")
+    def differential_filter_health():
+        """
+        Cross-reference override data with tool quality metrics.
+        Determines whether eliminations are vindicated or questionable.
+        """
+        _, get_efficacy = _import_learning_overrides()
+        return get_efficacy()
