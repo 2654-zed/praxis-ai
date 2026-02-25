@@ -887,17 +887,13 @@ def register_core_routes(app, deps):
         return {"tool": tool_name, "intel": intel}
 
     # ── Nutrition Label Routes ──
+    # NOTE: Static paths must come before dynamic {tool_name} to avoid shadowing
 
-    @app.get("/nutrition/{tool_name}")
-    def nutrition_label(tool_name: str):
-        """Generate AI Nutrition Label for a specific tool."""
-        gen_label, _, _ = _import_nutrition()
-        assess, *_ = _import_sovereignty()
-        tool = next((t for t in TOOLS if t.name.lower() == tool_name.lower()), None)
-        if not tool:
-            return {"error": f"Tool '{tool_name}' not found"}
-        sov_data = assess(tool)
-        return gen_label(tool, sov_data)
+    @app.get("/nutrition/self-label")
+    def nutrition_self():
+        """Show Praxis platform's own AI Nutrition Label."""
+        _, _, self_label = _import_nutrition()
+        return self_label()
 
     @app.get("/nutrition/all")
     def nutrition_all():
@@ -911,11 +907,16 @@ def register_core_routes(app, deps):
         }
         return gen_all(TOOLS, assessments)
 
-    @app.get("/nutrition/self-label")
-    def nutrition_self():
-        """Show Praxis platform's own AI Nutrition Label."""
-        _, _, self_label = _import_nutrition()
-        return self_label()
+    @app.get("/nutrition/{tool_name}")
+    def nutrition_label(tool_name: str):
+        """Generate AI Nutrition Label for a specific tool."""
+        gen_label, _, _ = _import_nutrition()
+        assess, *_ = _import_sovereignty()
+        tool = next((t for t in TOOLS if t.name.lower() == tool_name.lower()), None)
+        if not tool:
+            return {"error": f"Tool '{tool_name}' not found"}
+        sov_data = assess(tool)
+        return gen_label(tool, sov_data)
 
     # ── Outcome Routes ──
 
