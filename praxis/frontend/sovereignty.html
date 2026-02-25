@@ -341,29 +341,31 @@ async function showNutrition(toolName) {
 
 function renderNutritionLabel(label) {
   const sections = [];
+  const s = label.sections || label;  // Handle both nested and flat
 
-  if (label.provenance) {
-    sections.push(renderSection('Provenance', label.provenance));
+  if (s.provenance) {
+    sections.push(renderSection('Provenance', s.provenance));
   }
-  if (label.data_usage) {
-    sections.push(renderSection('Data Usage', label.data_usage));
+  if (s.data_usage) {
+    sections.push(renderSection('Data Usage', s.data_usage));
   }
-  if (label.retention) {
-    sections.push(renderSection('Data Retention', label.retention));
+  if (s.retention) {
+    sections.push(renderSection('Data Retention', s.retention));
   }
-  if (label.compliance) {
-    sections.push(renderSection('Compliance', label.compliance));
+  if (s.compliance) {
+    sections.push(renderSection('Compliance', s.compliance));
   }
-  if (label.sovereignty) {
-    sections.push(renderSection('Sovereignty', label.sovereignty));
+  if (s.sovereignty) {
+    sections.push(renderSection('Sovereignty', s.sovereignty));
   }
-  if (label.outcome) {
-    sections.push(renderSection('Outcome Metrics', label.outcome));
+  if (s.outcome) {
+    sections.push(renderSection('Outcome Metrics', s.outcome));
   }
   if (label.risk_summary) {
+    const flags = (label.risk_summary.flags || []).map(f => `<div style="color:var(--accent-warm);font-size:.8rem;margin:.2rem 0">⚠ ${f}</div>`).join('');
     sections.push(`<div class="nutrition-section"><h3>Risk Summary</h3>
       <div class="nutrition-row"><span class="label">Overall Risk</span><span class="value">${label.risk_summary.overall_risk || '—'}</span></div>
-      <div class="nutrition-row"><span class="label">Recommendation</span><span class="value">${label.risk_summary.recommendation || '—'}</span></div>
+      ${flags}
     </div>`);
   }
 
