@@ -46,6 +46,10 @@ class UserProfile:
         preferences: Optional[Dict] = None,
         created_at: Optional[str] = None,
         updated_at: Optional[str] = None,
+        # ── 2026 Security Blueprint Fields ──
+        requires_us_sovereignty: bool = False,
+        strict_privacy_mode: bool = False,
+        sovereignty_tier_preference: Optional[str] = None,
     ):
         self.profile_id = profile_id
         self.industry = industry
@@ -58,6 +62,10 @@ class UserProfile:
         self.preferences = preferences or {}
         self.created_at = created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         self.updated_at = updated_at or self.created_at
+        # ── 2026 Security Blueprint ──
+        self.requires_us_sovereignty = requires_us_sovereignty
+        self.strict_privacy_mode = strict_privacy_mode
+        self.sovereignty_tier_preference = sovereignty_tier_preference  # "us_controlled" | "allied" | None
 
     # ---- serialization ----
 
@@ -74,6 +82,9 @@ class UserProfile:
             "preferences": self.preferences,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            "requires_us_sovereignty": self.requires_us_sovereignty,
+            "strict_privacy_mode": self.strict_privacy_mode,
+            "sovereignty_tier_preference": self.sovereignty_tier_preference,
         }
 
     @classmethod
@@ -90,6 +101,9 @@ class UserProfile:
             preferences=d.get("preferences"),
             created_at=d.get("created_at"),
             updated_at=d.get("updated_at"),
+            requires_us_sovereignty=d.get("requires_us_sovereignty", False),
+            strict_privacy_mode=d.get("strict_privacy_mode", False),
+            sovereignty_tier_preference=d.get("sovereignty_tier_preference"),
         )
 
     def update(self, **kwargs):
