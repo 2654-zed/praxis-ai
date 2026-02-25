@@ -17,7 +17,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and executes wor
 | **Test coverage** | 645 tests across 13 test files, all passing |
 | **Frontend** | 27 HTML + 4 JS files (~12,000 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~64,000 (Python + Frontend) |
+| **Total LOC** | ~64,100 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
 | **Last auto-update** | 2026-02-25 20:36 UTC |
 <!-- AUTO:STATS:END -->
@@ -929,6 +929,8 @@ _CONDUIT_OK = False  # set in except block
 
 <!-- AUTO:GIT:START -->
 ```
+1403d42 auto: 2026-02-25 14:36:43
+7a8e629 docs(auto): update README stats [skip ci]
 1fec1ce auto: 2026-02-25 14:36:08
 ab44737 docs(auto): update README stats [skip ci]
 61019a8 auto: 2026-02-25 14:29:04
@@ -947,8 +949,6 @@ e04d438 auto: 2026-02-25 14:22:43
 292ee5f docs(auto): update README stats [skip ci]
 669181b auto: 2026-02-25 14:21:39
 eda0e5f docs(auto): update README stats [skip ci]
-2719ec6 auto: 2026-02-25 12:36:45
-4450594 docs(auto): update README stats [skip ci]
 ```
 <!-- AUTO:GIT:END -->
 
