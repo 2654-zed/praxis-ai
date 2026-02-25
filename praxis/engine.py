@@ -71,6 +71,17 @@ if _INTEL_AVAILABLE:
         log.warning("Intelligence init failed (permanently disabled): %s", exc)
         _INTEL_AVAILABLE = False
 
+# ── 2026 Security Blueprint: Sovereignty scoring ──
+try:
+    from .sovereignty import sovereignty_score_modifier as _sov_mod, filter_by_sovereignty as _sov_filter
+    _SOVEREIGNTY_AVAILABLE = True
+except ImportError:
+    try:
+        from sovereignty import sovereignty_score_modifier as _sov_mod, filter_by_sovereignty as _sov_filter
+        _SOVEREIGNTY_AVAILABLE = True
+    except ImportError:
+        _SOVEREIGNTY_AVAILABLE = False
+
 
 def normalize(text: str) -> str:
     """Lowercase + basic cleanup."""
@@ -144,6 +155,13 @@ def score_tool(tool, keywords):
             score += get_learned_boost(tool.name)
         except Exception as exc:
             log.debug("Learned boost failed for %s: %s", tool.name, exc)
+
+    # ── 2026 Security Blueprint: Sovereignty score modifier ──
+    if _SOVEREIGNTY_AVAILABLE and _w("enable_sovereignty_scoring", True):
+        try:
+            score += _sov_mod(tool)
+        except Exception as exc:
+            log.debug("Sovereignty scoring failed for %s: %s", tool.name, exc)
 
     return score
 

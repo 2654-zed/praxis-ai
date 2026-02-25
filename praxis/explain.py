@@ -571,6 +571,39 @@ def explain_tool(tool: Tool, intent: dict, profile: Optional[UserProfile] = None
     }
 
 
+# ── 2026 Security Blueprint: Sovereignty & Nutrition helpers ──
+
+def _get_sovereignty_data(tool) -> dict:
+    """Generate sovereignty assessment for a tool explanation."""
+    if not _SOVEREIGNTY_AVAILABLE:
+        return {}
+    try:
+        assessment = assess_sovereignty(tool)
+        badge = get_trust_badge(tool)
+        return {
+            "trust_tier": assessment.get("trust_tier", "unknown"),
+            "badge": badge,
+            "risk_score": assessment.get("risk_score", 0.0),
+            "warnings": assessment.get("warnings", []),
+            "recommendation": assessment.get("recommendation", ""),
+        }
+    except Exception:
+        return {}
+
+
+def _get_nutrition_data(tool) -> dict:
+    """Generate nutrition label for a tool explanation."""
+    if not _NUTRITION_AVAILABLE:
+        return {}
+    try:
+        sov_data = None
+        if _SOVEREIGNTY_AVAILABLE:
+            sov_data = assess_sovereignty(tool)
+        return generate_nutrition_label(tool, sov_data)
+    except Exception:
+        return {}
+
+
 # ======================================================================
 # Per-stack explanations
 # ======================================================================
