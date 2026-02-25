@@ -322,5 +322,35 @@ def find_tools(user_input, top_n: int = 5, categories_filter: list = None, profi
         except Exception as exc:
             log.warning("Diversity reranking failed: %s", exc)
 
-    return [tool for _, tool in scored[:top_n]]
+    results = [tool for _, tool in scored[:top_n]]
+
+    # ── 2026 Security Blueprint: Sovereignty filtering ──
+    if _SOVEREIGNTY_AVAILABLE and profile:
+        require_us = getattr(profile, "requires_us_sovereignty", False)
+        require_zdr = getattr(profile, "strict_privacy_mode", False)
+        tier_pref = getattr(profile, "sovereignty_tier_preference", None)
+
+        if require_us or require_zdr or tier_pref:
+            try:
+                tier_whitelist = None
+                if tier_pref == "us_controlled":
+                    tier_whitelist = {"us_controlled"}
+                elif tier_pref == "allied":
+                    tier_whitelist = {"us_controlled", "allied"}
+
+                filtered = _sov_filter(
+                    results,
+                    tier_whitelist=tier_whitelist,
+                    exclude_high_risk=True,
+                    require_zdr=require_zdr,
+                    require_us=require_us,
+                )
+                if filtered:
+                    results = filtered
+                    log.info("Sovereignty filter: %d → %d tools after tier/ZDR constraints",
+                             len(scored), len(results))
+            except Exception as exc:
+                log.warning("Sovereignty filtering failed: %s", exc)
+
+    return results
 
