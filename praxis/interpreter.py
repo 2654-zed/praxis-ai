@@ -626,5 +626,7 @@ def extract_structured_intents(user_query: str) -> dict:
         },
         "multi_intents": multi,
         "interpreted": interpreted,
+        # ── 2026 Security Blueprint: Sensitive context propagation ──
+        "sensitive_context": interpreted.get("sensitive_context", detect_sensitive_context(user_query)),
     }
 
