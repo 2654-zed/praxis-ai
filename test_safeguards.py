@@ -18,6 +18,11 @@ def test(name, url, body):
         )
         resp = json.loads(urllib.request.urlopen(req).read())
         return resp
+    except urllib.error.HTTPError as exc:
+        body_text = exc.read().decode()
+        print(f"  FAIL {name}: HTTP {exc.code} — {body_text[:200]}")
+        failed += 1
+        return None
     except Exception as exc:
         print(f"  FAIL {name}: {exc}")
         failed += 1
