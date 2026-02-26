@@ -843,3 +843,142 @@ log.info(
     _SELF_DIR,
     len(_discover_source_files()),
 )
+
+# =====================================================================
+# Safeguard 2 — Complexity Ceiling Enforcement
+# =====================================================================
+# Prevents cognitive offloading by rejecting LLM-generated code that
+# exceeds safe complexity thresholds.  Two dimensions:
+#   1. Cyclomatic Complexity ≤ 10  (reuses existing _cyclomatic_complexity)
+#   2. AST Nesting Depth ≤ 5      (new CognitiveDepthVisitor)
+# =====================================================================
+
+
+class CognitiveDepthVisitor(ast.NodeVisitor):
+    """
+    Walks an AST and tracks the maximum nesting depth of control-flow
+    structures (if/for/while/try/with/match).  Depths > 5 indicate
+    code that is too complex for a human reviewer to confidently verify.
+    """
+
+    NESTING_NODES = (
+        ast.If, ast.For, ast.While, ast.Try,
+        ast.With, ast.AsyncWith, ast.AsyncFor,
+    )
+
+    # Python 3.10+ match statement
+    try:
+        NESTING_NODES = NESTING_NODES + (ast.Match,)
+    except AttributeError:
+        pass  # pre-3.10
+
+    def __init__(self):
+        self.max_depth: int = 0
+        self._current_depth: int = 0
+        self.depth_locations: List[Dict[str, Any]] = []
+
+    def _enter_nesting(self, node):
+        self._current_depth += 1
+        if self._current_depth > self.max_depth:
+            self.max_depth = self._current_depth
+        if self._current_depth > 5:
+            self.depth_locations.append({
+                "line": getattr(node, "lineno", 0),
+                "depth": self._current_depth,
+                "node_type": type(node).__name__,
+            })
+        self.generic_visit(node)
+        self._current_depth -= 1
+
+    def visit_If(self, node):      self._enter_nesting(node)
+    def visit_For(self, node):     self._enter_nesting(node)
+    def visit_While(self, node):   self._enter_nesting(node)
+    def visit_Try(self, node):     self._enter_nesting(node)
+    def visit_With(self, node):    self._enter_nesting(node)
+    def visit_AsyncWith(self, node): self._enter_nesting(node)
+    def visit_AsyncFor(self, node):  self._enter_nesting(node)
+
+    # Python 3.10+
+    if hasattr(ast, "Match"):
+        def visit_Match(self, node): self._enter_nesting(node)
+
+
+def enforce_complexity_ceilings(
+    source_code: str,
+    *,
+    max_cyclomatic: int = 10,
+    max_nesting: int = 5,
+) -> Dict[str, Any]:
+    """
+    Enforce complexity ceilings on source code.
+
+    Checks:
+        1. Per-function cyclomatic complexity ≤ *max_cyclomatic* (default 10)
+        2. Maximum AST nesting depth ≤ *max_nesting* (default 5)
+
+    Returns:
+        {
+            "accepted": bool,
+            "max_nesting_depth": int,
+            "nesting_violations": [...],
+            "cyclomatic_violations": [...],
+            "functions_checked": int,
+            "summary": str,
+        }
+
+    Raises nothing — the caller decides how to handle a rejection.
+    """
+    try:
+        tree = ast.parse(source_code)
+    except SyntaxError as exc:
+        return {
+            "accepted": False,
+            "max_nesting_depth": -1,
+            "nesting_violations": [],
+            "cyclomatic_violations": [{"error": f"SyntaxError: {exc}"}],
+            "functions_checked": 0,
+            "summary": f"Code failed to parse: {exc}",
+        }
+
+    # ── Nesting depth check ──
+    depth_visitor = CognitiveDepthVisitor()
+    depth_visitor.visit(tree)
+
+    # ── Cyclomatic complexity per-function ──
+    cc_violations: List[Dict[str, Any]] = []
+    func_count = 0
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            func_count += 1
+            cc = _cyclomatic_complexity(node)
+            if cc > max_cyclomatic:
+                cc_violations.append({
+                    "function": node.name,
+                    "line": node.lineno,
+                    "cyclomatic_complexity": cc,
+                    "limit": max_cyclomatic,
+                })
+
+    accepted = (
+        depth_visitor.max_depth <= max_nesting
+        and len(cc_violations) == 0
+    )
+
+    parts = []
+    if depth_visitor.max_depth > max_nesting:
+        parts.append(
+            f"Nesting depth {depth_visitor.max_depth} exceeds limit {max_nesting}"
+        )
+    if cc_violations:
+        names = ", ".join(v["function"] for v in cc_violations)
+        parts.append(f"Cyclomatic complexity exceeded in: {names}")
+    summary = "; ".join(parts) if parts else "All complexity checks passed"
+
+    return {
+        "accepted": accepted,
+        "max_nesting_depth": depth_visitor.max_depth,
+        "nesting_violations": depth_visitor.depth_locations,
+        "cyclomatic_violations": cc_violations,
+        "functions_checked": func_count,
+        "summary": summary,
+    }
