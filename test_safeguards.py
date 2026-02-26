@@ -3,7 +3,7 @@ import urllib.request
 import json
 import sys
 
-BASE = "http://localhost:8000"
+BASE = "http://localhost:8001"
 passed = 0
 failed = 0
 
