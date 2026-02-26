@@ -1186,3 +1186,196 @@ def register_core_routes(app, deps):
         if not tool:
             return {"error": f"Tool '{tool_name}' not found"}
         return assess(tool)
+    # ══════════════════════════════════════════════════════════════
+    # Cognitive Offloading Safeguards — Blueprint 2026
+    # ══════════════════════════════════════════════════════════════
+
+    # ── Safeguard 1: Architectural Boundary Enforcement ──
+
+    @app.post("/safeguards/validate-boundaries")
+    def validate_boundaries(body: dict):
+        """
+        Validate LLM-generated code against Hexagonal Architecture boundaries.
+
+        Body: { "code": "import requests\\n...", "layer": "domain" }
+        """
+        from praxis.engine import ArchitecturalBoundaryEnforcer
+        code = body.get("code", "")
+        layer = body.get("layer", "domain")
+        enforcer = ArchitecturalBoundaryEnforcer()
+        return enforcer.validate_llm_output(code, layer=layer)
+
+    @app.post("/safeguards/generate-prompt")
+    def generate_constrained_prompt(body: dict):
+        """
+        Generate a Hexagonal-Architecture-scoped prompt for an LLM.
+
+        Body: {
+            "port_name": "find_tools",
+            "input_types": {"query": "str", "limit": "int"},
+            "return_type": "List[Tool]",
+            "domain_rules": ["max 50 results", "validate query length"]
+        }
+        """
+        from praxis.engine import ArchitecturalBoundaryEnforcer, PortContract
+        contract = PortContract(
+            port_name=body.get("port_name", "unnamed_port"),
+            input_types=body.get("input_types", {}),
+            return_type=body.get("return_type", "Any"),
+            domain_rules=body.get("domain_rules", []),
+        )
+        enforcer = ArchitecturalBoundaryEnforcer()
+        return {"prompt": enforcer.generate_constrained_prompt(contract)}
+
+    # ── Safeguard 2: Complexity Ceiling Enforcement ──
+
+    @app.post("/safeguards/complexity-check")
+    def complexity_check(body: dict):
+        """
+        Enforce complexity ceilings on submitted code.
+
+        Body: {
+            "code": "def foo():\\n  ...",
+            "max_cyclomatic": 10,   (optional, default 10)
+            "max_nesting": 5        (optional, default 5)
+        }
+        """
+        from praxis.introspect import enforce_complexity_ceilings
+        code = body.get("code", "")
+        return enforce_complexity_ceilings(
+            code,
+            max_cyclomatic=body.get("max_cyclomatic", 10),
+            max_nesting=body.get("max_nesting", 5),
+        )
+
+    # ── Safeguard 3: LLM-to-LLM Verification ──
+
+    @app.post("/safeguards/mutation-test")
+    def mutation_test(body: dict):
+        """
+        Generate a semantically-mutated variant of code for verification.
+
+        Body: { "code": "def foo(x):\\n  return x > 5" }
+        """
+        from praxis.explain import generate_mutation
+        code = body.get("code", "")
+        mutated, mutations = generate_mutation(code)
+        return {
+            "original_code": code,
+            "mutated_code": mutated,
+            "mutations_applied": mutations,
+        }
+
+    @app.post("/safeguards/verify-consistency")
+    def verify_consistency(body: dict):
+        """
+        Run dual-agent consistency verification on code.
+
+        Body: { "code": "def process(items):\\n  ..." }
+        """
+        from praxis.intelligence import VerificationPipeline
+        code = body.get("code", "")
+        pipeline = VerificationPipeline(
+            similarity_threshold=body.get("threshold", 0.95)
+        )
+        return pipeline.execute_consistency_check(code)
+
+    # ── Safeguard 4: Boring Code Optimisation ──
+
+    @app.post("/safeguards/boring-prompt")
+    def boring_prompt(body: dict):
+        """
+        Build a KERNEL-framework prompt that steers LLMs toward
+        maintainable "boring" code.
+
+        Body: {
+            "task_goal": "Parse CSV and return validated records",
+            "input_context": "existing code snippet...",
+            "verification_criteria": ["< 30 lines per function"],
+            "extra_constraints": ["Use pathlib for paths"]
+        }
+        """
+        from praxis.interpreter import PromptInterpreter, KernelPromptContext
+        ctx = KernelPromptContext(
+            task_goal=body.get("task_goal", ""),
+            input_context=body.get("input_context", ""),
+            verification_criteria=body.get("verification_criteria", []),
+            max_function_lines=body.get("max_function_lines", 30),
+        )
+        interpreter = PromptInterpreter(
+            extra_constraints=body.get("extra_constraints"),
+        )
+        return {"prompt": interpreter.build_boring_prompt(ctx)}
+
+    @app.post("/safeguards/boring-validate")
+    def boring_validate(body: dict):
+        """
+        Validate code against boring-code compliance rules.
+
+        Body: { "code": "def foo():\\n  ..." }
+        """
+        from praxis.interpreter import PromptInterpreter
+        code = body.get("code", "")
+        interpreter = PromptInterpreter()
+        return interpreter.validate_boring_compliance(code)
+
+    # ── Safeguard Dashboard (all-in-one) ──
+
+    @app.post("/safeguards/full-analysis")
+    def safeguard_full_analysis(body: dict):
+        """
+        Run all 4 safeguards on a piece of code and return a unified report.
+
+        Body: {
+            "code": "...",
+            "layer": "domain",       (optional)
+            "max_cyclomatic": 10,    (optional)
+            "max_nesting": 5         (optional)
+        }
+        """
+        from praxis.engine import ArchitecturalBoundaryEnforcer
+        from praxis.introspect import enforce_complexity_ceilings
+        from praxis.intelligence import VerificationPipeline
+        from praxis.interpreter import PromptInterpreter
+
+        code = body.get("code", "")
+        layer = body.get("layer", "domain")
+
+        # S1: Architectural boundaries
+        enforcer = ArchitecturalBoundaryEnforcer()
+        boundaries = enforcer.validate_llm_output(code, layer=layer)
+
+        # S2: Complexity ceilings
+        complexity = enforce_complexity_ceilings(
+            code,
+            max_cyclomatic=body.get("max_cyclomatic", 10),
+            max_nesting=body.get("max_nesting", 5),
+        )
+
+        # S3: Consistency verification
+        pipeline = VerificationPipeline()
+        consistency = pipeline.execute_consistency_check(code)
+
+        # S4: Boring code compliance
+        boring = PromptInterpreter().validate_boring_compliance(code)
+
+        # Unified verdict
+        all_pass = (
+            boundaries["valid"]
+            and complexity["accepted"]
+            and consistency["verified"]
+            and boring["compliant"]
+        )
+
+        return {
+            "all_safeguards_pass": all_pass,
+            "safeguard_1_boundaries": boundaries,
+            "safeguard_2_complexity": complexity,
+            "safeguard_3_verification": consistency,
+            "safeguard_4_boring_code": boring,
+            "summary": (
+                "All 4 safeguards passed — code is safe to accept"
+                if all_pass
+                else "One or more safeguards failed — review required"
+            ),
+        }
