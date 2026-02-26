@@ -954,3 +954,119 @@ def assemble_presentation(survivors: list, eliminated: list) -> dict:
         "total_eliminated": e_count,
         "notable_eliminations": notable,
     }
+
+# =====================================================================
+# Safeguard 3a — AST Mutation Engine for LLM-to-LLM Verification
+# =====================================================================
+# Generates semantically-mutated variants of source code so a second
+# LLM agent can verify the first agent's comprehension.  If the second
+# agent cannot detect the mutation, the original output is flagged as
+# potentially hallucinated.
+# =====================================================================
+
+import ast as _ast
+import copy as _copy
+import random as _random
+from typing import Tuple
+
+
+class ASTMutator(_ast.NodeTransformer):
+    """
+    Flips comparison and boolean operators in an AST to produce a
+    semantically-different but syntactically-valid mutation.
+
+    Mutation types:
+        • Eq ↔ NotEq
+        • Lt ↔ Gt
+        • LtE ↔ GtE
+        • And ↔ Or
+        • Is ↔ IsNot
+    """
+
+    # Operator flip table
+    _COMPARE_FLIPS = {
+        _ast.Eq:    _ast.NotEq,
+        _ast.NotEq: _ast.Eq,
+        _ast.Lt:    _ast.Gt,
+        _ast.Gt:    _ast.Lt,
+        _ast.LtE:   _ast.GtE,
+        _ast.GtE:   _ast.LtE,
+        _ast.Is:    _ast.IsNot,
+        _ast.IsNot: _ast.Is,
+    }
+
+    _BOOL_FLIPS = {
+        _ast.And: _ast.Or,
+        _ast.Or:  _ast.And,
+    }
+
+    def __init__(self, *, max_mutations: int = 3, seed: int | None = None):
+        super().__init__()
+        self.mutations_applied: list[str] = []
+        self._max_mutations = max_mutations
+        self._rng = _random.Random(seed)
+
+    def visit_Compare(self, node):
+        self.generic_visit(node)
+        if len(self.mutations_applied) >= self._max_mutations:
+            return node
+
+        new_ops = []
+        mutated = False
+        for op in node.ops:
+            flipped = self._COMPARE_FLIPS.get(type(op))
+            if flipped and not mutated and self._rng.random() < 0.6:
+                new_ops.append(flipped())
+                self.mutations_applied.append(
+                    f"Line {node.lineno}: {type(op).__name__} → {flipped.__name__}"
+                )
+                mutated = True
+            else:
+                new_ops.append(op)
+        node.ops = new_ops
+        return node
+
+    def visit_BoolOp(self, node):
+        self.generic_visit(node)
+        if len(self.mutations_applied) >= self._max_mutations:
+            return node
+
+        flipped = self._BOOL_FLIPS.get(type(node.op))
+        if flipped and self._rng.random() < 0.5:
+            self.mutations_applied.append(
+                f"Line {node.lineno}: {type(node.op).__name__} → {flipped.__name__}"
+            )
+            node.op = flipped()
+        return node
+
+
+def generate_mutation(
+    source_code: str,
+    *,
+    max_mutations: int = 3,
+    seed: int | None = None,
+) -> Tuple[str, list[str]]:
+    """
+    Generate a semantically-mutated variant of *source_code*.
+
+    Returns:
+        (mutated_source, list_of_mutations_applied)
+
+    If no mutations are possible (e.g. no comparisons), returns the
+    original code unchanged with an empty list.
+    """
+    try:
+        tree = _ast.parse(source_code)
+    except SyntaxError:
+        return source_code, []
+
+    mutator = ASTMutator(max_mutations=max_mutations, seed=seed)
+    mutated_tree = mutator.visit(tree)
+    _ast.fix_missing_locations(mutated_tree)
+
+    try:
+        mutated_code = _ast.unparse(mutated_tree)
+    except Exception:
+        return source_code, []
+
+    return mutated_code, mutator.mutations_applied
