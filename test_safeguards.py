@@ -1,32 +1,43 @@
 """End-to-end tests for 4 Cognitive Offloading Safeguard endpoints."""
 import urllib.request
+import urllib.error
 import json
 import sys
+import time
 
-BASE = "http://localhost:8001"
+BASE = "http://localhost:8002"
 passed = 0
 failed = 0
 
 
 def test(name, url, body):
     global passed, failed
-    try:
-        data = json.dumps(body).encode()
-        req = urllib.request.Request(
-            f"{BASE}{url}", data=data,
-            headers={"Content-Type": "application/json"},
-        )
-        resp = json.loads(urllib.request.urlopen(req).read())
-        return resp
-    except urllib.error.HTTPError as exc:
-        body_text = exc.read().decode()
-        print(f"  FAIL {name}: HTTP {exc.code} — {body_text[:200]}")
-        failed += 1
-        return None
-    except Exception as exc:
-        print(f"  FAIL {name}: {exc}")
-        failed += 1
-        return None
+    for attempt in range(3):
+        try:
+            data = json.dumps(body).encode()
+            req = urllib.request.Request(
+                f"{BASE}{url}", data=data,
+                headers={"Content-Type": "application/json"},
+            )
+            resp = json.loads(urllib.request.urlopen(req, timeout=10).read())
+            time.sleep(0.3)
+            return resp
+        except urllib.error.HTTPError as exc:
+            body_text = exc.read().decode()
+            print(f"  FAIL {name}: HTTP {exc.code} — {body_text[:200]}")
+            failed += 1
+            return None
+        except (ConnectionRefusedError, urllib.error.URLError) as exc:
+            if attempt < 2:
+                time.sleep(2)
+                continue
+            print(f"  FAIL {name}: {exc}")
+            failed += 1
+            return None
+        except Exception as exc:
+            print(f"  FAIL {name}: {exc}")
+            failed += 1
+            return None
 
 
 def ok(name, condition, detail=""):
