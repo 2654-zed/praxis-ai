@@ -772,8 +772,9 @@ class PromptInterpreter:
                 # Length check
                 func_lines = (node.end_lineno or node.lineno) - node.lineno + 1
                 # Subtract docstring lines
+                _str_types = (_a.Constant,) + ((_a.Str,) if hasattr(_a, 'Str') else ())
                 if (node.body and isinstance(node.body[0], _a.Expr)
-                        and isinstance(node.body[0].value, (_a.Constant, _a.Str))):
+                        and isinstance(node.body[0].value, _str_types)):
                     doc_lines = (node.body[0].end_lineno or node.body[0].lineno) - node.body[0].lineno + 1
                     func_lines -= doc_lines
 
@@ -791,7 +792,7 @@ class PromptInterpreter:
                 has_doc = (
                     node.body
                     and isinstance(node.body[0], _a.Expr)
-                    and isinstance(node.body[0].value, (_a.Constant, _a.Str))
+                    and isinstance(node.body[0].value, _str_types)
                 )
                 if not has_doc:
                     violations.append({
