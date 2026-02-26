@@ -5,7 +5,7 @@ import json
 import sys
 import time
 
-BASE = "http://localhost:8002"
+BASE = "http://localhost:8000"
 passed = 0
 failed = 0
 
