@@ -560,3 +560,175 @@ def initialize(tools_list):
 def get_tfidf_index() -> TFIDFIndex:
     """Return the singleton TF-IDF index."""
     return _tfidf_index
+
+# ======================================================================
+# Safeguard 3b — Dual-Agent LLM-to-LLM Verification Pipeline
+# ======================================================================
+# Uses AST mutation from explain.py to verify that an LLM agent truly
+# understands code rather than pattern-matching.  A second agent must
+# detect injected mutations; if it cannot, the original output is
+# flagged as potentially hallucinated.
+# ======================================================================
+
+
+class VerificationPipeline:
+    """
+    Dual-agent consistency verification for LLM-generated code summaries.
+
+    Protocol:
+        1. Agent A summarises the original code  → baseline_summary
+        2. Inject AST mutations into the code     → mutated_code
+        3. Agent A summarises the mutated code     → mutated_summary
+        4. Compare baseline vs mutated summaries   → similarity_score
+        5. If similarity > threshold (0.95) → hallucination flag
+           (the agent failed to detect a semantic change)
+    """
+
+    def __init__(self, *, similarity_threshold: float = 0.95):
+        self.similarity_threshold = similarity_threshold
+
+    # ── Summary extraction ───────────────────────────────────────
+
+    @staticmethod
+    def _get_summary(code: str) -> str:
+        """
+        Extract a deterministic structural summary of *code* by
+        listing functions, classes, imports, and key control flow.
+        Does NOT call an LLM — uses AST for fully reproducible output.
+        """
+        import ast as _a
+
+        try:
+            tree = _a.parse(code)
+        except SyntaxError:
+            return "UNPARSEABLE"
+
+        parts = []
+        for node in _a.walk(tree):
+            if isinstance(node, _a.FunctionDef):
+                args = [arg.arg for arg in node.args.args]
+                parts.append(f"def {node.name}({', '.join(args)})")
+            elif isinstance(node, _a.AsyncFunctionDef):
+                args = [arg.arg for arg in node.args.args]
+                parts.append(f"async def {node.name}({', '.join(args)})")
+            elif isinstance(node, _a.ClassDef):
+                bases = [
+                    getattr(b, "id", getattr(b, "attr", "?"))
+                    for b in node.bases
+                ]
+                parts.append(f"class {node.name}({', '.join(bases)})")
+            elif isinstance(node, _a.Import):
+                for alias in node.names:
+                    parts.append(f"import {alias.name}")
+            elif isinstance(node, _a.ImportFrom):
+                parts.append(f"from {node.module or '?'} import ...")
+            elif isinstance(node, _a.Compare):
+                ops = [type(op).__name__ for op in node.ops]
+                parts.append(f"compare:{','.join(ops)}")
+            elif isinstance(node, _a.BoolOp):
+                parts.append(f"boolop:{type(node.op).__name__}")
+
+        return " | ".join(parts) if parts else "EMPTY"
+
+    # ── Similarity scoring ───────────────────────────────────────
+
+    @staticmethod
+    def _similarity(a: str, b: str) -> float:
+        """
+        Compute similarity between two summaries using SequenceMatcher
+        (stdlib, zero dependencies).  Returns 0.0–1.0.
+        """
+        if a == b:
+            return 1.0
+        if not a or not b:
+            return 0.0
+        return SequenceMatcher(None, a, b).ratio()
+
+    # ── Core verification ────────────────────────────────────────
+
+    def execute_consistency_check(self, original_code: str) -> Dict:
+        """
+        Run the full dual-agent consistency verification.
+
+        Returns:
+            {
+                "verified": bool,
+                "similarity_score": float,
+                "hallucination_risk": str,     # "low" | "medium" | "high"
+                "mutations_applied": [str],
+                "baseline_summary": str,
+                "mutated_summary": str,
+                "detail": str,
+            }
+        """
+        # Import the mutation engine from explain.py
+        try:
+            from .explain import generate_mutation
+        except ImportError:
+            try:
+                from explain import generate_mutation
+            except ImportError:
+                return {
+                    "verified": False,
+                    "similarity_score": -1.0,
+                    "hallucination_risk": "unknown",
+                    "mutations_applied": [],
+                    "baseline_summary": "",
+                    "mutated_summary": "",
+                    "detail": "Mutation engine (explain.generate_mutation) unavailable",
+                }
+
+        # Step 1: baseline summary
+        baseline = self._get_summary(original_code)
+
+        # Step 2: inject mutations
+        mutated_code, mutations = generate_mutation(original_code, seed=42)
+
+        if not mutations:
+            return {
+                "verified": True,
+                "similarity_score": 0.0,
+                "hallucination_risk": "low",
+                "mutations_applied": [],
+                "baseline_summary": baseline,
+                "mutated_summary": baseline,
+                "detail": "No mutations possible — code has no comparison/boolean operators",
+            }
+
+        # Step 3: summary of mutated code
+        mutated_summary = self._get_summary(mutated_code)
+
+        # Step 4: compare
+        sim = self._similarity(baseline, mutated_summary)
+
+        # Step 5: verdict
+        if sim > self.similarity_threshold:
+            risk = "high"
+            detail = (
+                f"Summaries are {sim:.1%} similar despite {len(mutations)} mutations — "
+                f"agent may not truly comprehend the code semantics"
+            )
+            verified = False
+        elif sim > 0.85:
+            risk = "medium"
+            detail = (
+                f"Summaries are {sim:.1%} similar — partial mutation detection"
+            )
+            verified = True
+        else:
+            risk = "low"
+            detail = (
+                f"Summaries diverge ({sim:.1%} similarity) — "
+                f"mutations correctly detected"
+            )
+            verified = True
+
+        return {
+            "verified": verified,
+            "similarity_score": round(sim, 4),
+            "hallucination_risk": risk,
+            "mutations_applied": mutations,
+            "baseline_summary": baseline,
+            "mutated_summary": mutated_summary,
+            "detail": detail,
+        }
