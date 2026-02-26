@@ -308,7 +308,6 @@
   <a href="/static/home.html">Home</a>
   <a href="/static/tools.html">Tools</a>
   <a href="/static/differential.html">Diagnosis</a>
-  <a href="/static/sovereignty.html">Sovereignty</a>
   <a href="/static/trust_badges.html" class="active">Trust Badges</a>
   <a href="/static/manifesto.html">Manifesto</a>
 </nav>
@@ -491,7 +490,7 @@ async function loadDashboard() {
     const data = await resp.json();
 
     // Grade distribution
-    const dist = data.summary?.trust_distribution || {};
+    const dist = data.summary?.grade_distribution || data.summary?.trust_distribution || {};
     document.getElementById('grade-a-count').textContent = dist.A || 0;
     document.getElementById('grade-b-count').textContent = dist.B || 0;
     document.getElementById('grade-c-count').textContent = dist.C || 0;
