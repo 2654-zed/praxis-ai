@@ -1431,10 +1431,16 @@ def create_app():
         _RASP_MODE = _os.environ.get("PRAXIS_RASP_MODE", "enforce").lower()  # enforce | log | off
         _RASP_BLOCK_FLOOR = {_TSev.MEDIUM, _TSev.HIGH, _TSev.CRITICAL}
         _RASP_MAX_SCAN_BYTES = 256 * 1024  # only scan first 256 KB
+        # Endpoints that receive raw source code as input — exempt from RASP
+        _RASP_EXEMPT_PREFIXES = ("/safeguards/",)
 
         class _RASPMiddleware(_BaseHTTPMW):
             async def dispatch(self, request, call_next):
                 if _RASP_MODE == "off" or request.method in {"GET", "HEAD", "OPTIONS"}:
+                    return await call_next(request)
+                # Exempt code-analysis endpoints from RASP scanning
+                path = request.url.path
+                if any(path.startswith(p) for p in _RASP_EXEMPT_PREFIXES):
                     return await call_next(request)
                 try:
                     body = await request.body()
