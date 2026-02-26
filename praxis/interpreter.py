@@ -630,3 +630,206 @@ def extract_structured_intents(user_query: str) -> dict:
         "sensitive_context": interpreted.get("sensitive_context", detect_sensitive_context(user_query)),
     }
 
+
+# =====================================================================
+# Safeguard 4 — Boring Code Optimization (KERNEL Prompting Framework)
+# =====================================================================
+# Forces LLM-generated code toward maintainability by constructing
+# prompts that explicitly forbid clever patterns and mandate "boring"
+# idiomatic Python.  Uses the KERNEL framework:
+#   K — Knowledge context
+#   E — Explicit constraints
+#   R — Required output format
+#   N — Negative examples (what NOT to do)
+#   E — Evaluation criteria
+#   L — Limitations acknowledgement
+# =====================================================================
+
+from dataclasses import dataclass as _dc2, field as _fld2
+from typing import List as _List2, Optional as _Opt2
+
+
+@_dc2
+class KernelPromptContext:
+    """Input context for the KERNEL boring-code prompt builder."""
+    task_goal: str                          # What the code should accomplish
+    input_context: str = ""                 # Relevant codebase context
+    verification_criteria: _List2[str] = _fld2(default_factory=list)
+    target_language: str = "Python"
+    max_function_lines: int = 30
+
+
+class PromptInterpreter:
+    """
+    Builds KERNEL-framework prompts that steer LLMs toward producing
+    maintainable, "boring" code — no clever tricks, no deep nesting,
+    explicit control flow, comprehensive docstrings.
+    """
+
+    EXPLICIT_CONSTRAINTS: _List2[str] = [
+        "Follow PEP 8 style conventions strictly",
+        "No nested ternary expressions",
+        "No multi-clause list/dict/set comprehensions (max 1 clause)",
+        "Maximum function length: 30 lines (excluding docstring)",
+        "Use explicit for-loops instead of map/filter/reduce",
+        "Every function must have a Google-style docstring",
+        "No single-letter variable names except i/j/k in loops and x/y in lambdas",
+        "No monkey-patching or runtime class modification",
+        "No *args/**kwargs unless wrapping an external API",
+        "Prefer early returns over deeply nested if/else chains",
+        "No global mutable state — use dependency injection",
+        "Type hints on all function signatures",
+    ]
+
+    NEGATIVE_EXAMPLES: _List2[str] = [
+        "# BAD: nested ternary\nresult = a if x else (b if y else c)",
+        "# BAD: multi-clause comprehension\n[f(x) for x in items if x.active for y in x.parts if y.valid]",
+        "# BAD: clever one-liner\ndata = {k: v for d in [a, b, c] for k, v in d.items()}",
+        "# BAD: implicit behaviour\ndef process(items, cache={}): ...",
+    ]
+
+    def __init__(self, extra_constraints: _Opt2[_List2[str]] = None):
+        self.constraints = list(self.EXPLICIT_CONSTRAINTS)
+        if extra_constraints:
+            self.constraints.extend(extra_constraints)
+
+    def build_boring_prompt(self, ctx: KernelPromptContext) -> str:
+        """
+        Build a KERNEL-framework prompt from the given context.
+
+        Returns a fully formatted prompt string ready to send to an LLM.
+        """
+        constraints_block = "\n".join(f"  {i+1}. {c}" for i, c in enumerate(self.constraints))
+        negatives_block = "\n\n".join(self.NEGATIVE_EXAMPLES)
+        criteria = ctx.verification_criteria or [
+            "All functions < 30 lines",
+            "No nesting deeper than 3 levels",
+            "Every public function has a docstring",
+            "Type hints on all signatures",
+        ]
+        criteria_block = "\n".join(f"  - {c}" for c in criteria)
+
+        prompt = (
+            f"## K — Knowledge Context\n"
+            f"Language: {ctx.target_language}\n"
+            f"Task: {ctx.task_goal}\n"
+        )
+        if ctx.input_context:
+            prompt += f"Existing code context:\n```\n{ctx.input_context}\n```\n"
+
+        prompt += (
+            f"\n## E — Explicit Constraints\n"
+            f"{constraints_block}\n"
+            f"\n## R — Required Output Format\n"
+            f"Return ONLY valid {ctx.target_language} code. "
+            f"Each function must be ≤ {ctx.max_function_lines} lines. "
+            f"Include complete type hints and docstrings.\n"
+            f"\n## N — Negative Examples (DO NOT produce code like this)\n"
+            f"```python\n{negatives_block}\n```\n"
+            f"\n## E — Evaluation Criteria\n"
+            f"Your code will be verified against:\n"
+            f"{criteria_block}\n"
+            f"\n## L — Limitations\n"
+            f"- Do not assume availability of external packages unless specified\n"
+            f"- Do not use deprecated APIs\n"
+            f"- Prefer stdlib solutions over third-party dependencies\n"
+            f"- If a task requires >5 functions, split across multiple modules\n"
+        )
+
+        return prompt.strip()
+
+    def validate_boring_compliance(self, source_code: str) -> dict:
+        """
+        Check whether *source_code* adheres to boring-code constraints.
+
+        Returns:
+            {
+                "compliant": bool,
+                "violations": [{"rule": str, "detail": str, "line": int}],
+                "stats": {"functions": int, "max_length": int, "has_type_hints": bool},
+            }
+        """
+        import ast as _a
+
+        violations = []
+        try:
+            tree = _a.parse(source_code)
+        except SyntaxError as exc:
+            return {
+                "compliant": False,
+                "violations": [{"rule": "syntax", "detail": str(exc), "line": exc.lineno or 0}],
+                "stats": {},
+            }
+
+        lines = source_code.splitlines()
+        func_count = 0
+        max_length = 0
+        has_any_hints = False
+
+        for node in _a.walk(tree):
+            if isinstance(node, (_a.FunctionDef, _a.AsyncFunctionDef)):
+                func_count += 1
+                # Length check
+                func_lines = (node.end_lineno or node.lineno) - node.lineno + 1
+                # Subtract docstring lines
+                if (node.body and isinstance(node.body[0], _a.Expr)
+                        and isinstance(node.body[0].value, (_a.Constant, _a.Str))):
+                    doc_lines = (node.body[0].end_lineno or node.body[0].lineno) - node.body[0].lineno + 1
+                    func_lines -= doc_lines
+
+                if func_lines > max_length:
+                    max_length = func_lines
+
+                if func_lines > 30:
+                    violations.append({
+                        "rule": "max_function_length",
+                        "detail": f"{node.name}() is {func_lines} lines (limit: 30)",
+                        "line": node.lineno,
+                    })
+
+                # Docstring check
+                has_doc = (
+                    node.body
+                    and isinstance(node.body[0], _a.Expr)
+                    and isinstance(node.body[0].value, (_a.Constant, _a.Str))
+                )
+                if not has_doc:
+                    violations.append({
+                        "rule": "missing_docstring",
+                        "detail": f"{node.name}() has no docstring",
+                        "line": node.lineno,
+                    })
+
+                # Return type hint check
+                if node.returns:
+                    has_any_hints = True
+                else:
+                    violations.append({
+                        "rule": "missing_return_type",
+                        "detail": f"{node.name}() missing return type hint",
+                        "line": node.lineno,
+                    })
+
+        # Check for nested ternaries (simple regex heuristic)
+        for i, line in enumerate(lines, 1):
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                continue
+            # Nested ternary: "x if ... else y if ... else z"
+            if_count = stripped.count(" if ") + stripped.count(" else ")
+            if if_count >= 4:  # at least 2 ternary expressions
+                violations.append({
+                    "rule": "nested_ternary",
+                    "detail": "Possible nested ternary expression",
+                    "line": i,
+                })
+
+        return {
+            "compliant": len(violations) == 0,
+            "violations": violations,
+            "stats": {
+                "functions": func_count,
+                "max_length": max_length,
+                "has_type_hints": has_any_hints,
+            },
+        }
