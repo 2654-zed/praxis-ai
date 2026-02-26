@@ -388,3 +388,143 @@ def find_tools(user_input, top_n: int = 5, categories_filter: list = None, profi
 
     return results
 
+
+# =====================================================================
+# Safeguard 1 — Architectural Boundary Enforcement
+# =====================================================================
+# Enforces Hexagonal Architecture constraints on LLM-generated code.
+# Domain and use-case layers are forbidden from importing infrastructure
+# modules (ORMs, HTTP clients, cloud SDKs, web frameworks).
+# =====================================================================
+
+import ast
+from dataclasses import dataclass as _dc, field as _fld
+from typing import Dict, List, Optional
+
+@_dc
+class PortContract:
+    """Describes a hexagonal port that LLM-generated code must respect."""
+    port_name: str
+    input_types: Dict[str, str]   # e.g. {"user_id": "str", "query": "str"}
+    return_type: str              # e.g. "List[ToolResult]"
+    domain_rules: List[str]       # e.g. ["must validate user_id", "max 50 results"]
+
+
+class ArchitecturalBoundaryEnforcer:
+    """
+    Validates that LLM-generated code respects Hexagonal Architecture
+    boundaries by checking imports against a forbidden-list per layer.
+
+    Layers:
+        domain     — pure business logic, zero infrastructure imports
+        use_cases  — orchestration, no direct infra except ports
+        adapters   — free to import anything (infrastructure boundary)
+    """
+
+    FORBIDDEN_IMPORTS: Dict[str, List[str]] = {
+        "domain": [
+            "sqlalchemy", "requests", "fastapi", "boto3", "flask",
+            "django", "httpx", "aiohttp", "psycopg2", "pymongo",
+            "redis", "celery", "pika", "grpc",
+        ],
+        "use_cases": [
+            "sqlalchemy", "requests", "flask", "django",
+            "psycopg2", "pymongo",
+        ],
+        "adapters": [],   # adapters may import anything
+    }
+
+    def __init__(self, target_module_path: Optional[str] = None):
+        self.target_module_path = target_module_path
+        self.violations: List[Dict[str, str]] = []
+
+    # ── Core validation ──────────────────────────────────────────
+
+    def validate_llm_output(
+        self, generated_code: str, layer: str = "domain"
+    ) -> Dict:
+        """
+        Parse *generated_code* and reject any forbidden imports for *layer*.
+
+        Returns:
+            {
+                "valid": bool,
+                "layer": str,
+                "violations": [{"module": str, "line": int, "statement": str}],
+                "imports_found": [str],
+            }
+        """
+        self.violations = []
+        forbidden = self.FORBIDDEN_IMPORTS.get(layer, [])
+        imports_found: List[str] = []
+
+        try:
+            tree = ast.parse(generated_code)
+        except SyntaxError as exc:
+            return {
+                "valid": False,
+                "layer": layer,
+                "violations": [{"module": "SYNTAX_ERROR", "line": exc.lineno or 0,
+                                 "statement": str(exc)}],
+                "imports_found": [],
+            }
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    root = alias.name.split(".")[0]
+                    imports_found.append(alias.name)
+                    if self._is_forbidden(root, forbidden):
+                        self.violations.append({
+                            "module": alias.name,
+                            "line": node.lineno,
+                            "statement": f"import {alias.name}",
+                        })
+            elif isinstance(node, ast.ImportFrom):
+                if node.module:
+                    root = node.module.split(".")[0]
+                    imports_found.append(node.module)
+                    if self._is_forbidden(root, forbidden):
+                        self.violations.append({
+                            "module": node.module,
+                            "line": node.lineno,
+                            "statement": f"from {node.module} import ...",
+                        })
+
+        return {
+            "valid": len(self.violations) == 0,
+            "layer": layer,
+            "violations": self.violations,
+            "imports_found": imports_found,
+        }
+
+    # ── Prompt generation ────────────────────────────────────────
+
+    def generate_constrained_prompt(self, contract: PortContract) -> str:
+        """
+        Generate a Hexagonal-Architecture-scoped prompt that instructs
+        the LLM to produce code honouring *contract* boundaries.
+        """
+        input_sig = ", ".join(f"{k}: {v}" for k, v in contract.input_types.items())
+        rules = "\n".join(f"  - {r}" for r in contract.domain_rules)
+        forbidden = ", ".join(self.FORBIDDEN_IMPORTS.get("domain", []))
+
+        return (
+            f"## Hexagonal Architecture Port: {contract.port_name}\n\n"
+            f"Generate a Python function implementing this port contract.\n\n"
+            f"### Signature\n"
+            f"```python\n"
+            f"def {contract.port_name}({input_sig}) -> {contract.return_type}:\n"
+            f"```\n\n"
+            f"### Domain Rules\n{rules}\n\n"
+            f"### FORBIDDEN Imports (domain layer)\n"
+            f"Do NOT import any of: {forbidden}\n\n"
+            f"The function must be a pure domain operation with no side effects.\n"
+            f"All I/O must go through injected port interfaces, never direct imports.\n"
+        )
+
+    # ── Helpers ──────────────────────────────────────────────────
+
+    @staticmethod
+    def _is_forbidden(module_root: str, forbidden: List[str]) -> bool:
+        return module_root.lower() in [f.lower() for f in forbidden]
