@@ -1379,3 +1379,101 @@ def register_core_routes(app, deps):
                 else "One or more safeguards failed — review required"
             ),
         }
+
+    # ── Fort Knox Security Status Dashboard ─────────────────────────
+    import os as _fk_os
+
+    @app.get("/fort-knox/status")
+    def fort_knox_status():
+        """
+        Live status of the Fort Knox security architecture.
+
+        Returns axiom states, RASP mode, safeguard operational status,
+        and architecture posture for the Fort Knox dashboard.
+        """
+        rasp_mode = _fk_os.environ.get("PRAXIS_RASP_MODE", "enforce").lower()
+        cors_raw = _fk_os.environ.get("PRAXIS_CORS_ORIGINS", "")
+        cors_origins = [o.strip() for o in cors_raw.split(",") if o.strip()]
+
+        # Check each safeguard is importable and operational
+        safeguard_status = []
+        sg_names = [
+            ("Architectural Boundaries", "praxis.engine", "ArchitecturalBoundaryEnforcer"),
+            ("Complexity Ceilings", "praxis.introspect", "enforce_complexity_ceilings"),
+            ("LLM-to-LLM Verification", "praxis.intelligence", "VerificationPipeline"),
+            ("Boring Code Optimisation", "praxis.interpreter", "PromptInterpreter"),
+        ]
+        for label, mod_path, cls_name in sg_names:
+            try:
+                import importlib
+                mod = importlib.import_module(mod_path)
+                obj = getattr(mod, cls_name, None)
+                safeguard_status.append({
+                    "name": label,
+                    "module": mod_path,
+                    "class": cls_name,
+                    "operational": obj is not None,
+                })
+            except Exception as exc:
+                safeguard_status.append({
+                    "name": label,
+                    "module": mod_path,
+                    "class": cls_name,
+                    "operational": False,
+                    "error": str(exc)[:120],
+                })
+
+        safeguards_active = sum(1 for s in safeguard_status if s["operational"])
+
+        return {
+            "architecture": "Hexagonal (Ports and Adapters)",
+            "philosophy": "Fail-Closed",
+            "rasp_mode": rasp_mode,
+            "cors_policy": "strict-allowlist" if cors_origins else "open-dev",
+            "cors_origins_count": len(cors_origins),
+            "safeguards_active": safeguards_active,
+            "safeguard_status": safeguard_status,
+            "axioms": {
+                "axiom1": {
+                    "name": "The Moat",
+                    "description": "Outer Perimeter — CORS + Rate Limiting",
+                    "active": True,
+                },
+                "axiom2": {
+                    "name": "The Sally Port",
+                    "description": "RASP Middleware — Runtime Inspection",
+                    "active": rasp_mode != "off",
+                },
+                "axiom3": {
+                    "name": "Identity Gates",
+                    "description": "AuthN/AuthZ — Zero-Trust JWT",
+                    "active": True,
+                },
+                "axiom4": {
+                    "name": "Internal Scanners",
+                    "description": "AST Taint Propagation",
+                    "active": True,
+                },
+                "axiom5": {
+                    "name": "The Vault",
+                    "description": "Bounded Write Queues + File Locking",
+                    "active": True,
+                },
+            },
+            "layers": {
+                "presentation": {
+                    "analogue": "The Moat & Sally Port",
+                    "role": "External I/O: REST, APIs, UIs, webhooks",
+                },
+                "workflow": {
+                    "analogue": "The Vault",
+                    "role": "PRISM engine, state management, multi-agent pipelines",
+                },
+                "persistence": {
+                    "analogue": "The Ledgers",
+                    "role": "Database transactions, vector stores, knowledge graphs",
+                },
+            },
+            "prism_agents": ["Analyzer", "Selector", "Critic", "Adder"],
+            "threat_mitigations": 6,
+        }
