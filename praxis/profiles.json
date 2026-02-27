@@ -19,17 +19,20 @@
   },
   "journey": {
     "profile_id": "journey",
-    "industry": "startup",
-    "budget": "medium",
+    "industry": "saas",
+    "budget": "low",
     "team_size": "solo",
     "skill_level": "intermediate",
     "existing_tools": [],
     "goals": [
-      "marketing"
+      "design"
     ],
     "constraints": [],
     "preferences": {},
-    "created_at": "2026-02-25T17:09:35.487133Z",
-    "updated_at": "2026-02-25T17:09:35.487600Z"
+    "created_at": "2026-02-27T04:43:45.168224Z",
+    "updated_at": "2026-02-27T04:43:45.171211Z",
+    "requires_us_sovereignty": false,
+    "strict_privacy_mode": false,
+    "sovereignty_tier_preference": null
   }
 }
