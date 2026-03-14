@@ -764,6 +764,14 @@
       flex-shrink: 0;
       box-shadow: 0 4px 12px var(--accent-glow);
     }
+    .tool-logo, .sov-logo, .tc-logo {
+      object-fit: contain;
+      background: rgba(255,255,255,0.08);
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    .tool-logo { width: 44px; height: 44px; border-radius: var(--radius-sm); }
+    .sov-logo { width: 32px; height: 32px; border-radius: 8px; }
     .tool-name {
       font-weight: 700;
       font-size: 1.05rem;
@@ -1461,6 +1469,16 @@
        ══════════════════════════════════════════════ */
 
     /* ── State ── */
+    function getLogoDomain(url) {
+      try { return new URL(url).hostname.replace(/^www\./, ''); }
+      catch { return ''; }
+    }
+    function logoHtml(url, name, cls, fallbackCls, size) {
+      var d = getLogoDomain(url);
+      if (!d) return '<div class="' + fallbackCls + '">' + name.charAt(0).toUpperCase() + '</div>';
+      return '<img class="' + cls + '" src="https://www.google.com/s2/favicons?domain=' + d + '&sz=' + (size || 64) + '" alt="' + name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" /><div class="' + fallbackCls + '" style="display:none">' + name.charAt(0).toUpperCase() + '</div>';
+    }
+
     let activeFilters = [];
     let lastQuery = '';
     let acTimer = null;
@@ -1888,7 +1906,7 @@
         const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 
         let html = `<div class="tool-top">
-          <div class="tool-icon">${tool.name.charAt(0).toUpperCase()}</div>
+          ${logoHtml(tool.url, tool.name, 'tool-logo', 'tool-icon', 64)}
           <div>
             <div class="tool-name">${tool.name}</div>
             <div class="tool-meta">`;
@@ -2085,7 +2103,7 @@
             card.onclick = () => { window.open(t.url, '_blank'); };
             const cats = (t.categories || []).slice(0, 2).join(', ');
             card.innerHTML = `
-              <div class="eb-sov-icon">${t.name.charAt(0)}</div>
+              ${logoHtml(t.url, t.name, 'sov-logo', 'eb-sov-icon', 64)}
               <div class="eb-sov-info">
                 <div class="eb-sov-name">${t.name}</div>
                 <div class="eb-sov-meta">${cats}${t.compliance && t.compliance.length ? ' · ' + t.compliance.slice(0,2).join(', ') : ''}</div>

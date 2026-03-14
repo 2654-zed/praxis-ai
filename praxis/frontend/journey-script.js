@@ -3,6 +3,15 @@
  * Uses the /stack endpoint for composed stack recommendations
  * and /profile for persisting user profiles.
  */
+function getLogoDomain(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ''); }
+  catch { return ''; }
+}
+function logoTag(url, name, logoCls, fallbackCls) {
+  var d = getLogoDomain(url);
+  if (!d) return '<div class="' + fallbackCls + '">' + name.charAt(0).toUpperCase() + '</div>';
+  return '<img class="' + logoCls + '" src="https://www.google.com/s2/favicons?domain=' + d + '&sz=64" alt="' + name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" /><div class="' + fallbackCls + '" style="display:none">' + name.charAt(0).toUpperCase() + '</div>';
+}
 
 let currentStep = 1;
 let journey = { task: null, industry: null, budget: null, skill: null };
@@ -173,7 +182,7 @@ function showResults(data) {
       html += `
         <div class="stack-card" style="${role === 'primary' ? 'box-shadow:inset 4px 0 0 #6366f1, 0 2px 16px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.03);' : ''}">
           <div class="stack-card-header">
-            <div class="stack-icon">${name.charAt(0).toUpperCase()}</div>
+            ${logoTag(entry.url, name, 'stack-logo', 'stack-icon')}
             <div class="stack-card-title" style="flex:1;">
               <div style="display:flex;justify-content:space-between;align-items:center;">
                 <span>${name}</span>

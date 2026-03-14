@@ -1,3 +1,8 @@
+function getLogoDomain(url) {
+  try { return new URL(url).hostname.replace(/^www\./, ''); }
+  catch { return ''; }
+}
+
 async function search() {
   const q = document.getElementById('query').value;
   const filtersRaw = document.getElementById('filters').value;
@@ -41,9 +46,19 @@ async function search() {
     const header = document.createElement('div');
     header.className = 'card-header';
 
+    const domain = getLogoDomain(tool.url);
+    if (domain) {
+      const logo = document.createElement('img');
+      logo.className = 'tool-logo';
+      logo.src = 'https://www.google.com/s2/favicons?domain=' + domain + '&sz=64';
+      logo.alt = tool.name;
+      logo.onerror = function() { this.style.display='none'; this.nextElementSibling.style.display='flex'; };
+      header.appendChild(logo);
+    }
     const icon = document.createElement('div');
     icon.className = 'card-icon';
     icon.textContent = tool.name.charAt(0).toUpperCase();
+    if (domain) icon.style.display = 'none';
     header.appendChild(icon);
 
     const titleDiv = document.createElement('div');

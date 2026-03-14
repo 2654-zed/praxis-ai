@@ -1497,6 +1497,16 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v24.9 — Tool Logo Favicons (2026-03-13)
+
+Replaced letter-in-circle tool card avatars with actual logos via Google Favicon API (`google.com/s2/favicons?domain={DOMAIN}&sz=64`). Falls back to the original letter circle on favicon load error.
+
+**Files updated:** home.html (search results + sovereign collection), tools.html (premium/moderate/compact cards), category.html, script.js (index.html search), journey-script.js + journey.html, index.html
+
+**Implementation:** `getLogoDomain(url)` extracts domain from tool URL, `<img>` with `onerror` fallback hides logo and shows letter circle. CSS classes: `.tool-logo`, `.sov-logo`, `.tc-logo`/`.tc-logo-sm`/`.tc-logo-xs`, `.stack-logo` — all with `object-fit: contain`, `border-radius`, dark background padding.
+
+---
+
 ### v24.8 — 7 New Tools (2026-03-13)
 
 Added 7 fully-profiled AI tools to the catalog (246 → 253 tools):
