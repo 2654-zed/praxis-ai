@@ -17,11 +17,11 @@ Praxis is a backend orchestration engine that plans, evaluates, and eliminates A
 | **Tool catalog** | 246 curated AI tools with rich metadata |
 | **API endpoints** | 356 REST routes via FastAPI |
 | **Test coverage** | 645 tests across 13 test files, all passing |
-| **Frontend** | 29 HTML + 4 JS files (~13,600 lines), Liquid Glass UI |
+| **Frontend** | 29 HTML + 4 JS files (~13,700 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~76,300 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-03-14 03:30 UTC |
+| **Last auto-update** | 2026-03-14 03:48 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -1702,6 +1702,8 @@ Praxis applies clinical differential diagnosis to AI tool selection: generate a 
 
 <!-- AUTO:GIT:START -->
 ```
+dc03c33 v24.5: Hide footer and chips when dropdown is open
+7cffecf docs(auto): update README stats [skip ci]
 18b462d v24.4: Fix 5 search bar and dropdown bugs
 898ec4a docs(auto): update README stats [skip ci]
 0be71b1 v24.3: Drag-and-drop stack reordering with role labels
@@ -1748,7 +1750,7 @@ An **elimination-first AI tool curation engine** that evolved into a **cognitive
 - **356 API routes**, all functional
 - **645 tests passing**
 - **113 Python modules**, ~62,600 lines
-- **33 frontend files**, ~13,600 lines
+- **33 frontend files**, ~13,700 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
 <!-- AUTO:STATE:END -->
