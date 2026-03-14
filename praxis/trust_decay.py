@@ -43,6 +43,20 @@ from typing import Any, Dict, Final, List, Optional, Tuple
 
 logger = logging.getLogger("praxis.trust_decay")
 
+# ── Latent Flux orchestration monitor (optional) ──
+_lf_monitor = None
+try:
+    from .lf_monitor import OrchestrationMonitor as _OrchestrationMonitor
+    _lf_monitor = _OrchestrationMonitor(d=6, leak_rate=0.1)
+    logger.info("Latent Flux monitor loaded — LF-enhanced trust decay active")
+except ImportError:
+    try:
+        from lf_monitor import OrchestrationMonitor as _OrchestrationMonitor  # type: ignore[no-redef]
+        _lf_monitor = _OrchestrationMonitor(d=6, leak_rate=0.1)
+        logger.info("Latent Flux monitor loaded (direct import)")
+    except ImportError:
+        logger.info("Latent Flux monitor not available — using threshold-based trust decay")
+
 try:
     from .pipeline_constants import (
         TRUST_DECAY_INTERVAL_HOURS,
@@ -716,12 +730,75 @@ def get_decay_summary() -> dict:
 
 
 # =====================================================================
+# Latent Flux Integration — LF-enhanced trust monitoring
+# =====================================================================
+
+def lf_record_tool_call(
+    tool_name: str,
+    latency_ms: float = 0.0,
+    quality_score: float = 1.0,
+    token_consumption: float = 0.0,
+    error_rate: float = 0.0,
+    output_length: float = 0.0,
+    cost_per_call: float = 0.0,
+) -> Optional[float]:
+    """Record a tool invocation's performance via LF monitor.
+
+    Returns deviation_score if LF is available, None otherwise.
+    """
+    if _lf_monitor is None:
+        return None
+    try:
+        metrics = [latency_ms, quality_score, token_consumption,
+                   error_rate, output_length, cost_per_call]
+        return _lf_monitor.record_tool_call(tool_name, metrics)
+    except Exception as exc:
+        logger.debug("LF record_tool_call failed for %s: %s", tool_name, exc)
+        return None
+
+
+def lf_assess_severity(tool_name: str, metrics: Optional[list] = None) -> str:
+    """Assess trust decay severity using LF basin competition.
+
+    Returns DecaySeverity value: "none", "mild", or "severe".
+    Falls back to "none" if LF is unavailable.
+    """
+    if _lf_monitor is None:
+        return DecaySeverity.NONE.value
+    try:
+        health = _lf_monitor.assess_pipeline_health()
+        if health.winner == "failing":
+            return DecaySeverity.SEVERE.value
+        elif health.winner == "degrading":
+            return DecaySeverity.MILD.value
+        return DecaySeverity.NONE.value
+    except Exception as exc:
+        logger.debug("LF severity assessment failed: %s", exc)
+        return DecaySeverity.NONE.value
+
+
+def lf_get_tool_states() -> Optional[dict]:
+    """Get all LF-monitored tool states.
+
+    Returns dict of {tool_name: {step_count, deviation_score, variance, std}}
+    or None if LF is unavailable.
+    """
+    if _lf_monitor is None:
+        return None
+    try:
+        return _lf_monitor.get_all_tool_states()
+    except Exception:
+        return None
+
+
+# =====================================================================
 # MODULE INIT
 # =====================================================================
 
 logger.info(
-    "trust_decay.py loaded — monitoring every %dh, %d severe keywords, %d mild keywords",
+    "trust_decay.py loaded — monitoring every %dh, %d severe keywords, %d mild keywords, LF=%s",
     TRUST_DECAY_INTERVAL_HOURS,
     len(TRUST_DECAY_SEVERE_KEYWORDS),
     len(TRUST_DECAY_MILD_KEYWORDS),
+    "active" if _lf_monitor else "disabled",
 )

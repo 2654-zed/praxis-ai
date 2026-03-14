@@ -1497,6 +1497,28 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v25.4 — Latent Flux Integration (2026-03-14)
+
+Integrated Latent Flux geometric computation primitives into Praxis for orchestration reliability monitoring.
+
+**Phase 1 (LF repo):** Added σ² (running variance) tracking to `ReservoirState`. New: `variance`, `std` properties and `deviation_score(x)` method (Mahalanobis-like z-score). Variance resets on `reset()`.
+
+**Phase 2 (Praxis):** New `praxis/lf_monitor.py` — pure-Python (no NumPy) adapter implementing:
+- `ToolReservoir` — per-tool ESN behavioral baseline with σ² tracking, power-iteration eigenvalue estimation
+- `PipelineHealthCompetitor` — 3-basin attractor (Healthy/Degrading/Failing) classification
+- `RetryLoopDetector` — cycle detection with σ-enhanced circuit breaker logic
+- `OrchestrationMonitor` — high-level composition managing per-tool reservoirs, pipeline health, and retry detection
+
+**Phase 3:** Wired into `trust_decay.py` with graceful fallback:
+- `lf_record_tool_call()` — records per-invocation metrics to ToolReservoir
+- `lf_assess_severity()` — basin-based severity (replaces threshold comparison when LF active)
+- `lf_get_tool_states()` — serializable tool monitoring state
+- Import guarded with try/except — falls back to threshold-based monitoring when unavailable
+
+644/645 tests pass (1 pre-existing search ranking issue).
+
+---
+
 ### v25.3 — Shared Command Bar (2026-03-14)
 
 Built a shared "Command Bar" search component used by both homepage and Room SPA.
