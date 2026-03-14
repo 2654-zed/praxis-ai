@@ -1497,6 +1497,19 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v24.7 — Tool Data Quality Fixes (2026-03-13)
+
+Fixed 472 issues identified in the tool catalog audit across 246 tools:
+- **FIX 1 (HIGH):** `skill_level="expert"` → `"advanced"` on 10 tools (FEniCS, preCICE, NVIDIA PhysicsNeMo, MechStyle, Apache Flink, Opacus, GoodVibe Security, TransformerLens, steering-vectors, Firecracker)
+- **FIX 2 (MEDIUM):** Added `base_model` to 11 generative/LLM tools (Midjourney→proprietary, DALL-E→proprietary, Google Gemini→Gemini, Stability AI→Stable Diffusion, DeepSeek-R1, Qwen3-235B, etc.)
+- **FIX 3:** Skipped — HIPAA compliance on non-healthcare tools (Salesforce, Slack, etc.) is correct; these offer BAAs
+- **FIX 4 (LOW):** Removed redundant `"starter": 0` from 26 tools where `free_tier: True` already communicates free access
+- **FIX 5 (LOW):** Normalized 6 keyword casing inconsistencies (claude→Claude, crm→CRM, kafka→Kafka, pydantic→Pydantic, pytest→Pytest, hypothesis→Hypothesis)
+- **FIX 6 (LOW):** Removed 270 duplicate keywords that matched tags on the same tool (reduces score inflation)
+- Deleted stale `tools.db` SQLite cache
+
+---
+
 ### v24.6 — Canonical Nav Audit (2026-03-13)
 
 Unified nav bar across all 28 static HTML pages to match the canonical nav from home.html:
