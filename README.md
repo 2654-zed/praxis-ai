@@ -1497,6 +1497,19 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v24.8 — 7 New Tools (2026-03-13)
+
+Added 7 fully-profiled AI tools to the catalog (246 → 253 tools):
+- **Microsoft Agent Framework** — Open-source SDK unifying Semantic Kernel + AutoGen for multi-agent orchestration (Python/.NET, MIT License)
+- **MiroFish** — Open-source swarm-intelligence prediction engine from China using multi-agent simulation (AGPL-3.0, 10.2K GitHub stars)
+- **Grok 4.20 Multi-Agent** — xAI's 4-agent parallel debate system (SuperGrok/API only, NOT on Poe)
+- **Perplexity Computer** — Multi-model agent orchestration platform using 19+ frontier models ($200/mo Max subscription, launched Feb 25, 2026)
+- **Replit Agent** — AI-powered browser IDE that builds full-stack apps from natural language (Agent 4, announced Mar 11, 2026)
+- **Lindy.ai** — No-code AI agent builder with 3,000+ integrations for business workflow automation (SOC2 + HIPAA)
+- **ASCN.AI** — Crypto-focused AI assistant + no-code automation builder from UAE (Web3 analytics, ArbitrageScanner team)
+
+---
+
 ### v24.7 — Tool Data Quality Fixes (2026-03-13)
 
 Fixed 472 issues identified in the tool catalog audit across 246 tools:
