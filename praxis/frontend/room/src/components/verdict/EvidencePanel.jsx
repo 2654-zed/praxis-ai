@@ -20,8 +20,8 @@ export default function EvidencePanel() {
   });
 
   return (
-    <div className="w-[360px] shrink-0 flex flex-col overflow-hidden border-l border-white/[0.06] relative max-[900px]:w-full max-[900px]:border-l-0 max-[900px]:border-t max-[900px]:border-white/[0.06]">
-      <div className="flex-1 overflow-y-auto px-4 py-5">
+    <div className="flex-1 min-w-0 flex flex-col overflow-hidden relative">
+      <div className="flex-1 overflow-y-auto px-5 py-5">
         {/* Section header */}
         <div className="flex items-center gap-2 mb-4">
           <span className="text-[10px] font-bold text-white/25 uppercase tracking-[2px]">Evidence</span>
@@ -66,16 +66,30 @@ export default function EvidencePanel() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="space-y-3"
             >
-              {sorted.map((tool, i) => (
+              {/* Hero / top pick — full width */}
+              <div className="mb-3">
                 <EvidenceCard
-                  key={tool.name || i}
-                  tool={tool}
-                  index={i}
-                  isTopPick={i === 0}
+                  key={sorted[0].name || 0}
+                  tool={sorted[0]}
+                  index={0}
+                  isTopPick
                 />
-              ))}
+              </div>
+
+              {/* Remaining cards — 2-column grid */}
+              {sorted.length > 1 && (
+                <div className="grid grid-cols-2 gap-3 max-[700px]:grid-cols-1">
+                  {sorted.slice(1).map((tool, i) => (
+                    <EvidenceCard
+                      key={tool.name || i + 1}
+                      tool={tool}
+                      index={i + 1}
+                      isTopPick={false}
+                    />
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

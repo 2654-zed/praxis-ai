@@ -81,13 +81,13 @@ export default function EvidenceCard({ tool, index, isTopPick }) {
         </div>
 
         {/* Description */}
-        <p className="text-xs text-white/35 leading-relaxed mb-3 line-clamp-2">
-          {description.slice(0, 160)}{description.length > 160 ? '\u2026' : ''}
+        <p className="text-xs text-white/35 leading-relaxed mb-3">
+          {description}
         </p>
 
         {/* Compliance + pricing badges */}
         <div className="flex flex-wrap gap-1 mb-3">
-          {compliance.slice(0, 4).map((c, i) => (
+          {compliance.map((c, i) => (
             <span key={i} className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400/70 border border-emerald-500/15">
               {c}
             </span>

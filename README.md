@@ -1497,6 +1497,16 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v25.1 — Swap Panel Widths (2026-03-14)
+
+Swapped verdict/evidence panel proportions:
+- **Verdict panel** (left): `flex-1` → `width: 340px` fixed sidebar. Narrative font reduced to 13px.
+- **Evidence panel** (right): `width: 360px` → `flex-1` wide area. Non-hero cards now render in a 2-column grid (`grid-cols-2 gap-3`). Hero/top pick stays full-width above the grid.
+- Removed description truncation (was `line-clamp-2` + `slice(0,160)`) and compliance badge limit (was `slice(0,4)`)
+- Responsive: `<900px` stacks vertically with verdict `max-h-[200px]`; `<700px` grid collapses to 1 column
+
+---
+
 ### v25 — Split Verdict Layout (2026-03-14)
 
 **Complete Room SPA rebuild** — replaced 3-panel chat layout with a two-panel "Split Verdict" design.

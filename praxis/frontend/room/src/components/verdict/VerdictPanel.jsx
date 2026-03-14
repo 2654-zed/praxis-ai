@@ -101,8 +101,8 @@ export default function VerdictPanel() {
       : '';
 
   return (
-    <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+    <div className="w-[340px] shrink-0 flex flex-col overflow-hidden border-r border-white/[0.06] max-[900px]:w-full max-[900px]:max-h-[200px] max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:border-white/[0.06]">
+      <div className="flex-1 overflow-y-auto px-5 py-5">
         {/* Archived queries */}
         {queryHistory.length > 0 && queryHistory.map((entry, i) => (
           <ArchivedQuery key={i} entry={entry} />
@@ -130,7 +130,7 @@ export default function VerdictPanel() {
             transition={{ duration: 0.4 }}
             className="prose prose-invert prose-sm max-w-none mb-4"
           >
-            <div className="text-sm text-white/60 leading-relaxed">
+            <div className="text-white/60 leading-relaxed" style={{ fontSize: '13px' }}>
               <ReactMarkdown>{cleanedNarrative}</ReactMarkdown>
             </div>
           </motion.div>
