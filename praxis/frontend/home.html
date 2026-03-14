@@ -352,6 +352,95 @@
       margin-top: 20px;
     }
 
+    /* ── Inline Results ── */
+    .ir-loading {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 40px 0; color: rgba(255,255,255,0.4); font-size: 14px;
+    }
+    .ir-pulse {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+      animation: irPulse 1.2s ease-in-out infinite;
+    }
+    @keyframes irPulse { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+
+    .ir-summary {
+      text-align: center; font-size: 13px; color: rgba(255,255,255,0.4);
+      padding: 12px 0 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 12px;
+    }
+    .ir-summary strong { color: rgba(255,255,255,0.7); }
+
+    .ir-card {
+      display: flex; align-items: center; gap: 14px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 8px;
+      transition: border-color 0.15s;
+    }
+    .ir-card:hover { border-color: rgba(255,255,255,0.15); }
+    .ir-card.top-pick { border-color: var(--accent); }
+    .ir-card-icon {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      object-fit: contain; background: rgba(255,255,255,0.06); padding: 3px;
+    }
+    .ir-card-fallback {
+      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 14px;
+    }
+    .ir-card-body { flex: 1; min-width: 0; }
+    .ir-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .ir-card-name { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.85); }
+    .ir-card-score { font-size: 15px; font-weight: 700; flex-shrink: 0; }
+    .ir-card-score.high { color: var(--accent); }
+    .ir-card-score.low { color: rgba(255,255,255,0.4); }
+    .ir-card-desc {
+      font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ir-card-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+    .ir-badges { display: flex; flex-wrap: wrap; gap: 4px; }
+    .ir-badge {
+      font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px;
+    }
+    .ir-badge-compliance { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.15); }
+    .ir-badge-pricing { background: rgba(80,227,194,0.1); color: #50e3c2; border: 1px solid rgba(80,227,194,0.15); }
+    .ir-badge-skill { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.08); }
+    .ir-card-link {
+      font-size: 12px; color: rgba(255,255,255,0.3); text-decoration: none;
+      transition: color 0.15s; flex-shrink: 0;
+    }
+    .ir-card-link:hover { color: var(--accent); }
+    .ir-top-label {
+      font-size: 9px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--accent); margin-bottom: 4px;
+    }
+    .ir-show-all {
+      text-align: center; padding: 12px; font-size: 12px;
+      color: rgba(255,255,255,0.3); cursor: pointer;
+    }
+    .ir-show-all:hover { color: var(--accent); }
+
+    .ir-feedback {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding: 16px 0; border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.3);
+    }
+    .ir-fb-btn {
+      padding: 4px 12px; border-radius: 8px; font-size: 12px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.15s;
+    }
+    .ir-fb-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .ir-reset {
+      text-align: center; padding: 16px 0;
+    }
+    .ir-reset button {
+      background: none; border: none; color: rgba(255,255,255,0.3);
+      cursor: pointer; font-size: 13px; transition: color 0.15s;
+    }
+    .ir-reset button:hover { color: var(--accent); }
+
     /* ── Autocomplete Dropdown — Bento Grid (Glass) ── */
     .ac-dropdown {
       position: absolute;
@@ -1422,27 +1511,27 @@
       </div>
 
       <!-- Footer line -->
-      <div class="hero-footer-line">253 tools &middot; 11 trust signals &middot; elimination-first methodology</div>
+      <div class="hero-footer-line" id="hero-footer">253 tools &middot; 11 trust signals &middot; elimination-first methodology</div>
+
+      <!-- Inline Results (hidden until search) -->
+      <div id="inline-results" style="display:none">
+        <div id="results-loading" style="display:none">
+          <div class="ir-loading">
+            <div class="ir-pulse"></div>
+            <span>Evaluating 253 tools...</span>
+          </div>
+        </div>
+        <div id="results-content" style="display:none">
+          <div id="results-summary" class="ir-summary"></div>
+          <div id="results-cards"></div>
+          <div id="results-feedback" class="ir-feedback"></div>
+          <div class="ir-reset"><button onclick="resetSearch()">&larr; Search again</button></div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Intelligence Banners -->
-  <div class="intel-banner" id="intel-banner"></div>
-
-  <!-- Results -->
-  <div class="results-section">
-    <div class="results-header" id="results-header" style="display:none;">
-      <h2 id="results-title">Results</h2>
-      <span class="results-count" id="results-count"></span>
-    </div>
-    <div class="results-grid" id="results"></div>
-
-    <div class="empty-state" id="empty-state" style="display:none;">
-      <div class="emoji">✦</div>
-      <p>Search for any task, role, or tool name</p>
-      <p style="font-size:0.82rem;">Try: <em>"write marketing copy"</em> · <em>"data visualization"</em> · <em>"automate workflows"</em></p>
-    </div>
-  </div>
+  <!-- Old results section removed — inline results in hero now -->
 
   <!-- Ambient footer (hidden — stats shown in hero footer line) -->
   <div class="ambient-footer" id="ambient-footer" style="display:none">
@@ -1855,61 +1944,183 @@
     /* ══════════════════════════════════════════════
        SEARCH
        ══════════════════════════════════════════════ */
-    /* ── Submit to Room ── */
+    /* ── Inline Search — no navigation ── */
+    let _lastSearchQuery = '';
+
     function submitSearch() {
       const q = document.getElementById('query').value.trim();
       if (!q) return;
-      const constraints = [...document.querySelectorAll('.cpill.active')]
-        .map(el => el.textContent.trim())
-        .join(',');
-      let url = '/room?q=' + encodeURIComponent(q);
-      if (constraints) url += '&constraints=' + encodeURIComponent(constraints);
-      window.location.href = url;
-    }
+      _lastSearchQuery = q;
 
-    async function doSearch() {
-      // Primary path: navigate to Room
-      submitSearch();
-      // Fallback: if submitSearch didn't navigate (empty query), do nothing
-      const q = document.getElementById('query').value.trim();
-      if (!q) return;
+      // Append constraint labels to query for API
       const cLabels = [...activeConstraints].map(c => CONSTRAINT_LABELS[c] || c);
-      if (cLabels.length) q += ', ' + cLabels.join(', ');
-      lastQuery = q;
+      const fullQuery = cLabels.length ? q + ', ' + cLabels.join(', ') : q;
 
-      // Transition to results state
-      document.body.classList.add('has-results');
-      updateNav();
+      // Hide hero content, show results area
+      document.getElementById('task-grid').style.display = 'none';
+      document.querySelector('.constraint-section').style.display = 'none';
+      document.getElementById('live-summary').style.display = 'none';
+      document.querySelector('.path-section').style.display = 'none';
+      document.getElementById('hero-footer').style.display = 'none';
 
-      // Loading state
-      document.getElementById('empty-state').style.display = 'none';
-      document.getElementById('intel-banner').innerHTML = '';
-      document.getElementById('results-header').style.display = 'flex';
-      document.getElementById('results-title').textContent = 'Searching\u2026';
-      document.getElementById('results-count').textContent = '';
-      document.getElementById('results').innerHTML = '<div class="empty-state pulse" style="padding:2rem;"><div class="emoji">\u25CC</div><p>Finding the best tools\u2026</p></div>';
+      const irEl = document.getElementById('inline-results');
+      const loadingEl = document.getElementById('results-loading');
+      const contentEl = document.getElementById('results-content');
+      irEl.style.display = 'block';
+      loadingEl.style.display = 'block';
+      contentEl.style.display = 'none';
 
-      const body = { query: q, profile_id: 'journey' };
-
-      try {
-        const res = await fetch('/search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+      // Call API
+      fetch('/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: fullQuery }),
+      })
+        .then(res => { if (!res.ok) throw new Error(res.status); return res.json(); })
+        .then(data => {
+          loadingEl.style.display = 'none';
+          const tools = Array.isArray(data) ? data : (data.results || []);
+          const totalTools = data.total_tools || data.tools_considered || 253;
+          renderInlineResults(tools, q, totalTools);
+        })
+        .catch(err => {
+          loadingEl.style.display = 'none';
+          contentEl.style.display = 'block';
+          document.getElementById('results-cards').innerHTML =
+            '<div style="text-align:center;padding:40px 0;color:rgba(255,255,255,0.3);">' +
+            '<div style="font-size:24px;margin-bottom:8px;">&#9888;</div>' +
+            '<p>Something went wrong. Make sure the API is running on port 8000.</p></div>';
         });
-        if (!res.ok) throw new Error(res.status);
-        const data = await res.json();
-
-        const tools = Array.isArray(data) ? data : (data.results || []);
-        const meta = Array.isArray(data) ? {} : (data.meta || {});
-
-        renderIntelBanner(meta, q);
-        renderResults(tools, q);
-      } catch (e) {
-        console.error('search error', e);
-        document.getElementById('results').innerHTML = '<div class="empty-state"><div class="emoji">⚠</div><p>Something went wrong. Make sure the API is running.</p></div>';
-      }
     }
+
+    function getLogoDomainHome(url) {
+      try { return new URL(url).hostname.replace(/^www\./, ''); }
+      catch { return ''; }
+    }
+
+    function renderInlineResults(tools, query, totalTools) {
+      const contentEl = document.getElementById('results-content');
+      contentEl.style.display = 'block';
+
+      const survivorCount = tools.length;
+      const eliminatedCount = Math.max(0, totalTools - survivorCount);
+
+      // Normalize scores to percentages
+      const maxScore = tools.length ? Math.max(...tools.map(t => t.score || t.fit_score || 0)) : 1;
+      tools.forEach(t => {
+        const raw = t.score || t.fit_score || 0;
+        t._pct = maxScore > 0 ? Math.min(99, Math.round((raw / maxScore) * 95 + 5)) : 50;
+      });
+
+      // Sort by score descending
+      tools.sort((a, b) => (b._pct || 0) - (a._pct || 0));
+
+      // Summary
+      document.getElementById('results-summary').innerHTML =
+        '<strong>' + totalTools + '</strong> evaluated &middot; ' +
+        '<strong>' + eliminatedCount + '</strong> eliminated &middot; ' +
+        '<strong>' + survivorCount + '</strong> survived';
+
+      // Cards
+      const cardsEl = document.getElementById('results-cards');
+      let html = '';
+      const showCount = Math.min(8, tools.length);
+      for (let i = 0; i < showCount; i++) {
+        const t = tools[i];
+        const name = t.name || 'Unknown';
+        const desc = t.description || '';
+        const url = t.url || '';
+        const domain = getLogoDomainHome(url);
+        const pct = t._pct;
+        const isTop = i === 0;
+        const compliance = t.compliance || [];
+        const pricing = t.pricing || {};
+        const skill = t.skill_level || '';
+
+        const badges = [];
+        compliance.slice(0, 2).forEach(c => badges.push('<span class="ir-badge ir-badge-compliance">' + c + '</span>'));
+        if (pricing.free_tier) badges.push('<span class="ir-badge ir-badge-pricing">Free tier</span>');
+        else if (pricing.starter) badges.push('<span class="ir-badge ir-badge-pricing">From $' + pricing.starter + '/mo</span>');
+        if (skill && badges.length < 4) badges.push('<span class="ir-badge ir-badge-skill">' + skill + '</span>');
+
+        const iconHtml = domain
+          ? '<img class="ir-card-icon" src="https://www.google.com/s2/favicons?domain=' + domain + '&sz=32" alt="' + name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" />' +
+            '<div class="ir-card-fallback" style="display:none">' + name.charAt(0) + '</div>'
+          : '<div class="ir-card-fallback">' + name.charAt(0) + '</div>';
+
+        html += '<div class="ir-card' + (isTop ? ' top-pick' : '') + '">' +
+          iconHtml +
+          '<div class="ir-card-body">' +
+            (isTop ? '<div class="ir-top-label">Top pick</div>' : '') +
+            '<div class="ir-card-header">' +
+              '<span class="ir-card-name">' + name + '</span>' +
+              '<span class="ir-card-score ' + (pct >= 70 ? 'high' : 'low') + '">' + pct + '% fit</span>' +
+            '</div>' +
+            '<div class="ir-card-desc">' + desc.slice(0, 120) + (desc.length > 120 ? '...' : '') + '</div>' +
+            '<div class="ir-card-row">' +
+              '<div class="ir-badges">' + badges.join('') + '</div>' +
+              (url ? '<a class="ir-card-link" href="' + url + '" target="_blank">Visit site &rarr;</a>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }
+
+      if (tools.length > 8) {
+        html += '<div class="ir-show-all">Show all ' + tools.length + ' results</div>';
+      }
+
+      cardsEl.innerHTML = html;
+
+      // Feedback
+      document.getElementById('results-feedback').innerHTML =
+        '<span>Was this helpful?</span>' +
+        '<button class="ir-fb-btn" onclick="sendFeedback(1, this)">&#128077; Yes</button>' +
+        '<button class="ir-fb-btn" onclick="sendFeedback(-1, this)">&#128078; No</button>' +
+        '<span style="color:rgba(255,255,255,0.1);">|</span>' +
+        '<button class="ir-fb-btn" onclick="copyResults()">&#128203; Copy results</button>';
+    }
+
+    function sendFeedback(rating, btn) {
+      fetch('/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: _lastSearchQuery, tool: 'homepage_search', rating: rating, details: { from_ui: true, action: 'rate' } }),
+      }).catch(() => {});
+      btn.parentElement.querySelectorAll('.ir-fb-btn').forEach(b => { if (b.textContent.includes('Yes') || b.textContent.includes('No')) b.style.display = 'none'; });
+      const thanks = document.createElement('span');
+      thanks.textContent = 'Thanks for the feedback!';
+      thanks.style.color = 'var(--accent)';
+      btn.parentElement.insertBefore(thanks, btn.parentElement.querySelector('.ir-fb-btn'));
+    }
+
+    function copyResults() {
+      const cards = document.querySelectorAll('.ir-card');
+      let text = 'Praxis recommendation for "' + _lastSearchQuery + '":\n';
+      cards.forEach((card, i) => {
+        const name = card.querySelector('.ir-card-name')?.textContent || '';
+        const score = card.querySelector('.ir-card-score')?.textContent || '';
+        const desc = card.querySelector('.ir-card-desc')?.textContent || '';
+        text += (i + 1) + '. ' + name + ' (' + score + ') — ' + desc + '\n';
+      });
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.ir-fb-btn:last-child');
+        if (btn) { const orig = btn.innerHTML; btn.innerHTML = '&#10003; Copied!'; setTimeout(() => btn.innerHTML = orig, 2000); }
+      });
+    }
+
+    function resetSearch() {
+      document.getElementById('inline-results').style.display = 'none';
+      document.getElementById('results-loading').style.display = 'none';
+      document.getElementById('results-content').style.display = 'none';
+      document.getElementById('task-grid').style.display = '';
+      document.querySelector('.constraint-section').style.display = '';
+      document.getElementById('live-summary').style.display = '';
+      document.querySelector('.path-section').style.display = '';
+      document.getElementById('hero-footer').style.display = '';
+    }
+
+    /* ── Legacy doSearch (calls submitSearch) ── */
+    function doSearch() { submitSearch(); }
 
     /* ── Intelligence Banner ── */
     function renderIntelBanner(meta, query) {

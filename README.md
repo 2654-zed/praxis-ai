@@ -1606,6 +1606,25 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v25.8 — Inline Results (2026-03-14)
+
+Homepage now shows search results inline — no page navigation. The entire product experience is on one page.
+- **Submit → inline results**: POST /search, render survivor cards below the search bar. Task grid, pills, paths hide; results replace them.
+- **Survivor cards**: Favicon + name + % fit score + description + compliance/pricing badges + "Visit site →" link. Top card gets indigo border + "Top pick" label.
+- **Elimination summary**: "253 evaluated · N eliminated · N survived" — centered counts above cards.
+- **Feedback row**: Yes/No rating (POST /feedback), Copy results (clipboard), Search again (resets to initial state).
+- **Score normalization**: Raw API scores → percentage fit (top result ~95%, proportional below).
+- **No navigation**: Enter, → button, and Evaluate 253 all do inline search. Room still accessible via nav bar for power users.
+- 714/714 tests pass.
+
+---
+
+### Launch Blocker Fix (2026-03-14)
+
+Fixed 4 bugs: submit paths broken (Enter early-return bug), autocomplete overlap (disabled), subtitle jargon, pill labels.
+
+---
+
 ### v25.7 — Homepage Hero Rebuild (2026-03-14)
 
 Replaced the homepage hero section with a task-builder + path-card layout:
