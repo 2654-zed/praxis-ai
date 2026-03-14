@@ -23,14 +23,14 @@ export default function FollowUpInput() {
   };
 
   return (
-    <div className="px-5 py-3 border-t border-white/[0.06]">
+    <div className="px-5 py-3 mt-auto" style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
       <div className="flex items-end gap-2">
         <textarea
           ref={inputRef}
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
-          placeholder="Ask a follow-up... 'Why not Jasper?'"
+          placeholder="Ask about these results... 'Why not Jasper?'"
           disabled={isRunning}
           rows={1}
           className="flex-1 resize-none bg-transparent outline-none text-xs text-white/60 placeholder-white/20 py-1.5 min-h-[28px] max-h-[100px] disabled:opacity-30"

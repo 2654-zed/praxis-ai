@@ -1497,6 +1497,16 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v25.2 — Hero Search Input (2026-03-14)
+
+Two-state search input for the Room:
+- **Empty state**: Full-viewport centered hero input (640px, 52px tall, 16px font) with cycling placeholder examples on 4s intervals, quick-start category chips (Writing, Coding, Marketing, Analytics, No-code, Security), and subtitle text. Homepage glassmorphism styling.
+- **Active state**: Input collapses into the top bar (36px, 13px font, 10px radius) with arrow/refresh icon toggle. TopBar shows compact always-editable input between "Praxis" and the pipeline badge.
+- Follow-up input restyled: underline separator, placeholder "Ask about these results..."
+- App.jsx conditionally renders HeroSearch (idle) vs TopBar+panels (has results)
+
+---
+
 ### v25.1 — Swap Panel Widths (2026-03-14)
 
 Swapped verdict/evidence panel proportions:

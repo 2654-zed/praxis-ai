@@ -150,17 +150,6 @@ export default function VerdictPanel() {
 
         {/* Elimination badges */}
         <EliminationBadges eliminated={eliminated} />
-
-        {/* Idle state */}
-        {!hasResult && !isRunning && (
-          <div className="flex flex-col items-center justify-center h-full text-center py-16">
-            <div className="text-3xl mb-3 opacity-20">{'\u2726'}</div>
-            <p className="text-sm text-white/25">Type a query to begin</p>
-            <p className="text-xs text-white/15 mt-2 max-w-[280px]">
-              Describe what you need. Praxis will evaluate 253 tools, eliminate the unfit, and explain why.
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Follow-up input at bottom */}

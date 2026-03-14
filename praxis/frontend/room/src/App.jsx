@@ -1,15 +1,18 @@
 import { useEffect } from 'react';
-import { RoomProvider, useRoomState, useRoomDispatch } from './context/RoomContext';
+import { RoomProvider, useRoomState, useRoomDispatch, PHASES } from './context/RoomContext';
 import AmbientBackground from './components/ambient/AmbientBackground';
 import ParticleField from './components/ambient/ParticleField';
 import TopBar from './components/verdict/TopBar';
 import VerdictPanel from './components/verdict/VerdictPanel';
 import EvidencePanel from './components/verdict/EvidencePanel';
+import HeroSearch from './components/verdict/HeroSearch';
 import useDecayAlerts from './hooks/useDecayAlerts';
 
 function RoomShell() {
-  const { room, error, phase } = useRoomState();
+  const { room, phase, differentialResult } = useRoomState();
   const dispatch = useRoomDispatch();
+
+  const hasResults = !!differentialResult || phase === PHASES.ELIMINATING || phase === PHASES.EXECUTING;
 
   // Auto-create or load most recent room on mount
   useEffect(() => {
@@ -56,13 +59,28 @@ function RoomShell() {
       <ParticleField />
       <div className="noise" />
       <div className="relative z-10 flex flex-col h-screen w-screen">
-        <TopBar />
-
-        {/* Split Verdict Layout */}
-        <div className="flex flex-1 overflow-hidden max-[900px]:flex-col">
-          <VerdictPanel />
-          <EvidencePanel />
-        </div>
+        {hasResults ? (
+          <>
+            <TopBar />
+            <div className="flex flex-1 overflow-hidden max-[900px]:flex-col">
+              <VerdictPanel />
+              <EvidencePanel />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Minimal top bar for empty state */}
+            <div
+              className="relative z-30 flex items-center gap-4 px-5 py-2.5 border-b border-white/[0.06]"
+              style={{ background: 'rgba(10,10,15,0.5)', backdropFilter: 'blur(30px)' }}
+            >
+              <a href="/" className="text-white/30 hover:text-white/60 text-sm transition-colors">{'\u2190'} Praxis</a>
+              <span className="text-white/10">|</span>
+              <span className="text-sm text-white/40 font-medium">Room</span>
+            </div>
+            <HeroSearch />
+          </>
+        )}
       </div>
     </>
   );

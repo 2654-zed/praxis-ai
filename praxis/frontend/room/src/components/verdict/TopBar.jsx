@@ -15,25 +15,22 @@ export default function TopBar() {
   const dispatch = useRoomDispatch();
   const { submit, isRunning, constraints, setConstraint, removeConstraint } = useQuerySubmit();
   const [text, setText] = useState('');
-  const [editing, setEditing] = useState(false);
   const [editingChip, setEditingChip] = useState(null);
   const inputRef = useRef(null);
+  const lastSubmitted = useRef('');
 
-  useEffect(() => { if (query && !text) setText(query); }, [query]);
+  useEffect(() => { if (query && !text) { setText(query); lastSubmitted.current = query; } }, [query]);
 
   const survivors = differentialResult?.tools_recommended || differentialResult?.survivors || [];
   const totalConsidered = differentialResult?.tools_considered || 0;
   const isComplete = phase === 'complete' || phase === 'routing';
   const isIdle = phase === 'idle';
-
-  const startEditing = () => {
-    setEditing(true);
-    setTimeout(() => inputRef.current?.focus(), 50);
-  };
+  const isModified = text.trim() !== lastSubmitted.current;
 
   const handleSubmit = () => {
-    setEditing(false);
-    if (text.trim()) submit(text.trim());
+    if (!text.trim() || isRunning) return;
+    lastSubmitted.current = text.trim();
+    submit(text.trim());
   };
 
   const contextChips = [];
@@ -58,28 +55,44 @@ export default function TopBar() {
       <a href="/" className="text-white/30 hover:text-white/60 text-sm shrink-0 transition-colors">{'\u2190'} Praxis</a>
       <span className="text-white/10 shrink-0">|</span>
 
-      {/* Query input */}
-      <div className="flex-1 min-w-[200px]">
-        {editing ? (
-          <div className="flex items-center gap-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={text}
-              onChange={e => setText(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); if (e.key === 'Escape') setEditing(false); }}
-              onBlur={handleSubmit}
-              className="flex-1 bg-transparent border-b border-indigo-500/40 outline-none text-sm text-white/90 py-1"
-            />
-          </div>
-        ) : (
+      {/* Query input — compact inline */}
+      <div className="flex-1 min-w-[180px] flex items-center">
+        <div
+          className="flex items-center flex-1 rounded-[10px] transition-all"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
+            placeholder="New search..."
+            disabled={isRunning}
+            className="flex-1 bg-transparent outline-none text-white/80 placeholder-white/25 disabled:opacity-40"
+            style={{ height: '36px', fontSize: '13px', padding: '8px 16px' }}
+          />
           <button
-            onClick={startEditing}
-            className="text-sm text-white/70 hover:text-white/90 transition-colors text-left truncate max-w-full"
+            onClick={handleSubmit}
+            disabled={!text.trim() || isRunning}
+            className="shrink-0 mr-1 rounded-full flex items-center justify-center transition-all disabled:opacity-20"
+            style={{
+              width: '28px', height: '28px',
+              background: text.trim() ? '#6366f1' : 'transparent',
+              color: text.trim() ? 'white' : 'rgba(255,255,255,0.3)',
+            }}
           >
-            {query || 'Click to search...'}
+            {isModified ? (
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                <path d="M7 2v10M4 5l3-3 3 3M4 9l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
           </button>
-        )}
+        </div>
       </div>
 
       {/* Pipeline badge */}
