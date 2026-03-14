@@ -13,15 +13,15 @@ Praxis is a backend orchestration engine that plans, evaluates, and eliminates A
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 113 files, ~62,700 lines |
-| **Tool catalog** | 246 curated AI tools with rich metadata |
+| **Python modules** | 113 files, ~62,800 lines |
+| **Tool catalog** | 253 curated AI tools with rich metadata |
 | **API endpoints** | 356 REST routes via FastAPI |
 | **Test coverage** | 645 tests across 13 test files, all passing |
 | **Frontend** | 29 HTML + 4 JS files (~14,200 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~76,900 (Python + Frontend) |
+| **Total LOC** | ~77,000 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-03-14 04:24 UTC |
+| **Last auto-update** | 2026-03-14 04:51 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -1748,6 +1748,8 @@ Praxis applies clinical differential diagnosis to AI tool selection: generate a 
 
 <!-- AUTO:GIT:START -->
 ```
+06602f6 v24.8: Add 7 new AI tools to catalog (246 -> 253)
+ca18add docs(auto): update README stats [skip ci]
 77b3d6a v24.7: Fix 472 tool data quality issues from audit
 e89b69b docs(auto): update README stats [skip ci]
 80e8348 v24.6: Canonical nav audit — unified 28 static pages
@@ -1796,10 +1798,10 @@ An **elimination-first AI tool curation engine** that evolved into a **cognitive
 
 ### Current State
 <!-- AUTO:STATE:START -->
-- **246 tools**, zero duplicates, clean tag casing
+- **253 tools**, zero duplicates, clean tag casing
 - **356 API routes**, all functional
 - **645 tests passing**
-- **113 Python modules**, ~62,700 lines
+- **113 Python modules**, ~62,800 lines
 - **33 frontend files**, ~14,200 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
