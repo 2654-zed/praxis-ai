@@ -219,146 +219,103 @@
     }
     body.has-results .search-container { margin-top: 1rem; }
 
-    .search-glass {
-      position: relative;
-      z-index: 10;
+    /* ── Command Bar ── */
+    .cb-bar {
       display: flex;
-      flex-direction: column;
+      align-items: center;
       background: rgba(15, 15, 20, 0.88);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius-card);
-      padding: 12px 16px;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset;
+      border: 0.5px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 6px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+      transition: box-shadow 0.2s;
     }
-    .search-glass:focus-within {
-      border-color: rgba(99,102,241,0.3);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 30px 0 rgba(99,102,241,0.15), 0 1px 0 rgba(255,255,255,0.05) inset;
+    .cb-bar:focus-within {
+      box-shadow: 0 0 0 2px rgba(99,102,241,0.3), 0 8px 40px rgba(0,0,0,0.4);
     }
-    .search-glass::before { display: none; }
-
-    .search-glass .search-main-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .cb-modes {
+      display: flex; align-items: center; gap: 0;
+      border-right: 0.5px solid rgba(255,255,255,0.08);
+      padding-right: 6px; margin-right: 6px;
     }
-
-    .search-glass .search-bottom-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255,255,255,0.06);
+    .cb-mode {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; border: none; cursor: pointer;
+      background: transparent; color: var(--text-secondary);
+      transition: all 0.15s;
     }
-
-    .search-glass .search-chips-inline {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      flex: 1;
+    .cb-mode:hover { background: rgba(255,255,255,0.06); }
+    .cb-mode.active { background: #6366f1; color: white; }
+    .cb-input-wrap { flex: 1; position: relative; min-width: 0; }
+    .cb-input {
+      width: 100%; height: 42px; padding: 6px 8px; font-size: 15px;
+      background: transparent; border: none; outline: none;
+      color: var(--text-primary); caret-color: #6366f1;
     }
-
-    .search-glass .search-chips-inline .chip {
-      margin: 0;
-      padding: 3px 10px;
-      font-size: 11px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.4);
-      background: transparent;
-      cursor: pointer;
-      transition: border-color 0.15s, color 0.15s;
-      white-space: nowrap;
-      flex-shrink: 0;
+    .cb-placeholder {
+      position: absolute; top: 50%; left: 8px; transform: translateY(-50%);
+      pointer-events: none; font-size: 15px; color: var(--text-dim);
+      transition: opacity 0.3s;
     }
-    .search-glass .search-chips-inline .chip:hover {
-      border-color: rgba(99,102,241,0.5);
-      color: rgba(255,255,255,0.7);
-    }
-    .search-glass .search-chips-inline .chip.active {
-      border-color: rgba(99,102,241,0.6);
-      color: #a5b4fc;
-      background: rgba(99,102,241,0.08);
-    }
-
-    .search-input-wrap {
-      flex: 1;
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 1rem 1.5rem;
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: var(--text-primary);
-      background: transparent;
-      border: none;
-      outline: none;
-      caret-color: var(--accent);
-      letter-spacing: -0.2px;
-    }
-    .search-input::placeholder { color: transparent; }
-
-    /* Kinetic placeholder */
-    .kinetic-placeholder {
-      position: absolute;
-      top: 50%; left: 1.5rem;
-      transform: translateY(-50%);
-      pointer-events: none;
-      font-size: 1.1rem;
-      color: var(--text-dim);
-      font-weight: 400;
-      letter-spacing: -0.2px;
-      transition: opacity 0.3s ease;
-    }
-    .kinetic-placeholder.hidden { opacity: 0; }
-
-    .search-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding-right: 0.25rem;
-    }
-
-    .search-micro-btn {
-      width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-    }
-    .search-micro-btn:hover {
-      background: rgba(255,255,255,0.08);
-      color: var(--text-secondary);
-      transform: scale(1.08);
-    }
-
-    .search-submit {
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 50%;
-      background: #6366f1;
-      border: none;
-      color: white;
-      cursor: pointer;
+    .cb-placeholder.hidden { opacity: 0; }
+    .cb-submit {
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; background: #6366f1; border: none; color: white;
+      cursor: pointer; flex-shrink: 0;
       transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
-      box-shadow: none;
-      flex-shrink: 0;
     }
-    .search-submit:hover {
-      background: #818cf8;
-      box-shadow: 0 0 16px rgba(99,102,241,0.45);
-      transform: scale(1.06);
+    .cb-submit:hover { background: #818cf8; box-shadow: 0 0 16px rgba(99,102,241,0.45); transform: scale(1.06); }
+    .cb-submit:active { transform: scale(0.94); }
+
+    /* Layer 2: Chips */
+    .cb-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .cb-chip-add {
+      padding: 6px 16px; border-radius: 999px; font-size: 12px;
+      border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.35);
+      background: transparent; cursor: pointer; transition: all 0.15s;
     }
-    .search-submit:active { transform: scale(0.95); }
+    .cb-chip-add:hover { border-color: rgba(99,102,241,0.4); color: rgba(255,255,255,0.6); }
+    .cb-chip-active {
+      padding: 6px 16px; border-radius: 999px; font-size: 12px;
+      border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc;
+      background: rgba(99,102,241,0.06); cursor: default;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .cb-chip-active .cb-chip-x {
+      background: none; border: none; color: rgba(255,255,255,0.3);
+      cursor: pointer; font-size: 14px; line-height: 1; padding: 0;
+    }
+    .cb-chip-active .cb-chip-x:hover { color: rgba(255,255,255,0.7); }
+
+    /* Layer 3A: Idle context */
+    .cb-explore-label { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 1px; }
+    .cb-explore-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
+    @media (max-width: 600px) { .cb-explore-grid { grid-template-columns: repeat(2, 1fr); } }
+    .cb-explore-card {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 12px 8px; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);
+      cursor: pointer; transition: all 0.15s; color: rgba(255,255,255,0.3);
+    }
+    .cb-explore-card:hover { border-color: rgba(99,102,241,0.3); background: rgba(99,102,241,0.04); }
+    .cb-explore-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
+    .cb-explore-count { font-size: 11px; color: rgba(255,255,255,0.2); }
+    .cb-journey-link {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 16px;
+      font-size: 13px; color: rgba(255,255,255,0.25); text-decoration: none; transition: color 0.15s;
+    }
+    .cb-journey-link:hover { color: rgba(255,255,255,0.5); }
+    .cb-subtitle { font-size: 12px; color: rgba(255,255,255,0.15); margin-top: 16px; }
+
+    /* Layer 3B: Funnel */
+    .cb-funnel { margin-top: 8px; }
+    .cb-funnel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .cb-funnel-label { font-size: 11px; color: rgba(255,255,255,0.3); width: 72px; text-align: right; flex-shrink: 0; }
+    .cb-funnel-track { flex: 1; height: 12px; border-radius: 999px; background: rgba(255,255,255,0.04); overflow: hidden; }
+    .cb-funnel-fill { height: 100%; border-radius: 999px; transition: width 0.5s; }
+    .cb-funnel-count { font-size: 11px; color: rgba(255,255,255,0.25); width: 32px; flex-shrink: 0; }
 
     /* ── Autocomplete Dropdown — Bento Grid (Glass) ── */
     .ac-dropdown {
@@ -531,25 +488,7 @@
     /* ══════════════════════════════════════════════
        FILTER CHIPS — Glass pills
        ══════════════════════════════════════════════ */
-    .filter-strip {
-      max-width: 720px;
-      margin: 1.25rem auto 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      justify-content: center;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 0.6s;
-    }
-    body.has-results .filter-strip { margin-top: 0.75rem; }
-    /* Chips inside command card use inline styling */
-    .search-chips-inline.filter-strip,
-    .search-bottom-row .filter-strip {
-      margin: 0;
-      opacity: 1;
-      animation: none;
-      justify-content: flex-start;
-    }
+    /* Filter strip replaced by command bar chips */
 
     .chip {
       padding: 0.4rem 0.9rem;
@@ -1342,34 +1281,75 @@
       <p class="hero-subtitle">The translation layer from human intention to machine action.</p>
     </div>
 
-    <div class="search-container">
-      <div class="search-glass" id="search-glass">
-        <div class="search-main-row">
-          <div class="search-input-wrap">
-            <input
-              id="query"
-              class="search-input"
-              type="text"
-              autocomplete="off"
-              autofocus
-            />
-            <div class="kinetic-placeholder" id="kinetic-placeholder">
-              <span id="kinetic-word">Ask anything...</span>
-            </div>
-            <div class="ac-dropdown" id="ac-dropdown"></div>
-          </div>
-          <button class="search-submit" id="searchBtn" onclick="doSearch()">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="search-container" id="search-container">
+      <!-- Layer 1: Input Bar -->
+      <div class="cb-bar" id="cb-bar">
+        <div class="cb-modes" id="cb-modes">
+          <button class="cb-mode active" data-mode="find" title="Find">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+          <button class="cb-mode" data-mode="compare" title="Compare">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="5" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="3" width="5" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+          <button class="cb-mode" data-mode="analyze" title="Analyze">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="9" width="3" height="5" rx="0.5" stroke="currentColor" stroke-width="1.5"/><rect x="6.5" y="5" width="3" height="9" rx="0.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="2" width="3" height="12" rx="0.5" stroke="currentColor" stroke-width="1.5"/></svg>
           </button>
         </div>
-        <div class="search-bottom-row">
-          <div class="search-chips-inline" id="filter-bar"></div>
+        <div class="cb-input-wrap">
+          <input id="query" class="cb-input" type="text" autocomplete="off" autofocus />
+          <div class="cb-placeholder" id="cb-placeholder">Find the right AI tool...</div>
+          <div class="ac-dropdown" id="ac-dropdown"></div>
+        </div>
+        <button class="cb-submit" id="searchBtn" onclick="doSearch()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <!-- Layer 2: Parameter Chips -->
+      <div class="cb-chips" id="cb-chips">
+        <button class="cb-chip-add" data-key="budget" data-placeholder="$300/mo">+ Budget</button>
+        <button class="cb-chip-add" data-key="compliance" data-placeholder="HIPAA">+ Compliance</button>
+        <button class="cb-chip-add" data-key="industry" data-placeholder="Healthcare">+ Industry</button>
+        <button class="cb-chip-add" data-key="skill_level" data-placeholder="beginner">+ Skill level</button>
+        <button class="cb-chip-add" data-key="team" data-placeholder="10">+ Team size</button>
+      </div>
+
+      <!-- Layer 3A: Idle Context -->
+      <div class="cb-context-idle" id="cb-idle">
+        <div class="cb-explore-label">Explore</div>
+        <div class="cb-explore-grid">
+          <button class="cb-explore-card" data-query="I need writing tools for...">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4h8v1H4zM4 7h6v1H4zM4 10h8v1H4z" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span class="cb-explore-name">Writing</span><span class="cb-explore-count">34</span>
+          </button>
+          <button class="cb-explore-card" data-query="I need coding tools for...">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 4l-3 4 3 4M11 4l3 4-3 4M8 3l-1 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="cb-explore-name">Coding</span><span class="cb-explore-count">28</span>
+          </button>
+          <button class="cb-explore-card" data-query="I need automation tools for...">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h4l2-4 2 8 2-4h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="cb-explore-name">Automation</span><span class="cb-explore-count">22</span>
+          </button>
+          <button class="cb-explore-card" data-query="I need analytics tools for...">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 12V6M7 12V4M11 12V8M15 12V2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <span class="cb-explore-name">Analytics</span><span class="cb-explore-count">19</span>
+          </button>
+        </div>
+        <a href="/static/journey.html" class="cb-journey-link">Not sure what you need? Take the guided quiz →</a>
+        <p class="cb-subtitle">Praxis will evaluate 253 tools, eliminate the unfit, and explain why.</p>
+      </div>
+
+      <!-- Layer 3B: Typing Context (funnel) -->
+      <div class="cb-context-typing" id="cb-typing" style="display:none">
+        <div class="cb-explore-label">Live elimination preview</div>
+        <div class="cb-funnel" id="cb-funnel">
+          <div class="cb-funnel-row"><span class="cb-funnel-label">Catalog</span><div class="cb-funnel-track"><div class="cb-funnel-fill" data-stage="catalog" style="width:100%;background:rgba(255,255,255,0.15)"></div></div><span class="cb-funnel-count">253</span></div>
+          <div class="cb-funnel-row"><span class="cb-funnel-label">Category</span><div class="cb-funnel-track"><div class="cb-funnel-fill" data-stage="category" style="width:35%;background:#6366f1"></div></div><span class="cb-funnel-count">~89</span></div>
+          <div class="cb-funnel-row"><span class="cb-funnel-label">Budget</span><div class="cb-funnel-track"><div class="cb-funnel-fill" data-stage="budget" style="width:20%;background:#50e3c2"></div></div><span class="cb-funnel-count">~52</span></div>
+          <div class="cb-funnel-row"><span class="cb-funnel-label">Compliance</span><div class="cb-funnel-track"><div class="cb-funnel-fill" data-stage="compliance" style="width:14%;background:#f5a623"></div></div><span class="cb-funnel-count">~36</span></div>
+          <div class="cb-funnel-row"><span class="cb-funnel-label">Survivors</span><div class="cb-funnel-track"><div class="cb-funnel-fill" data-stage="survivors" style="width:7%;background:#10b981"></div></div><span class="cb-funnel-count">~18</span></div>
         </div>
       </div>
-    </div>
-
-    <div class="journey-cta">
-      <a href="/static/journey.html">Not sure what you need? Take the guided quiz →</a>
     </div>
   </section>
 
@@ -1487,45 +1467,109 @@
     const queryInput = document.getElementById('query');
     const acDropdown = document.getElementById('ac-dropdown');
     const navBar = document.getElementById('nav-bar');
-    const kineticEl = document.getElementById('kinetic-placeholder');
-    const kineticWord = document.getElementById('kinetic-word');
+    const cbPlaceholder = document.getElementById('cb-placeholder');
+    const cbIdle = document.getElementById('cb-idle');
+    const cbTyping = document.getElementById('cb-typing');
 
-    /* ── Kinetic Placeholder ── */
-    const placeholderPhrases = [
-      'Ask anything...',
-      'Find the right AI tool...',
-      'Automate your workflow...',
-      'Research deeper...',
-      'Compare vendors...',
-      'Discover alternatives...',
-    ];
-    let phraseIndex = 0;
+    /* ── Mode Placeholders ── */
+    const modePlaceholders = {
+      find: 'Find the right AI tool...',
+      compare: 'Compare vendors side-by-side...',
+      analyze: 'Analyze your current stack...',
+    };
+    let currentMode = 'find';
 
-    function cyclePlaceholder() {
-      kineticWord.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      kineticWord.style.opacity = '0';
-      kineticWord.style.transform = 'translateY(-6px)';
-      setTimeout(() => {
-        phraseIndex = (phraseIndex + 1) % placeholderPhrases.length;
-        kineticWord.textContent = placeholderPhrases[phraseIndex];
-        kineticWord.style.transform = 'translateY(6px)';
-        requestAnimationFrame(() => {
-          kineticWord.style.opacity = '1';
-          kineticWord.style.transform = 'translateY(0)';
-        });
-      }, 400);
-    }
-    setInterval(cyclePlaceholder, 3500);
+    /* ── Mode Toggles ── */
+    document.querySelectorAll('.cb-mode').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cb-mode').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+        cbPlaceholder.textContent = modePlaceholders[currentMode];
+      });
+    });
 
+    /* ── Placeholder visibility ── */
     queryInput.addEventListener('input', () => {
-      kineticEl.classList.toggle('hidden', queryInput.value.length > 0);
+      cbPlaceholder.classList.toggle('hidden', queryInput.value.length > 0);
+      // Toggle idle/typing context
+      if (queryInput.value.length >= 3) {
+        cbIdle.style.display = 'none';
+        cbTyping.style.display = 'block';
+        updateFunnel(queryInput.value.length);
+      } else {
+        cbIdle.style.display = 'block';
+        cbTyping.style.display = 'none';
+      }
     });
     queryInput.addEventListener('focus', () => {
-      if (queryInput.value.length > 0) kineticEl.classList.add('hidden');
+      if (queryInput.value.length > 0) cbPlaceholder.classList.add('hidden');
     });
     queryInput.addEventListener('blur', () => {
-      if (queryInput.value.length === 0) kineticEl.classList.remove('hidden');
+      if (queryInput.value.length === 0) cbPlaceholder.classList.remove('hidden');
     });
+
+    /* ── Explore cards fill input ── */
+    document.querySelectorAll('.cb-explore-card').forEach(card => {
+      card.addEventListener('click', () => {
+        queryInput.value = card.dataset.query;
+        cbPlaceholder.classList.add('hidden');
+        queryInput.focus();
+        queryInput.dispatchEvent(new Event('input'));
+      });
+    });
+
+    /* ── Parameter chip interactions ── */
+    const cbChipsContainer = document.getElementById('cb-chips');
+    let activeConstraints = {};
+
+    function renderChips() {
+      const chips = cbChipsContainer.querySelectorAll('.cb-chip-active');
+      chips.forEach(c => c.remove());
+      Object.entries(activeConstraints).forEach(([key, val]) => {
+        const chip = document.createElement('span');
+        chip.className = 'cb-chip-active';
+        chip.innerHTML = `${key}: ${val} <button class="cb-chip-x" data-key="${key}">&times;</button>`;
+        cbChipsContainer.prepend(chip);
+        chip.querySelector('.cb-chip-x').addEventListener('click', () => {
+          delete activeConstraints[key];
+          renderChips();
+          // Show the add button again
+          const addBtn = cbChipsContainer.querySelector(`.cb-chip-add[data-key="${key}"]`);
+          if (addBtn) addBtn.style.display = '';
+        });
+      });
+    }
+
+    cbChipsContainer.querySelectorAll('.cb-chip-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.key;
+        const val = prompt(`Set ${btn.textContent.replace('+ ', '')}:`, btn.dataset.placeholder);
+        if (val && val.trim()) {
+          activeConstraints[key] = val.trim();
+          btn.style.display = 'none';
+          renderChips();
+          if (queryInput.value.length >= 3) updateFunnel(queryInput.value.length);
+        }
+      });
+    });
+
+    /* ── Funnel estimates ── */
+    function updateFunnel(queryLen) {
+      const chipCount = Object.keys(activeConstraints).length;
+      const base = 253;
+      const cat = Math.max(8, Math.round(base * (0.15 + Math.min(queryLen, 30) * 0.008)));
+      const budget = Math.round(cat * (0.5 + chipCount * 0.05));
+      const comp = Math.round(budget * (0.6 + chipCount * 0.04));
+      const surv = Math.max(3, Math.round(comp * 0.45));
+      const counts = [base, cat, budget, comp, surv];
+      const fills = cbTyping.querySelectorAll('.cb-funnel-fill');
+      const labels = cbTyping.querySelectorAll('.cb-funnel-count');
+      counts.forEach((c, i) => {
+        fills[i].style.width = ((c / 253) * 100) + '%';
+        labels[i].textContent = i === 0 ? '253' : '~' + c;
+      });
+    }
 
     /* ── Nav visibility ── */
     function updateNav() {
@@ -1537,33 +1581,7 @@
     }
     window.addEventListener('scroll', updateNav, { passive: true });
 
-    /* ── Load category chips ── */
-    (async function loadChips() {
-      try {
-        const res = await fetch('/categories');
-        if (!res.ok) return;
-        const cats = await res.json();
-        const bar = document.getElementById('filter-bar');
-        const featured = ['coding','writing','design','marketing','automation','analytics','sales','support','productivity','no-code','video','audio'];
-        const show = featured.filter(f => cats.includes(f));
-        show.forEach(cat => {
-          const c = document.createElement('span');
-          c.className = 'chip';
-          c.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
-          c.dataset.cat = cat;
-          c.addEventListener('click', () => {
-            c.classList.toggle('active');
-            if (activeFilters.includes(cat)) {
-              activeFilters = activeFilters.filter(x => x !== cat);
-            } else {
-              activeFilters.push(cat);
-            }
-            if (lastQuery || activeFilters.length) doSearch();
-          });
-          bar.appendChild(c);
-        });
-      } catch (e) { console.warn('chips', e); }
-    })();
+    /* ── Category chips replaced by command bar explore grid ── */
 
     /* ── Autocomplete (Bento Grid Engine) ── */
     queryInput.addEventListener('input', () => {
@@ -1780,14 +1798,22 @@
     function openAC() {
       acDropdown.classList.add('open');
       document.getElementById('ambient-footer').style.display = 'none';
-      document.getElementById('filter-bar').style.visibility = 'hidden';
+      document.getElementById('cb-chips').style.visibility = 'hidden';
+      cbIdle.style.display = 'none';
+      cbTyping.style.display = 'none';
     }
 
     function closeAC() {
       acDropdown.classList.remove('open');
       acIndex = -1;
       document.getElementById('ambient-footer').style.display = '';
-      document.getElementById('filter-bar').style.visibility = '';
+      document.getElementById('cb-chips').style.visibility = '';
+      // Restore idle/typing based on input
+      if (queryInput.value.length >= 3) {
+        cbTyping.style.display = 'block';
+      } else {
+        cbIdle.style.display = 'block';
+      }
     }
 
     /* ══════════════════════════════════════════════
@@ -1795,9 +1821,13 @@
        ══════════════════════════════════════════════ */
     async function doSearch() {
       closeAC();
-      const q = document.getElementById('query').value.trim();
-      if (!q && activeFilters.length === 0) return;
-      lastQuery = q || activeFilters.join(' ');
+      let q = document.getElementById('query').value.trim();
+      if (!q) return;
+      // Append active constraints to query
+      Object.entries(activeConstraints).forEach(([k, v]) => {
+        q += `, ${k}: ${v}`;
+      });
+      lastQuery = q;
 
       // Transition to results state
       document.body.classList.add('has-results');
@@ -1807,12 +1837,11 @@
       document.getElementById('empty-state').style.display = 'none';
       document.getElementById('intel-banner').innerHTML = '';
       document.getElementById('results-header').style.display = 'flex';
-      document.getElementById('results-title').textContent = 'Searching…';
+      document.getElementById('results-title').textContent = 'Searching\u2026';
       document.getElementById('results-count').textContent = '';
-      document.getElementById('results').innerHTML = '<div class="empty-state pulse" style="padding:2rem;"><div class="emoji">◌</div><p>Finding the best tools…</p></div>';
+      document.getElementById('results').innerHTML = '<div class="empty-state pulse" style="padding:2rem;"><div class="emoji">\u25CC</div><p>Finding the best tools\u2026</p></div>';
 
-      const body = { query: q || activeFilters.join(' '), profile_id: 'journey' };
-      if (activeFilters.length) body.filters = activeFilters;
+      const body = { query: q, profile_id: 'journey' };
 
       try {
         const res = await fetch('/search', {

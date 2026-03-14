@@ -5,7 +5,7 @@ import ParticleField from './components/ambient/ParticleField';
 import TopBar from './components/verdict/TopBar';
 import VerdictPanel from './components/verdict/VerdictPanel';
 import EvidencePanel from './components/verdict/EvidencePanel';
-import HeroSearch from './components/verdict/HeroSearch';
+import CommandBar from './components/verdict/CommandBar';
 import useDecayAlerts from './hooks/useDecayAlerts';
 
 function RoomShell() {
@@ -51,6 +51,17 @@ function RoomShell() {
     init();
   }, [dispatch]);
 
+  // Pick up query from URL params (when navigating from homepage)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q) {
+      // Clear URL params without reload
+      window.history.replaceState({}, '', '/room');
+      dispatch({ type: 'SET_QUERY', payload: q });
+    }
+  }, [dispatch]);
+
   useDecayAlerts(30000);
 
   return (
@@ -78,7 +89,7 @@ function RoomShell() {
               <span className="text-white/10">|</span>
               <span className="text-sm text-white/40 font-medium">Room</span>
             </div>
-            <HeroSearch />
+            <CommandBar />
           </>
         )}
       </div>

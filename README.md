@@ -1497,6 +1497,21 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v25.3 — Shared Command Bar (2026-03-14)
+
+Built a shared "Command Bar" search component used by both homepage and Room SPA.
+
+**Three-layer design:**
+- **Layer 1 — Input bar**: Mode toggles (Find/Compare/Analyze) as 32px icon buttons with radio behavior, text input (15px), circular indigo submit button (36px). Glassmorphism background with focus glow.
+- **Layer 2 — Parameter chips**: Active constraints show value + x (indigo border), available constraints show as "+ Label" (muted). Clicking opens inline popover. Constraints append to query on submit.
+- **Layer 3 — Context area**: Idle (input <3 chars) shows explore grid (Writing 34, Coding 28, Automation 22, Analytics 19) + guided quiz link. Typing (3+ chars) shows live elimination funnel with animated bars (Catalog→Category→Budget→Compliance→Survivors).
+
+**Homepage (home.html):** Replaced `.search-glass` with command bar HTML/CSS/JS. Removed old category chip loader, filter-strip CSS, kinetic placeholder. Explore cards fill input on click. Funnel estimates update per keystroke.
+
+**Room SPA (React):** New `CommandBar.jsx` component with `compact` prop. Empty state renders full command bar centered. TopBar uses `<CommandBar compact />` for the collapsed input. URL params (`?q=...&mode=...`) picked up on Room load.
+
+---
+
 ### v25.2 — Hero Search Input (2026-03-14)
 
 Two-state search input for the Room:
