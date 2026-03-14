@@ -1497,6 +1497,28 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v25 — Split Verdict Layout (2026-03-14)
+
+**Complete Room SPA rebuild** — replaced 3-panel chat layout with a two-panel "Split Verdict" design.
+
+**New layout:**
+- **TopBar** (fixed): Editable query input, pipeline badge ("8 survived / 253"), context chips, cost display, "New" button
+- **Left panel — Verdict**: AI narrative prose, inline pipeline progress stages, elimination badges (aggregated by reason code, expandable), follow-up input
+- **Right panel — Evidence** (360px): Tool cards sorted by fit score. Top pick gets 2px indigo border, "TOP PICK" label, 24px score, expanded reasoning. All cards have "Add to stack" + "Details" buttons with favicon logos
+- **Stack drawer**: Slide-up from bottom of evidence panel with drag-and-drop reorder (reuses framer-motion Reorder)
+
+**New files (7):** `useQuerySubmit.js` hook, `TopBar.jsx`, `VerdictPanel.jsx`, `PipelineProgress.jsx`, `EvidencePanel.jsx`, `EvidenceCard.jsx`, `StackDrawer.jsx`, `FollowUpInput.jsx`
+
+**Rewritten:** `App.jsx` (new component tree)
+
+**Preserved:** RoomContext state management, SSE streaming, room CRUD, pin/unpin/reorder, copy-to-clipboard, ToolDetailDrawer, ReasonCodeBadge, ambient visuals
+
+**Removed from active tree:** LeftPanel, RightPanel, Header, ActivityFeed, PhaseSteps, ContextPanel, TrustMonitor, IntentInput, RoutingPlan, ExecutionStream (files still exist, just not imported)
+
+**Responsive:** Below 900px panels stack vertically; below 600px chips wrap
+
+---
+
 ### v24.9 — Tool Logo Favicons (2026-03-13)
 
 Replaced letter-in-circle tool card avatars with actual logos via Google Favicon API (`google.com/s2/favicons?domain={DOMAIN}&sz=64`). Falls back to the original letter circle on favicon load error.
