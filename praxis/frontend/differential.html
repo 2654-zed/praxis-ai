@@ -58,16 +58,36 @@
     .container { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 20px; }
 
     /* ── Nav ── */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(6,6,14,0.75); backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border-glass);
-      padding: 10px 24px;
-      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    .nav-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      background: rgba(6,6,14,0.75);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    nav .nav-logo { color: var(--text-primary) !important; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; text-decoration: none; }
-    nav a { color: var(--text-secondary); text-decoration: none; font-size: 0.82rem; transition: color var(--transition-fast); }
-    nav a:hover, nav a.active { color: var(--text-primary); }
+    .nav-bar a {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: color 0.18s;
+    }
+    .nav-bar a:hover { color: #f0f0f5; }
+    .nav-bar a.active { color: #6366f1; }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #f0f0f5 !important;
+      letter-spacing: -0.5px;
+    }
     .text-gradient {
       background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
       -webkit-background-clip: text;
@@ -322,7 +342,7 @@
 <body>
   <div class="aurora"></div>
 
-  <nav>
+  <nav class="nav-bar" id="nav-bar">
     <a href="/" class="nav-logo">Praxis</a>
     <a href="/">Search</a>
     <a href="/static/differential.html" class="active">Diagnosis</a>
@@ -330,6 +350,7 @@
     <a href="/static/tools.html">All Tools</a>
     <a href="/static/tuesday-test.html">ROI Calculator</a>
     <a href="/static/rfp.html">RFP Builder</a>
+    <a href="/room">Room</a>
     <a href="/static/manifesto.html">Methodology</a>
   </nav>
 

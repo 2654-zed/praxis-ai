@@ -1497,6 +1497,26 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v24.6 — Canonical Nav Audit (2026-03-13)
+
+Unified nav bar across all 28 static HTML pages to match the canonical nav from home.html:
+`Praxis | Search | Diagnosis | Trust Badges | All Tools | ROI Calculator | RFP Builder | Room | Methodology`
+
+**22 files fixed:**
+- differential.html, trust_badges.html — added missing Room link, fixed nav class/id
+- sovereignty.html — replaced 5-link custom nav
+- stack-advisor.html — replaced 3-link custom nav
+- enterprise.html — added nav (was completely missing)
+- conduit.html, index.html, resonance.html — replaced `.nav-links` pattern with canonical `.nav-bar`
+- 8 dashboard pages (agent-orchestration, cognitive-dashboard, economics-hub, fort-knox, governance-center, knowledge-explorer, observability-console, pipeline) — replaced dashboard-context nav
+- 6 framework pages (coala-memory, codes-resonance, dsrp-ontology, mesias-governance, reasoning-router, repe-transparency) — replaced framework-context nav
+- Nav CSS unified: `position: fixed; z-index: 100; backdrop-filter: blur(30px); background: rgba(6,6,14,0.75)`
+- Active class set per page (Diagnosis, Trust Badges, All Tools, ROI Calculator, RFP Builder, Methodology); no active on pages without a nav mapping
+
+**6 files verified correct:** category.html, journey.html, manifesto.html, rfp.html, tools.html, tuesday-test.html
+
+---
+
 ### v24.5 — Dropdown Overlap Fixes (2026-03-13)
 
 - Footer overlap: `#ambient-footer` now hidden (`display: none`) when dropdown is open, restored on close

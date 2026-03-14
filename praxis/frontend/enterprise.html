@@ -15,7 +15,37 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-  .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+  .nav-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0.65rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    background: rgba(6,6,14,0.75);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-bar a {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.18s;
+  }
+  .nav-bar a:hover { color: #f0f0f5; }
+  .nav-bar a.active { color: #6366f1; }
+  .nav-logo {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #f0f0f5 !important;
+    letter-spacing: -0.5px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem 2rem; }
   h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; background: linear-gradient(135deg, var(--accent), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
   .query-box { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; color: var(--text); font-size: 0.95rem; resize: vertical; min-height: 80px; margin-bottom: 1rem; }
@@ -84,6 +114,17 @@
 </style>
 </head>
 <body>
+  <nav class="nav-bar" id="nav-bar">
+    <a href="/" class="nav-logo">Praxis</a>
+    <a href="/">Search</a>
+    <a href="/static/differential.html">Diagnosis</a>
+    <a href="/static/trust_badges.html">Trust Badges</a>
+    <a href="/static/tools.html">All Tools</a>
+    <a href="/static/tuesday-test.html">ROI Calculator</a>
+    <a href="/static/rfp.html">RFP Builder</a>
+    <a href="/room">Room</a>
+    <a href="/static/manifesto.html">Methodology</a>
+  </nav>
 <div class="container">
   <h1>Enterprise Engine Dashboard</h1>
   <p class="subtitle">v17 — Architecting the Billion-Dollar Enterprise Decision Engine</p>

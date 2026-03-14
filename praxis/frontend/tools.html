@@ -55,7 +55,7 @@
 
     /* ── Nav ── */
     .nav-bar {
-      position: sticky; top: 0; z-index: 100;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       padding: 0.65rem 1.5rem;
       display: flex; align-items: center; justify-content: center; gap: 2rem;
       background: rgba(6,6,14,0.75);
@@ -416,7 +416,7 @@
   <div class="aurora"></div>
   <div class="noise"></div>
 
-  <nav class="nav-bar">
+  <nav class="nav-bar" id="nav-bar">
     <a href="/" class="nav-logo">Praxis</a>
     <a href="/">Search</a>
     <a href="/static/differential.html">Diagnosis</a>
@@ -424,6 +424,7 @@
     <a href="/static/tools.html" class="active">All Tools</a>
     <a href="/static/tuesday-test.html">ROI Calculator</a>
     <a href="/static/rfp.html">RFP Builder</a>
+    <a href="/room">Room</a>
     <a href="/static/manifesto.html">Methodology</a>
   </nav>
 

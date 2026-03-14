@@ -48,20 +48,36 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
     .header p { color: var(--text-secondary); font-size: 1.05rem; margin-top: var(--space-2); }
-    .nav-links {
-      display: flex; gap: var(--space-2); justify-content: center;
-      flex-wrap: wrap; margin-top: var(--space-5);
+    .nav-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      background: rgba(6,6,14,0.75);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .nav-link {
-      display: inline-block; padding: var(--space-2) var(--space-4);
-      background: var(--bg-card); color: var(--text-secondary);
-      text-decoration: none; border-radius: var(--radius-pill);
-      font-size: 0.82rem; font-weight: 500;
-      transition: all var(--transition-fast);
-      backdrop-filter: blur(12px); box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    .nav-bar a {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: color 0.18s;
     }
-    .nav-link:hover { background: var(--bg-card-hover); color: var(--text-primary); }
-    .nav-link.active { background: var(--accent); color: #fff; }
+    .nav-bar a:hover { color: #f0f0f5; }
+    .nav-bar a.active { color: #6366f1; }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #f0f0f5 !important;
+      letter-spacing: -0.5px;
+    }
 
     .container { max-width: 960px; margin: 0 auto; padding: 0 var(--space-5); }
 
@@ -203,13 +219,17 @@
   <div class="header">
     <h1>The Listening Post</h1>
     <p>Detecting emergent agency through cognitive telemetry</p>
-    <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/static/tools.html" class="nav-link">All Tools</a>
-      <a href="/static/journey.html" class="nav-link">Guided Journey</a>
-      <a href="/static/conduit.html" class="nav-link active">Listening Post</a>
-      <a href="/static/manifesto.html" class="nav-link">Methodology</a>
-    </div>
+  <nav class="nav-bar" id="nav-bar">
+    <a href="/" class="nav-logo">Praxis</a>
+    <a href="/">Search</a>
+    <a href="/static/differential.html">Diagnosis</a>
+    <a href="/static/trust_badges.html">Trust Badges</a>
+    <a href="/static/tools.html">All Tools</a>
+    <a href="/static/tuesday-test.html">ROI Calculator</a>
+    <a href="/static/rfp.html">RFP Builder</a>
+    <a href="/room">Room</a>
+    <a href="/static/manifesto.html">Methodology</a>
+  </nav>
   </div>
 
   <div class="search-section">

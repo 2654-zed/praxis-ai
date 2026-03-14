@@ -31,25 +31,36 @@
     }
 
     /* ── NAV ── */
-    .nav {
+    .nav-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0.65rem 1.5rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 1.2rem 2.5rem;
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(20px);
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,15,0.85);
+      justify-content: center;
+      gap: 2rem;
+      background: rgba(6,6,14,0.75);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .nav-brand { font-size: 1.15rem; font-weight: 700; letter-spacing: .5px; color: var(--accent); }
-    .nav-links { display: flex; gap: .75rem; }
-    .nav-link {
-      padding: .45rem 1rem; border-radius: 999px; font-size: .82rem;
-      color: var(--text-dim); text-decoration: none;
-      background: var(--surface); border: 1px solid var(--border);
-      transition: all .2s;
+    .nav-bar a {
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      transition: color 0.18s;
     }
-    .nav-link:hover, .nav-link.active { color: var(--accent); border-color: var(--accent); background: var(--accent-glow); }
+    .nav-bar a:hover { color: #f0f0f5; }
+    .nav-bar a.active { color: #6366f1; }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #f0f0f5 !important;
+      letter-spacing: -0.5px;
+    }
 
     /* ── HERO ── */
     .hero {
@@ -193,16 +204,16 @@
   </style>
 </head>
 <body>
-  <!-- NAV -->
-  <nav class="nav">
-    <div class="nav-brand">⟡ PRAXIS</div>
-    <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/static/tools.html" class="nav-link">All Tools</a>
-      <a href="/static/journey.html" class="nav-link">Guided Journey</a>
-      <a href="/static/conduit.html" class="nav-link">Listening Post</a>
-      <a href="/static/resonance.html" class="nav-link active">Conductor</a>
-    </div>
+  <nav class="nav-bar" id="nav-bar">
+    <a href="/" class="nav-logo">Praxis</a>
+    <a href="/">Search</a>
+    <a href="/static/differential.html">Diagnosis</a>
+    <a href="/static/trust_badges.html">Trust Badges</a>
+    <a href="/static/tools.html">All Tools</a>
+    <a href="/static/tuesday-test.html">ROI Calculator</a>
+    <a href="/static/rfp.html">RFP Builder</a>
+    <a href="/room">Room</a>
+    <a href="/static/manifesto.html">Methodology</a>
   </nav>
 
   <!-- HERO -->
