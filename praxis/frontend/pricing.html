@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pricing — Praxis</title>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --text-primary: #f0f0f5;
+      --text-secondary: rgba(255,255,255,0.55);
+      --text-dim: rgba(255,255,255,0.35);
+      --accent: #6366f1;
+      --accent-secondary: #50e3c2;
+      --border-glass: rgba(255,255,255,0.08);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+      background: var(--bg-primary); color: var(--text-primary);
+      min-height: 100vh; line-height: 1.5;
+    }
+
+    /* Nav */
+    .nav-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0.65rem 1.5rem; display: flex; align-items: center; justify-content: center; gap: 2rem;
+      background: rgba(6,6,14,0.75); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .nav-bar a { color: rgba(255,255,255,0.55); text-decoration: none; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.3px; transition: color 0.18s; }
+    .nav-bar a:hover { color: #f0f0f5; }
+    .nav-bar a.active { color: #6366f1; }
+    .nav-logo { font-weight: 700; font-size: 0.95rem; color: #f0f0f5 !important; letter-spacing: -0.5px; }
+
+    /* Page */
+    .container { max-width: 800px; margin: 0 auto; padding: 100px 20px 60px; }
+    h1 { font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+    .subtitle { text-align: center; font-size: 15px; color: var(--text-dim); margin-bottom: 40px; }
+
+    /* Pricing cards */
+    .pricing-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 32px; margin-bottom: 16px;
+    }
+    .pricing-card.featured { border: 2px solid var(--accent); }
+    .pricing-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .pricing-badge {
+      display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 99px;
+      background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); margin-left: 8px;
+    }
+    .pricing-price { font-size: 32px; font-weight: 700; color: var(--text-primary); margin: 16px 0; }
+    .pricing-price span { font-size: 14px; color: var(--text-dim); font-weight: 400; }
+    .pricing-features { list-style: none; margin-bottom: 24px; }
+    .pricing-features li {
+      font-size: 14px; color: rgba(255,255,255,0.5); line-height: 2;
+    }
+    .pricing-features li::before { margin-right: 8px; }
+    .pricing-features .included::before { content: '\2713'; color: var(--accent-secondary); }
+    .pricing-features .upcoming::before { content: '\25CB'; color: rgba(255,255,255,0.25); }
+    .pricing-btn {
+      display: inline-block; padding: 10px 24px; border-radius: 10px;
+      font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.15s;
+    }
+    .pricing-btn-primary { background: var(--accent); color: white; border: none; cursor: pointer; }
+    .pricing-btn-primary:hover { background: #818cf8; }
+    .pricing-btn-secondary {
+      background: transparent; color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.15); cursor: pointer;
+    }
+    .pricing-btn-secondary:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.8); }
+    .pricing-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .pricing-row { grid-template-columns: 1fr; } }
+
+    /* Footer */
+    .site-footer {
+      background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 40px 24px; margin-top: 40px;
+    }
+    .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 800px; margin: 0 auto; }
+    @media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; } }
+    .footer-col-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.35); text-decoration: none; line-height: 2; transition: color 0.15s; }
+    .footer-col a:hover { color: rgba(255,255,255,0.7); }
+    .footer-bottom { max-width: 800px; margin: 32px auto 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 11px; color: rgba(255,255,255,0.25); text-align: center; }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar" id="nav-bar">
+    <a href="/" class="nav-logo">Praxis</a>
+    <a href="/static/tools.html">Tools</a>
+    <a href="/#how-it-works">How it works</a>
+    <a href="/static/tuesday-test.html">ROI Calculator</a>
+    <a href="/static/pricing.html" class="active">Pricing</a>
+  </nav>
+
+  <div class="container">
+    <h1>Pricing</h1>
+    <p class="subtitle">Praxis is free during early access.</p>
+
+    <!-- Free tier -->
+    <div class="pricing-card featured">
+      <div class="pricing-name">Free <span class="pricing-badge" style="background:rgba(99,102,241,0.15);color:#6366f1;">Current</span></div>
+      <div class="pricing-price">$0 <span>/ month</span></div>
+      <ul class="pricing-features">
+        <li class="included">Full tool catalog (253 tools)</li>
+        <li class="included">Elimination pipeline</li>
+        <li class="included">Trust monitoring alerts</li>
+        <li class="included">ROI calculator</li>
+        <li class="included">Guided journey wizard</li>
+        <li class="included">Shareable results</li>
+      </ul>
+      <a href="/" class="pricing-btn pricing-btn-primary">Get started &rarr;</a>
+    </div>
+
+    <!-- Pro + Team -->
+    <div class="pricing-row">
+      <div class="pricing-card">
+        <div class="pricing-name">Pro <span class="pricing-badge">Coming soon</span></div>
+        <div class="pricing-price" style="color:var(--text-dim);">Price TBD</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:16px;">Everything in Free, plus:</p>
+        <ul class="pricing-features">
+          <li class="upcoming">Multi-model AI workspace (Room)</li>
+          <li class="upcoming">Advanced analytics</li>
+          <li class="upcoming">Priority support</li>
+          <li class="upcoming">Custom tool requests</li>
+        </ul>
+        <button class="pricing-btn pricing-btn-secondary" onclick="this.textContent='We\'ll let you know!'">Notify me &rarr;</button>
+      </div>
+      <div class="pricing-card">
+        <div class="pricing-name">Team <span class="pricing-badge">Coming soon</span></div>
+        <div class="pricing-price" style="color:var(--text-dim);">Price TBD</div>
+        <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:16px;">Everything in Pro, plus:</p>
+        <ul class="pricing-features">
+          <li class="upcoming">Team workspaces</li>
+          <li class="upcoming">API access</li>
+          <li class="upcoming">Governance dashboard</li>
+          <li class="upcoming">SSO / audit compliance</li>
+        </ul>
+        <a href="mailto:drake@aidashboard.co" class="pricing-btn pricing-btn-secondary">Contact us &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-col-title">Product</div>
+        <a href="/static/tools.html">Tools</a>
+        <a href="/static/tuesday-test.html">ROI Calculator</a>
+        <a href="/room">Room</a>
+        <a href="/static/journey.html">Guided Journey</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Resources</div>
+        <a href="/static/manifesto.html">Methodology</a>
+        <a href="/static/trust_badges.html">Trust Badges</a>
+        <a href="/static/rfp.html">RFP Builder</a>
+        <a href="/static/differential.html">Diagnosis</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <a href="/static/pricing.html">Pricing</a>
+        <a href="/static/manifesto.html">About</a>
+        <a href="mailto:drake@aidashboard.co">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 Praxis by AI Dashboard &middot; aidashboard.co</div>
+  </footer>
+</body>
+</html>

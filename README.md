@@ -1606,6 +1606,24 @@ These questions have no clean answers. They shape Praxis's design decisions.
 
 ## Changelog
 
+### v25.9 — Nav Simplification + Pricing + Footer (2026-03-14)
+
+**Nav simplified from 9 items to 5:** Praxis | Tools | How it works | ROI Calculator | Pricing
+- Removed: Search (redundant), Diagnosis, Trust Badges, RFP Builder, Room, Methodology — all moved to footer
+- Added: "How it works" (smooth-scroll anchor), "Pricing" (new page)
+- Applied across all 28+ static HTML pages
+
+**"How it works" section** added to homepage — 3-card explainer below search results:
+1. You describe what you need → 2. We eliminate what doesn't fit → 3. You keep the survivors
+
+**pricing.html** — new page with 3 tiers: Free (current, $0), Pro (coming soon), Team (coming soon)
+
+**Site footer** — 3-column layout on all pages: Product (Tools, ROI, Room, Journey) | Resources (Methodology, Trust Badges, RFP, Diagnosis) | Company (Pricing, About, Contact)
+
+**Nav always visible** — removed scroll-reveal behavior; nav is permanently shown
+
+---
+
 ### v25.8 — Inline Results (2026-03-14)
 
 Homepage now shows search results inline — no page navigation. The entire product experience is on one page.

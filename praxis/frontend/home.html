@@ -122,17 +122,10 @@
       align-items: center;
       justify-content: center;
       gap: 2rem;
-      background: rgba(6,6,14,0.70);
+      background: rgba(6,6,14,0.75);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
       border-bottom: 1px solid var(--border-glass);
-      transform: translateY(-100%);
-      opacity: 0;
-      transition: transform var(--transition-smooth), opacity var(--transition-smooth);
-    }
-    .nav-bar.visible {
-      transform: translateY(0);
-      opacity: 1;
     }
     .nav-bar a {
       color: var(--text-secondary);
@@ -350,6 +343,42 @@
     .hero-footer-line {
       text-align: center; font-size: 11px; color: rgba(255,255,255,0.3);
       margin-top: 20px;
+    }
+
+    /* How It Works */
+    .hiw-section {
+      max-width: 800px; margin: 0 auto; padding: 60px 1rem 40px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .hiw-heading { text-align: center; margin-bottom: 32px; }
+    .hiw-heading h2 { font-size: 18px; font-weight: 500; color: var(--text-primary); }
+    .hiw-heading p { font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 6px; }
+    .hiw-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    }
+    @media (max-width: 700px) { .hiw-grid { grid-template-columns: 1fr; } }
+    .hiw-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 24px; text-align: center;
+    }
+    .hiw-step { font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+    .hiw-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+    .hiw-desc { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+
+    /* Site Footer */
+    .site-footer {
+      background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 40px 24px; margin-top: 40px;
+    }
+    .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 800px; margin: 0 auto; }
+    @media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; gap: 24px; } }
+    .footer-col-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+    .footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.35); text-decoration: none; line-height: 2; transition: color 0.15s; }
+    .footer-col a:hover { color: rgba(255,255,255,0.7); }
+    .footer-bottom {
+      max-width: 800px; margin: 32px auto 0; padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 11px; color: rgba(255,255,255,0.25); text-align: center;
     }
 
     /* ── Inline Results ── */
@@ -1388,14 +1417,10 @@
   <!-- Sticky Glass Nav (appears on results) -->
   <nav class="nav-bar" id="nav-bar">
     <a href="/" class="nav-logo">Praxis</a>
-    <a href="/" class="active">Search</a>
-    <a href="/static/differential.html">Diagnosis</a>
-    <a href="/static/trust_badges.html">Trust Badges</a>
-    <a href="/static/tools.html">All Tools</a>
+    <a href="/static/tools.html">Tools</a>
+    <a href="/#how-it-works">How it works</a>
     <a href="/static/tuesday-test.html">ROI Calculator</a>
-    <a href="/static/rfp.html">RFP Builder</a>
-    <a href="/room">Room</a>
-    <a href="/static/manifesto.html">Methodology</a>
+    <a href="/static/pricing.html">Pricing</a>
   </nav>
 
   <!-- Hero + Search -->
@@ -1533,9 +1558,30 @@
 
   <!-- Old results section removed — inline results in hero now -->
 
-  <!-- Ambient footer (hidden — stats shown in hero footer line) -->
-  <div class="ambient-footer" id="ambient-footer" style="display:none">
-  </div>
+  <!-- How It Works -->
+  <section class="hiw-section" id="how-it-works">
+    <div class="hiw-heading">
+      <h2>How it works</h2>
+      <p>Elimination-first. Not recommendation-first.</p>
+    </div>
+    <div class="hiw-grid">
+      <div class="hiw-card">
+        <div class="hiw-step">1</div>
+        <div class="hiw-title">You describe what you need</div>
+        <div class="hiw-desc">Task type, budget, compliance requirements, skill level. Tell us what matters to your business.</div>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-step">2</div>
+        <div class="hiw-title">We eliminate what doesn't fit</div>
+        <div class="hiw-desc">253 tools checked against your budget, compliance, trust scores, and skill level. Most don't survive.</div>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-step">3</div>
+        <div class="hiw-title">You keep the survivors</div>
+        <div class="hiw-desc">Ranked by fit, with reasons for every elimination and every recommendation. Full transparency.</div>
+      </div>
+    </div>
+  </section>
 
   <!-- ══════════════════════════════════════════════
        EXECUTIVE BENTO HUB — Below Hero, Above Results
@@ -1737,15 +1783,8 @@
       queryInput.focus();
     }
 
-    /* ── Nav visibility ── */
-    function updateNav() {
-      if (document.body.classList.contains('has-results') || window.scrollY > 100) {
-        navBar.classList.add('visible');
-      } else {
-        navBar.classList.remove('visible');
-      }
-    }
-    window.addEventListener('scroll', updateNav, { passive: true });
+    /* ── Nav is always visible (no scroll-reveal) ── */
+    function updateNav() { /* no-op — nav is permanently visible */ }
 
     /* ── Category chips replaced by command bar explore grid ── */
 
@@ -2418,5 +2457,32 @@
       } catch(e) { console.warn('exec-hub load failed', e); }
     })();
   </script>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-col-title">Product</div>
+        <a href="/static/tools.html">Tools</a>
+        <a href="/static/tuesday-test.html">ROI Calculator</a>
+        <a href="/room">Room</a>
+        <a href="/static/journey.html">Guided Journey</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Resources</div>
+        <a href="/static/manifesto.html">Methodology</a>
+        <a href="/static/trust_badges.html">Trust Badges</a>
+        <a href="/static/rfp.html">RFP Builder</a>
+        <a href="/static/differential.html">Diagnosis</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <a href="/static/pricing.html">Pricing</a>
+        <a href="/static/manifesto.html">About</a>
+        <a href="mailto:drake@aidashboard.co">Contact</a>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 Praxis by AI Dashboard &middot; aidashboard.co</div>
+  </footer>
 </body>
 </html>
