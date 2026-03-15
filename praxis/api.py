@@ -1586,7 +1586,7 @@ def create_app():
             # Home SPA — serve built React app (fallback to static HTML)
             home_dist = frontend_dir / "home" / "dist"
             if home_dist.exists() and (home_dist / "assets").exists():
-                app.mount("/home-assets", StaticFiles(directory=str(home_dist / "assets")), name="home-assets")
+                app.mount("/home-assets", StaticFiles(directory=str(home_dist)), name="home-assets")
 
             app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 
