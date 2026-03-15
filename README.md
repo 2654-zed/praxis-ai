@@ -21,7 +21,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and eliminates A
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~78,700 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-03-15 06:32 UTC |
+| **Last auto-update** | 2026-03-15 06:39 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -2088,6 +2088,8 @@ Praxis applies clinical differential diagnosis to AI tool selection: generate a 
 
 <!-- AUTO:GIT:START -->
 ```
+477709b Replace TaskGrid with MagicBento inline, remove WhyPraxis wrapper
+01db9d6 docs(auto): update README stats [skip ci]
 e2f8b19 feat: Add React Bits MagicBento as "Why Praxis" section
 04e8012 docs(auto): update README stats [skip ci]
 5a69d15 feat: Replace framer-motion aurora blobs with React Bits Aurora
@@ -2106,8 +2108,6 @@ a8b66d8 docs(auto): update README stats [skip ci]
 9da3149 docs(auto): update README stats [skip ci]
 7111a69 LAUNCH BLOCKER FIX: 4 bugs resolved
 f836f5e docs(auto): update README stats [skip ci]
-319b8f0 v25.7: Homepage hero rebuild — task grid + constraint pills + paths
-b620f25 docs: Rewrite roadmap, add Strategic Positioning, update LF section
 ```
 <!-- AUTO:GIT:END -->
 
