@@ -102,8 +102,8 @@ export default function App() {
               <ConstraintPills active={activeConstraints} onToggle={toggleConstraint} />
               <LiveSummary task={null} constraints={activeConstraints} query={query} onSubmit={() => handleSubmit(query)} />
               <PathCards onCompare={handleCompare} />
-              <div className="text-center text-[11px] text-white/30 mt-5 mb-8">
-                253 tools · 11 trust signals · elimination-first methodology
+              <div className="text-center mt-6 mb-8" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.03em' }}>
+                253 tools <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> 11 trust signals <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> elimination-first methodology
               </div>
             </motion.div>
           )}

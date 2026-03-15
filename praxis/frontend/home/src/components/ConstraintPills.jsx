@@ -15,11 +15,11 @@ const CONSTRAINTS = [
 export default function ConstraintPills({ active, onToggle }) {
   return (
     <div className="max-w-[640px] mx-auto px-4 mt-5">
-      <div className="flex items-center gap-2.5 mb-2">
-        <span className="text-[11px] text-white/20 uppercase tracking-wide whitespace-nowrap">Add constraints</span>
-        <div className="flex-1 h-px bg-white/[0.06]" />
+      <div className="flex items-center gap-2.5 mb-3">
+        <span style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', whiteSpace: 'nowrap' }}>Add constraints</span>
+        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
       </div>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-2">
         {CONSTRAINTS.map(c => {
           const isActive = active.has(c.id);
           return (
@@ -28,11 +28,15 @@ export default function ConstraintPills({ active, onToggle }) {
               layout
               whileTap={{ scale: 0.95 }}
               onClick={() => onToggle(c.id)}
-              className="text-[11px] py-1 px-3 rounded-full cursor-pointer transition-all"
+              className="cursor-pointer"
               style={{
-                background: isActive ? '#6366f1' : 'transparent',
-                color: isActive ? 'white' : 'rgba(255,255,255,0.5)',
-                border: `1px solid ${isActive ? '#6366f1' : 'rgba(255,255,255,0.1)'}`,
+                fontSize: '13px',
+                padding: '6px 14px',
+                borderRadius: '999px',
+                border: `1px solid ${isActive ? 'rgba(99,102,241,0.35)' : 'rgba(255,255,255,0.08)'}`,
+                background: isActive ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.04)',
+                color: isActive ? '#a5b4fc' : 'rgba(255,255,255,0.5)',
+                transition: 'all 0.2s ease',
               }}
             >
               {c.label}

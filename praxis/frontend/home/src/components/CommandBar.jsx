@@ -23,25 +23,24 @@ const CommandBar = forwardRef(function CommandBar({ onSubmit, value, onChange },
   return (
     <div className="max-w-[640px] w-full mx-auto px-4">
       <div
-        className="flex items-center transition-shadow duration-200"
+        className="flex items-center"
         style={{
-          background: 'rgba(15,15,20,0.88)',
-          backdropFilter: 'blur(24px)',
-          border: '0.5px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.08)',
           borderRadius: '16px',
-          padding: '6px',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+          padding: '8px 12px',
+          transition: 'all 0.3s ease',
         }}
       >
         {/* Mode toggles */}
-        <div className="flex items-center shrink-0" style={{ borderRight: '0.5px solid rgba(255,255,255,0.08)', paddingRight: '6px', marginRight: '6px' }}>
+        <div className="flex items-center shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.06)', paddingRight: '8px', marginRight: '8px' }}>
           {MODES.map(m => (
             <button
               key={m.id}
               onClick={() => setMode(m.id)}
               title={m.label}
-              className="w-8 h-8 flex items-center justify-center rounded-lg transition-all"
-              style={{ background: mode === m.id ? '#6366f1' : 'transparent', color: mode === m.id ? 'white' : 'rgba(255,255,255,0.4)' }}
+              className="w-8 h-8 flex items-center justify-center transition-all"
+              style={{ background: mode === m.id ? '#6366f1' : 'transparent', color: mode === m.id ? 'white' : 'rgba(255,255,255,0.35)', borderRadius: '8px' }}
             >
               {m.icon}
             </button>
@@ -56,16 +55,22 @@ const CommandBar = forwardRef(function CommandBar({ onSubmit, value, onChange },
           onChange={e => onChange?.(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
           placeholder={activeMode.placeholder}
-          className="flex-1 bg-transparent outline-none text-white/90 placeholder-white/25"
-          style={{ height: '42px', fontSize: '15px', padding: '6px 8px', caretColor: '#6366f1' }}
+          className="flex-1 bg-transparent outline-none"
+          style={{ height: '38px', fontSize: '15px', padding: '6px 8px', caretColor: '#6366f1', color: '#f0f0f5' }}
         />
 
         {/* Submit */}
         <button
           onClick={handleSubmit}
           disabled={!value?.trim()}
-          className="shrink-0 rounded-full flex items-center justify-center transition-all disabled:opacity-30 hover:scale-105 active:scale-95"
-          style={{ width: '36px', height: '36px', background: value?.trim() ? '#6366f1' : 'rgba(255,255,255,0.06)', color: 'white' }}
+          className="shrink-0 flex items-center justify-center transition-all disabled:opacity-30"
+          style={{
+            width: '34px', height: '34px',
+            background: value?.trim() ? '#6366f1' : 'rgba(255,255,255,0.06)',
+            border: value?.trim() ? 'none' : '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '10px',
+            color: 'white',
+          }}
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>

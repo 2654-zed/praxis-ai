@@ -9,9 +9,9 @@ const STEPS = [
 export default function HowItWorks() {
   return (
     <section id="how-it-works" className="max-w-[800px] mx-auto px-4 py-16" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-      <div className="text-center mb-8">
-        <h2 className="text-lg font-medium text-white">How it works</h2>
-        <p className="text-[13px] text-white/35 mt-1">Elimination-first. Not recommendation-first.</p>
+      <div className="text-center mb-10">
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 600, color: '#f0f0f5' }}>How it works</h2>
+        <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.4)', marginTop: '6px' }}>Elimination-first. Not recommendation-first.</p>
       </div>
       <div className="grid grid-cols-3 gap-4 max-[700px]:grid-cols-1">
         {STEPS.map((step, i) => (
@@ -21,12 +21,18 @@ export default function HowItWorks() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ delay: i * 0.12 }}
-            className="text-center rounded-2xl p-6"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+            className="text-center"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '16px',
+              padding: '32px 24px',
+              transition: 'all 0.3s ease',
+            }}
           >
-            <div className="text-2xl font-bold text-[#6366f1] mb-2.5">{step.num}</div>
-            <div className="text-[15px] font-bold text-white mb-2">{step.title}</div>
-            <div className="text-[13px] text-white/40 leading-relaxed">{step.desc}</div>
+            <div style={{ fontSize: '2rem', fontWeight: 700, color: '#6366f1', marginBottom: '12px' }}>{step.num}</div>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: '#f0f0f5', marginBottom: '8px' }}>{step.title}</div>
+            <div style={{ fontSize: '13px', lineHeight: 1.5, color: 'rgba(255,255,255,0.45)' }}>{step.desc}</div>
           </motion.div>
         ))}
       </div>
