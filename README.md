@@ -21,7 +21,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and eliminates A
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~78,700 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-03-15 05:06 UTC |
+| **Last auto-update** | 2026-03-15 05:26 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -2088,6 +2088,8 @@ Praxis applies clinical differential diagnosis to AI tool selection: generate a 
 
 <!-- AUTO:GIT:START -->
 ```
+7b7a177 fix: Move CSS reset into @layer base to fix Tailwind specificity
+bf0aa02 docs(auto): update README stats [skip ci]
 eb1db3d fix: Use resolved absolute paths for home SPA serving
 b38a237 docs(auto): update README stats [skip ci]
 412a476 fix: Mount home-assets at dist/ root, not dist/assets/
@@ -2106,8 +2108,6 @@ b620f25 docs: Rewrite roadmap, add Strategic Positioning, update LF section
 1a4de4d v25.6: Complete all 5 medium-term roadmap items
 b293ed0 docs(auto): update README stats [skip ci]
 95beb94 v25.5: LF wiring into journey.py + llm_resilience.py + roadmap completion
-0adea61 docs(auto): update README stats [skip ci]
-faebedd Add LF integration test suite (38 tests, all pass)
 ```
 <!-- AUTO:GIT:END -->
 
