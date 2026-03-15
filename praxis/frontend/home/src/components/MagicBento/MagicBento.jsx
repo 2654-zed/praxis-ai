@@ -8,42 +8,12 @@ const DEFAULT_GLOW_COLOR = '99, 102, 241';
 const MOBILE_BREAKPOINT = 768;
 
 const cardData = [
-  {
-    color: 'rgba(255,255,255,0.03)',
-    title: 'Elimination Engine',
-    description: 'Kill bad tools before they waste your time',
-    label: 'Core'
-  },
-  {
-    color: 'rgba(255,255,255,0.03)',
-    title: 'Trust Scoring',
-    description: 'Every tool rated on real compliance & durability',
-    label: 'Scoring'
-  },
-  {
-    color: 'rgba(255,255,255,0.03)',
-    title: 'Tuesday Test',
-    description: 'Know your ROI before you commit',
-    label: 'ROI'
-  },
-  {
-    color: 'rgba(255,255,255,0.03)',
-    title: 'Guided Journey',
-    description: 'Get a stack recommendation in 60 seconds',
-    label: 'Discovery'
-  },
-  {
-    color: 'rgba(255,255,255,0.03)',
-    title: '253 Tools Scored',
-    description: 'The largest elimination-first AI tool database',
-    label: 'Coverage'
-  },
-  {
-    color: 'rgba(255,255,255,0.03)',
-    title: 'Built for Non-Technical Teams',
-    description: 'No jargon. No guessing. Just answers.',
-    label: 'Simplicity'
-  }
+  { color: 'rgba(255,255,255,0.03)', title: 'Elimination Engine', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>' },
+  { color: 'rgba(255,255,255,0.03)', title: 'Trust Scoring', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>' },
+  { color: 'rgba(255,255,255,0.03)', title: 'Tuesday Test', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>' },
+  { color: 'rgba(255,255,255,0.03)', title: 'Guided Journey', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>' },
+  { color: 'rgba(255,255,255,0.03)', title: '253 Tools Scored', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>' },
+  { color: 'rgba(255,255,255,0.03)', title: 'Built for Teams', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
 ];
 
 const createParticleElement = (x, y, color = DEFAULT_GLOW_COLOR) => {
@@ -261,22 +231,22 @@ const MagicBento = ({
       )}
       <BentoCardGrid gridRef={gridRef}>
         {cardData.map((card, index) => {
-          const baseClassName = `magic-bento-card ${textAutoHide ? 'magic-bento-card--text-autohide' : ''} ${enableBorderGlow ? 'magic-bento-card--border-glow' : ''}`;
+          const baseClassName = `magic-bento-card ${enableBorderGlow ? 'magic-bento-card--border-glow' : ''}`;
           const cardProps = { className: baseClassName, style: { backgroundColor: card.color, '--glow-color': glowColor } };
+          const cardInner = (
+            <div className="magic-bento-card__inner">
+              <div className="magic-bento-card__icon" dangerouslySetInnerHTML={{ __html: card.icon }} />
+              <div className="magic-bento-card__title">{card.title}</div>
+            </div>
+          );
           if (enableStars) {
             return (
               <ParticleCard key={index} {...cardProps} disableAnimations={shouldDisableAnimations} particleCount={particleCount} glowColor={glowColor} enableTilt={enableTilt} clickEffect={clickEffect} enableMagnetism={enableMagnetism}>
-                <div className="magic-bento-card__header"><div className="magic-bento-card__label">{card.label}</div></div>
-                <div className="magic-bento-card__content"><h2 className="magic-bento-card__title">{card.title}</h2><p className="magic-bento-card__description">{card.description}</p></div>
+                {cardInner}
               </ParticleCard>
             );
           }
-          return (
-            <div key={index} {...cardProps}>
-              <div className="magic-bento-card__header"><div className="magic-bento-card__label">{card.label}</div></div>
-              <div className="magic-bento-card__content"><h2 className="magic-bento-card__title">{card.title}</h2><p className="magic-bento-card__description">{card.description}</p></div>
-            </div>
-          );
+          return <div key={index} {...cardProps}>{cardInner}</div>;
         })}
       </BentoCardGrid>
     </>
