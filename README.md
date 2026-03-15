@@ -21,7 +21,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and eliminates A
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~78,700 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-03-15 22:09 UTC |
+| **Last auto-update** | 2026-03-15 22:19 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -2088,6 +2088,8 @@ Praxis applies clinical differential diagnosis to AI tool selection: generate a 
 
 <!-- AUTO:GIT:START -->
 ```
+a7c1b94 Fix LogoLoop: remove @layer wrapper, reduce logo size to 24px
+251ef0d docs(auto): update README stats [skip ci]
 175e1f7 Increase LogoLoop gap from 64 to 85px
 2803b0e docs(auto): update README stats [skip ci]
 cca573c Fix LogoLoop: wider gap, larger logos, mix-blend-mode kills bg squares
@@ -2106,8 +2108,6 @@ cd1e21d Add paginated MagicBento: 3 pages x 6 cards with auto-rotate
 01db9d6 docs(auto): update README stats [skip ci]
 e2f8b19 feat: Add React Bits MagicBento as "Why Praxis" section
 04e8012 docs(auto): update README stats [skip ci]
-5a69d15 feat: Replace framer-motion aurora blobs with React Bits Aurora
-0976af7 docs(auto): update README stats [skip ci]
 ```
 <!-- AUTO:GIT:END -->
 
