@@ -33,7 +33,7 @@ export default function TrustedTools() {
         logos={toolLogos}
         speed={60}
         direction="left"
-        logoHeight={24}
+        logoHeight={55}
         gap={85}
         hoverSpeed={0}
         fadeOut={true}
