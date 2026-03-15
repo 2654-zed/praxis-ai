@@ -75,8 +75,8 @@ export default function App() {
         <AnimatePresence mode="wait">
           {showExplore && (
             <motion.div key="explore" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-              <div className="relative py-8 px-6">
-                <div className="max-w-4xl mx-auto">
+              <div className="relative py-6 px-6">
+                <div className="max-w-3xl mx-auto">
                   <MagicBento
                     textAutoHide={true}
                     enableStars={true}
