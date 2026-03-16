@@ -18,7 +18,7 @@ import json
 import logging
 import os
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 log = logging.getLogger("praxis.profile")
 
