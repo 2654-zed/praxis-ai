@@ -47,7 +47,7 @@ try:
         TIER_3_MIN_VERTICAL_FIT,
     )
 except ImportError:
-    from pipeline_constants import (  # type: ignore[no-redef]
+    from praxis.pipeline_constants import (  # type: ignore[no-redef]
         SMB_VERTICAL_MATCH_MAX,
         SMB_PRICING_ACCESS_MAX,
         SMB_OPERATIONAL_COMPLEXITY_MAX,

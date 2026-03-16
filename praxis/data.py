@@ -3,11 +3,11 @@ try:
     try:
         from .tools import Tool
     except Exception:
-        from tools import Tool
+        from praxis.tools import Tool
     from . import storage
     from pathlib import Path
 except Exception:
-    from tools import Tool
+    from praxis.tools import Tool
 
 # ======================================================================
 # Tool Knowledge Base
@@ -4124,7 +4124,7 @@ try:
     apply_to_tools(TOOLS)
 except Exception:
     try:
-        from usage import apply_to_tools
+        from praxis.usage import apply_to_tools
         apply_to_tools(TOOLS)
     except Exception:
         pass

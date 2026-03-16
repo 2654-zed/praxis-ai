@@ -41,8 +41,8 @@ try:
     from .tools import Tool
 except Exception:
     try:
-        from data import TOOLS
-        from tools import Tool
+        from praxis.data import TOOLS
+        from praxis.tools import Tool
     except Exception:
         TOOLS = []
         Tool = None
@@ -621,7 +621,7 @@ class ToolGraph:
             from .verticals import recommend_vertical_stack
         except Exception:
             try:
-                from verticals import recommend_vertical_stack  # type: ignore[no-redef]
+                from praxis.verticals import recommend_vertical_stack  # type: ignore[no-redef]
             except Exception:
                 return []
 

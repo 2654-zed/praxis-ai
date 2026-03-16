@@ -50,7 +50,7 @@ try:
         get_registry, list_connectors,
     )
 except ImportError:
-    from connectors import (
+    from praxis.connectors import (
         ConnectorContext, ConnectorResult, execute_connector,
         get_registry, list_connectors,
     )
@@ -60,9 +60,9 @@ try:
     from .interpreter import interpret
     from .data import TOOLS
 except ImportError:
-    from engine import find_tools
-    from interpreter import interpret
-    from data import TOOLS
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
+    from praxis.data import TOOLS
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

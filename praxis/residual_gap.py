@@ -41,7 +41,7 @@ try:
     )
 except Exception:
     try:
-        from context_engine import (  # type: ignore[no-redef]
+        from praxis.context_engine import (  # type: ignore[no-redef]
             ContextVector, FieldExtraction, TIER_1, TIER_2, TIER_3,
             assign_tier, extract_context,
         )
@@ -431,7 +431,7 @@ def resolve_gap(
         from .context_engine import record_context_correction
     except Exception:
         try:
-            from context_engine import record_context_correction  # type: ignore[no-redef]
+            from praxis.context_engine import record_context_correction  # type: ignore[no-redef]
         except Exception:
             record_context_correction = None  # type: ignore[assignment]
 

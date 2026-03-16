@@ -28,20 +28,20 @@ try:
     from .stack import compose_stack
     from .explain import explain_tool
 except Exception:
-    from tools import Tool
-    from profile import UserProfile, load_profile
-    from data import TOOLS
-    from engine import find_tools, score_tool
-    from interpreter import interpret
-    from stack import compose_stack
-    from explain import explain_tool
+    from praxis.tools import Tool
+    from praxis.profile import UserProfile, load_profile
+    from praxis.data import TOOLS
+    from praxis.engine import find_tools, score_tool
+    from praxis.interpreter import interpret
+    from praxis.stack import compose_stack
+    from praxis.explain import explain_tool
 
 try:
     from .philosophy import assess_freedom, assess_transparency
     _PHIL = True
 except Exception:
     try:
-        from philosophy import assess_freedom, assess_transparency
+        from praxis.philosophy import assess_freedom, assess_transparency
         _PHIL = True
     except Exception:
         _PHIL = False

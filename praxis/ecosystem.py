@@ -46,14 +46,14 @@ try:
     )
     from .model_trust_decay import get_trust_monitor
 except ImportError:
-    from model_registry import ModelSpec, get_registry
-    from model_router import (
+    from praxis.model_registry import ModelSpec, get_registry
+    from praxis.model_router import (
         RoutingDecision, RoutingStrategy, ScoredModel, route_query,
     )
-    from llm_provider import (
+    from praxis.llm_provider import (
         LLMMessage, LLMResponse, ProviderRouter, get_provider_router,
     )
-    from model_trust_decay import get_trust_monitor
+    from praxis.model_trust_decay import get_trust_monitor
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

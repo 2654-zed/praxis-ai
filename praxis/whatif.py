@@ -21,11 +21,11 @@ try:
     from .stack import compose_stack
     from .explain import explain_tool
 except Exception:
-    from profile import UserProfile, load_profile
-    from engine import find_tools
-    from interpreter import interpret
-    from stack import compose_stack
-    from explain import explain_tool
+    from praxis.profile import UserProfile, load_profile
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
+    from praxis.stack import compose_stack
+    from praxis.explain import explain_tool
 
 
 def simulate(

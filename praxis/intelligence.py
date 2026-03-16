@@ -496,7 +496,7 @@ def load_learned_data():
         from .learning import load_learned_signals
     except Exception:
         try:
-            from learning import load_learned_signals
+            from praxis.learning import load_learned_signals
         except Exception:
             return
 
@@ -666,7 +666,7 @@ class VerificationPipeline:
             from .explain import generate_mutation
         except ImportError:
             try:
-                from explain import generate_mutation
+                from praxis.explain import generate_mutation
             except ImportError:
                 return {
                     "verified": False,

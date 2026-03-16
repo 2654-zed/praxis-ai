@@ -41,7 +41,7 @@ logger = logging.getLogger("praxis.relationship_extraction")
 try:
     from .pipeline_constants import LLM_EXTRACTION_AUTO_COMMIT, LLM_EXTRACTION_HITL
 except ImportError:
-    from pipeline_constants import LLM_EXTRACTION_AUTO_COMMIT, LLM_EXTRACTION_HITL  # type: ignore[no-redef]
+    from praxis.pipeline_constants import LLM_EXTRACTION_AUTO_COMMIT, LLM_EXTRACTION_HITL  # type: ignore[no-redef]
 
 
 # =====================================================================

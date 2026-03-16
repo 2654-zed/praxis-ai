@@ -28,14 +28,14 @@ try:
     from .explain import explain_tool
     from .learning import run_learning_cycle
 except Exception:
-    from engine import find_tools
-    from interpreter import interpret
-    from data import get_all_categories
-    from feedback import record_feedback, summary, get_entries
-    from profile import UserProfile, build_profile_interactive, load_profile, save_profile
-    from stack import compose_stack, compare_tools
-    from explain import explain_tool
-    from learning import run_learning_cycle
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
+    from praxis.data import get_all_categories
+    from praxis.feedback import record_feedback, summary, get_entries
+    from praxis.profile import UserProfile, build_profile_interactive, load_profile, save_profile
+    from praxis.stack import compose_stack, compare_tools
+    from praxis.explain import explain_tool
+    from praxis.learning import run_learning_cycle
 
 
 # ======================================================================

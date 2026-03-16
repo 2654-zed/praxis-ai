@@ -14,7 +14,7 @@ used by both the CLI and the stack composer without side effects.
 try:
     from .data import TOOLS
 except ImportError:
-    from data import TOOLS
+    from praxis.data import TOOLS
 try:
     from . import config as _cfg
 except ImportError:
@@ -31,7 +31,7 @@ try:
     _DIAG_AVAILABLE = True
 except ImportError:
     try:
-        from diagnostics import record_failure as _record_failure, MIN_RESULTS_THRESHOLD, LOW_SCORE_THRESHOLD
+        from praxis.diagnostics import record_failure as _record_failure, MIN_RESULTS_THRESHOLD, LOW_SCORE_THRESHOLD
         _DIAG_AVAILABLE = True
     except ImportError:
         _DIAG_AVAILABLE = False
@@ -55,7 +55,7 @@ try:
     _INTEL_AVAILABLE = True
 except ImportError:
     try:
-        from intelligence import (
+        from praxis.intelligence import (
             get_tfidf_index, get_learned_boost, get_industry_boost,
             diversity_rerank, initialize as _init_intelligence,
         )
@@ -77,7 +77,7 @@ try:
     _SOVEREIGNTY_AVAILABLE = True
 except ImportError:
     try:
-        from sovereignty import sovereignty_score_modifier as _sov_mod, filter_by_sovereignty as _sov_filter
+        from praxis.sovereignty import sovereignty_score_modifier as _sov_mod, filter_by_sovereignty as _sov_filter
         _SOVEREIGNTY_AVAILABLE = True
     except ImportError:
         _SOVEREIGNTY_AVAILABLE = False
@@ -88,7 +88,7 @@ try:
     _BADGES_AVAILABLE = True
 except ImportError:
     try:
-        from trust_badges import calculate_all_badges as _calc_badges
+        from praxis.trust_badges import calculate_all_badges as _calc_badges
         _BADGES_AVAILABLE = True
     except ImportError:
         _BADGES_AVAILABLE = False

@@ -51,7 +51,7 @@ try:
     logger.info("Latent Flux monitor loaded — LF-enhanced trust decay active")
 except ImportError:
     try:
-        from lf_monitor import OrchestrationMonitor as _OrchestrationMonitor  # type: ignore[no-redef]
+        from praxis.lf_monitor import OrchestrationMonitor as _OrchestrationMonitor  # type: ignore[no-redef]
         _lf_monitor = _OrchestrationMonitor(d=6, leak_rate=0.1)
         logger.info("Latent Flux monitor loaded (direct import)")
     except ImportError:
@@ -68,7 +68,7 @@ try:
         BADGE_TIERS,
     )
 except ImportError:
-    from pipeline_constants import (  # type: ignore[no-redef]
+    from praxis.pipeline_constants import (  # type: ignore[no-redef]
         TRUST_DECAY_INTERVAL_HOURS,
         TRUST_DECAY_MILD_SENTIMENT_DROP,
         TRUST_DECAY_SEVERE_OUTAGE_HOURS,

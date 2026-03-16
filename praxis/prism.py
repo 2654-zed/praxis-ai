@@ -43,7 +43,7 @@ try:
     _RETRIEVAL_OK = True
 except Exception:
     try:
-        from retrieval import hybrid_search, context_precision, context_recall, f1_score
+        from praxis.retrieval import hybrid_search, context_precision, context_recall, f1_score
         _RETRIEVAL_OK = True
     except Exception:
         _RETRIEVAL_OK = False
@@ -53,7 +53,7 @@ try:
     _GRAPH_OK = True
 except Exception:
     try:
-        from graph import get_graph
+        from praxis.graph import get_graph
         _GRAPH_OK = True
     except Exception:
         _GRAPH_OK = False
@@ -62,7 +62,7 @@ try:
     from .interpreter import interpret
 except Exception:
     try:
-        from interpreter import interpret
+        from praxis.interpreter import interpret
     except Exception:
         interpret = None
 
@@ -70,7 +70,7 @@ try:
     from .engine import score_tool, find_tools
 except Exception:
     try:
-        from engine import score_tool, find_tools
+        from praxis.engine import score_tool, find_tools
     except Exception:
         score_tool = find_tools = None
 
@@ -79,7 +79,7 @@ try:
     _PHIL_OK = True
 except Exception:
     try:
-        from philosophy import assess_transparency, assess_freedom
+        from praxis.philosophy import assess_transparency, assess_freedom
         _PHIL_OK = True
     except Exception:
         _PHIL_OK = False

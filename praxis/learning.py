@@ -25,9 +25,9 @@ try:
     from .usage import _load_usage, _save_usage
     from .data import TOOLS
 except Exception:
-    from feedback import _load_feedback
-    from usage import _load_usage, _save_usage
-    from data import TOOLS
+    from praxis.feedback import _load_feedback
+    from praxis.usage import _load_usage, _save_usage
+    from praxis.data import TOOLS
 
 LEARNING_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "learned_signals.json")
 

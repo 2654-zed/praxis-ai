@@ -37,7 +37,7 @@ try:
         PrivacyLevel, LatencyClass, ModelRegistry, get_registry,
     )
 except ImportError:
-    from model_registry import (
+    from praxis.model_registry import (
         ModelSpec, ModelTier, ModelCapability, ModelProvider,
         PrivacyLevel, LatencyClass, ModelRegistry, get_registry,
     )
@@ -47,7 +47,7 @@ try:
     _INTERPRETER = True
 except ImportError:
     try:
-        from interpreter import interpret
+        from praxis.interpreter import interpret
         _INTERPRETER = True
     except ImportError:
         _INTERPRETER = False

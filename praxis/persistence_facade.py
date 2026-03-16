@@ -9,7 +9,7 @@ try:
         diagnose,
     )
 except Exception:
-    from persistence import (  # type: ignore
+    from praxis.persistence import (  # type: ignore
         get_connection,
         get_write_queue,
         pool_stats,

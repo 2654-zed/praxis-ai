@@ -91,7 +91,7 @@ def register_feature_routes(app, deps):
         _diag_available = True
     except Exception:
         try:
-            from diagnostics import get_failures, get_failure_summary
+            from praxis.diagnostics import get_failures, get_failure_summary
             _diag_available = True
         except Exception:
             _diag_available = False
@@ -323,16 +323,16 @@ def register_feature_routes(app, deps):
         _ecosystem_available = True
     except ImportError:
         try:
-            from ecosystem import (
+            from praxis.ecosystem import (
                 run_collaboration, create_session as eco_create_session,
                 get_session as eco_get_session, end_session as eco_end_session,
                 list_sessions as eco_list_sessions,
             )
-            from model_registry import get_registry
-            from model_router import route_query
-            from model_trust_decay import get_trust_monitor
-            from shared_state import get_shared_state_manager
-            from ai_economics import get_model_budget_manager
+            from praxis.model_registry import get_registry
+            from praxis.model_router import route_query
+            from praxis.model_trust_decay import get_trust_monitor
+            from praxis.shared_state import get_shared_state_manager
+            from praxis.ai_economics import get_model_budget_manager
             _ecosystem_available = True
         except ImportError:
             _ecosystem_available = False

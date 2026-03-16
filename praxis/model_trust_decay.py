@@ -41,7 +41,7 @@ try:
         TIER_1_THRESHOLD, TIER_3_THRESHOLD, DEACTIVATION_THRESHOLD,
     )
 except ImportError:
-    from model_registry import (
+    from praxis.model_registry import (
         ModelSpec, ModelTier, ModelRegistry, get_registry, compute_tier,
         TIER_1_THRESHOLD, TIER_3_THRESHOLD, DEACTIVATION_THRESHOLD,
     )

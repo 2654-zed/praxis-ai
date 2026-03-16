@@ -40,13 +40,13 @@ try:
     from .metric_translator import translate_response, build_risk_summary
 except ImportError:
     try:
-        from interpreter import interpret
-        from engine import find_tools
-        from stack import compose_stack
-        from compare_stack import compare_my_stack
-        from migration import migration_plan
-        from profile import load_profile, save_profile, UserProfile
-        from metric_translator import translate_response, build_risk_summary
+        from praxis.interpreter import interpret
+        from praxis.engine import find_tools
+        from praxis.stack import compose_stack
+        from praxis.compare_stack import compare_my_stack
+        from praxis.migration import migration_plan
+        from praxis.profile import load_profile, save_profile, UserProfile
+        from praxis.metric_translator import translate_response, build_risk_summary
     except ImportError:
         interpret = None
         find_tools = None
@@ -415,7 +415,7 @@ def submit_feedback(tool_name: str, rating: int,
         from .feedback import record_feedback
     except ImportError:
         try:
-            from feedback import record_feedback
+            from praxis.feedback import record_feedback
         except ImportError:
             return _err("Feedback module not available", 501)
 

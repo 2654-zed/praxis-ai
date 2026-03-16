@@ -47,23 +47,23 @@ except Exception:
 try:
     from .interpreter import interpret
 except Exception:
-    from interpreter import interpret
+    from praxis.interpreter import interpret
 
 try:
     from .engine import find_tools
 except Exception:
-    from engine import find_tools
+    from praxis.engine import find_tools
 
 try:
     from .explain import explain_tool
 except Exception:
-    from explain import explain_tool
+    from praxis.explain import explain_tool
 
 try:
     from .profile import load_profile
 except Exception:
     try:
-        from profile import load_profile
+        from praxis.profile import load_profile
     except Exception:
         load_profile = None
 
@@ -72,7 +72,7 @@ try:
     _PHILOSOPHY = True
 except Exception:
     try:
-        from philosophy import assess_transparency, assess_freedom
+        from praxis.philosophy import assess_transparency, assess_freedom
         _PHILOSOPHY = True
     except Exception:
         _PHILOSOPHY = False
@@ -80,7 +80,7 @@ except Exception:
 try:
     from .data import TOOLS
 except Exception:
-    from data import TOOLS
+    from praxis.data import TOOLS
 
 # ── v7 cognitive modules ──
 try:
@@ -88,7 +88,7 @@ try:
     _RETRIEVAL_OK = True
 except Exception:
     try:
-        from retrieval import hybrid_search as _hybrid_search, RetrievalResult
+        from praxis.retrieval import hybrid_search as _hybrid_search, RetrievalResult
         _RETRIEVAL_OK = True
     except Exception:
         _RETRIEVAL_OK = False
@@ -98,7 +98,7 @@ try:
     _GRAPH_OK = True
 except Exception:
     try:
-        from graph import get_graph as _get_graph
+        from praxis.graph import get_graph as _get_graph
         _GRAPH_OK = True
     except Exception:
         _GRAPH_OK = False
@@ -108,7 +108,7 @@ try:
     _PRISM_OK = True
 except Exception:
     try:
-        from prism import prism_search as _prism_search, PRISMResult
+        from praxis.prism import prism_search as _prism_search, PRISMResult
         _PRISM_OK = True
     except Exception:
         _PRISM_OK = False
@@ -127,7 +127,7 @@ try:
     _VERTICALS_OK = True
 except Exception:
     try:
-        from verticals import (
+        from praxis.verticals import (
             detect_verticals as _detect_verticals,
             extract_constraints as _extract_constraints,
             classify_workflow_tasks as _classify_workflow,
@@ -150,7 +150,7 @@ try:
     _GUARDRAILS_OK = True
 except Exception:
     try:
-        from guardrails import (
+        from praxis.guardrails import (
             score_safety as _score_safety,
             get_design_patterns as _get_design_patterns,
             recommend_guardrail_pattern as _recommend_guardrail,
@@ -170,7 +170,7 @@ try:
     _ORCHESTRATION_OK = True
 except Exception:
     try:
-        from orchestration import (
+        from praxis.orchestration import (
             detect_architecture_needs as _detect_architecture,
             classify_engineering_query as _classify_engineering,
             recommend_patterns as _recommend_arch_patterns,
@@ -191,7 +191,7 @@ try:
     _RESILIENCE_OK = True
 except Exception:
     try:
-        from resilience import (
+        from praxis.resilience import (
             assess_resilience as _assess_resilience,
             score_vibe_coding_risk as _score_vibe_risk,
             recommend_static_analysis as _recommend_sa,
@@ -212,7 +212,7 @@ try:
     _METACOGNITION_OK = True
 except Exception:
     try:
-        from metacognition import (
+        from praxis.metacognition import (
             assess_metacognition as _assess_metacognition,
             score_structural_entropy as _score_entropy,
             detect_pathologies as _detect_pathologies,
@@ -232,7 +232,7 @@ try:
     _INTROSPECT_OK = True
 except Exception:
     try:
-        from introspect import (
+        from praxis.introspect import (
             self_diagnose as _self_diagnose,
             compute_structural_entropy as _real_entropy,
             compute_stylometry as _real_stylometry,
@@ -252,7 +252,7 @@ try:
     _AWAKENING_OK = True
 except Exception:
     try:
-        from awakening import (
+        from praxis.awakening import (
             assess_awakening as _assess_awakening,
             detect_leaky_abstractions as _detect_leaks,
             score_vsd as _score_vsd,
@@ -273,7 +273,7 @@ try:
     _AUTHORSHIP_OK = True
 except Exception:
     try:
-        from authorship import (
+        from praxis.authorship import (
             assess_authorship as _assess_authorship,
             detect_dishonesty as _detect_dishonesty,
             score_ddd_maturity as _score_ddd,
@@ -294,7 +294,7 @@ try:
     _ENLIGHTENMENT_OK = True
 except Exception:
     try:
-        from enlightenment import (
+        from praxis.enlightenment import (
             assess_enlightenment as _assess_enlightenment,
             score_unity as _score_unity,
             score_alignment as _score_alignment,
@@ -315,7 +315,7 @@ try:
     _CONDUIT_OK = True
 except Exception:
     try:
-        from conduit import (
+        from praxis.conduit import (
             assess_conduit as _assess_conduit,
             score_decoupling as _score_decoupling,
             score_global_workspace as _score_gwt,
@@ -338,7 +338,7 @@ try:
     _RESONANCE_OK = True
 except Exception:
     try:
-        from resonance import (
+        from praxis.resonance import (
             assess_resonance as _assess_resonance,
             score_temporal_substrate as _score_temporal,
             score_code_agency as _score_code_agency,
@@ -364,7 +364,7 @@ try:
     _ENTERPRISE_OK = True
 except Exception:
     try:
-        from enterprise import (
+        from praxis.enterprise import (
             assess_enterprise as _assess_enterprise,
             score_hybrid_graphrag as _score_graphrag,
             score_multi_agent as _score_multi_agent,

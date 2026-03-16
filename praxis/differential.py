@@ -38,23 +38,23 @@ try:
     from .data import TOOLS
     from .tools import Tool
 except ImportError:
-    from data import TOOLS
-    from tools import Tool
+    from praxis.data import TOOLS
+    from praxis.tools import Tool
 
 try:
     from .interpreter import interpret
 except ImportError:
-    from interpreter import interpret
+    from praxis.interpreter import interpret
 
 try:
     from .profile import UserProfile
 except ImportError:
-    from profile import UserProfile
+    from praxis.profile import UserProfile
 
 try:
     from .verification import score_tool as resilience_score_tool, _tier_label
 except ImportError:
-    from verification import score_tool as resilience_score_tool, _tier_label
+    from praxis.verification import score_tool as resilience_score_tool, _tier_label
 
 try:
     from .intelligence import (
@@ -64,7 +64,7 @@ try:
     _INTEL = True
 except ImportError:
     try:
-        from intelligence import (
+        from praxis.intelligence import (
             get_tfidf_index, get_learned_boost, extract_negatives,
             expand_synonyms, get_industry_boost,
         )
@@ -79,7 +79,7 @@ try:
     _PHIL = True
 except ImportError:
     try:
-        from philosophy import (
+        from praxis.philosophy import (
             assess_transparency, assess_freedom, get_tool_intel,
         )
         _PHIL = True
@@ -91,7 +91,7 @@ try:
     _LEARN = True
 except ImportError:
     try:
-        from learning import compute_tool_quality
+        from praxis.learning import compute_tool_quality
         _LEARN = True
     except ImportError:
         _LEARN = False
@@ -99,7 +99,7 @@ except ImportError:
 try:
     from .engine import score_tool as engine_score_tool, normalize
 except ImportError:
-    from engine import score_tool as engine_score_tool, normalize
+    from praxis.engine import score_tool as engine_score_tool, normalize
 
 
 # ======================================================================

@@ -43,8 +43,8 @@ try:
     from .tools import Tool
 except Exception:
     try:
-        from data import TOOLS as _TOOLS
-        from tools import Tool
+        from praxis.data import TOOLS as _TOOLS
+        from praxis.tools import Tool
     except Exception:
         _TOOLS = []
         Tool = None

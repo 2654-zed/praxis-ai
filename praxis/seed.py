@@ -182,7 +182,7 @@ def seed_all(force: bool = False):
     try:
         from .learning import run_learning_cycle
     except Exception:
-        from learning import run_learning_cycle
+        from praxis.learning import run_learning_cycle
 
     signals = run_learning_cycle()
     print(f"[seed] Learning cycle complete. {len(signals.get('tool_quality', {}))} tools scored.")

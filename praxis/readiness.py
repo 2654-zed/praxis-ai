@@ -27,10 +27,10 @@ try:
     from .interpreter import interpret
     from .data import TOOLS
 except Exception:
-    from profile import UserProfile, load_profile
-    from engine import find_tools
-    from interpreter import interpret
-    from data import TOOLS
+    from praxis.profile import UserProfile, load_profile
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
+    from praxis.data import TOOLS
 
 
 # ======================================================================

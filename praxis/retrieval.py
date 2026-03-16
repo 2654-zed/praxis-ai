@@ -46,8 +46,8 @@ try:
     from .tools import Tool
 except Exception:
     try:
-        from data import TOOLS
-        from tools import Tool
+        from praxis.data import TOOLS
+        from praxis.tools import Tool
     except Exception:
         TOOLS = []
         Tool = None
@@ -57,7 +57,7 @@ try:
     _INTEL_AVAILABLE = True
 except Exception:
     try:
-        from intelligence import get_tfidf_index, expand_synonyms
+        from praxis.intelligence import get_tfidf_index, expand_synonyms
         _INTEL_AVAILABLE = True
     except Exception:
         _INTEL_AVAILABLE = False
@@ -499,11 +499,11 @@ def hybrid_find_tools(
     try:
         from .interpreter import interpret
     except Exception:
-        from interpreter import interpret
+        from praxis.interpreter import interpret
     try:
         from .engine import score_profile_fit
     except Exception:
-        from engine import score_profile_fit
+        from praxis.engine import score_profile_fit
 
     if isinstance(user_input, dict):
         intent = user_input

@@ -204,7 +204,7 @@ def setup_default_tasks() -> None:
         _scheduler.schedule("trust_decay", lambda: run_trust_sweep(), sweep_interval)
     except ImportError:
         try:
-            from trust_decay import run_trust_sweep
+            from praxis.trust_decay import run_trust_sweep
             _scheduler.schedule("trust_decay", lambda: run_trust_sweep(), sweep_interval)
         except ImportError:
             log.info("trust_decay not available — skipping sweep schedule")
@@ -218,7 +218,7 @@ def setup_default_tasks() -> None:
         )
     except ImportError:
         try:
-            from journey import get_oracle
+            from praxis.journey import get_oracle
             _scheduler.schedule("journey_corrections", lambda: get_oracle().apply_drift_corrections(), sweep_interval)
         except ImportError:
             log.info("journey not available — skipping corrections schedule")

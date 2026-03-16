@@ -92,7 +92,7 @@ try:
     from .context_engine import extract_context, ContextVector
 except Exception:
     try:
-        from context_engine import extract_context, ContextVector  # type: ignore[no-redef]
+        from praxis.context_engine import extract_context, ContextVector  # type: ignore[no-redef]
     except Exception:
         extract_context = None  # type: ignore[assignment]
         ContextVector = None  # type: ignore[assignment]
@@ -101,7 +101,7 @@ try:
     from .residual_gap import compute_gap, GapAnalysis
 except Exception:
     try:
-        from residual_gap import compute_gap, GapAnalysis  # type: ignore[no-redef]
+        from praxis.residual_gap import compute_gap, GapAnalysis  # type: ignore[no-redef]
     except Exception:
         compute_gap = None  # type: ignore[assignment]
         GapAnalysis = None  # type: ignore[assignment]
@@ -110,7 +110,7 @@ try:
     from .learning import get_tool_quality
 except Exception:
     try:
-        from learning import get_tool_quality  # type: ignore[no-redef]
+        from praxis.learning import get_tool_quality  # type: ignore[no-redef]
     except Exception:
         get_tool_quality = None  # type: ignore[assignment]
 
@@ -152,7 +152,7 @@ try:
     _LF_AVAILABLE = True
 except ImportError:
     try:
-        from lf_monitor import ToolReservoir as _ToolReservoir
+        from praxis.lf_monitor import ToolReservoir as _ToolReservoir
         _LF_AVAILABLE = True
     except ImportError:
         pass

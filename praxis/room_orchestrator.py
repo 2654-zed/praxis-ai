@@ -37,7 +37,7 @@ try:
         record_spend,
     )
 except ImportError:
-    from room_router_extension import (  # type: ignore[no-redef]
+    from praxis.room_router_extension import (  # type: ignore[no-redef]
         route_for_room,
         RoomRoutingDecision,
         record_spend,
@@ -49,7 +49,7 @@ try:
     _ecosystem_available = True
 except ImportError:
     try:
-        from ecosystem import run_collaboration, CollaborationResult  # type: ignore[no-redef]
+        from praxis.ecosystem import run_collaboration, CollaborationResult  # type: ignore[no-redef]
         _ecosystem_available = True
     except ImportError:
         pass
@@ -60,7 +60,7 @@ try:
     _context_engine_available = True
 except ImportError:
     try:
-        from context_engine import extract_context  # type: ignore[no-redef]
+        from praxis.context_engine import extract_context  # type: ignore[no-redef]
         _context_engine_available = True
     except ImportError:
         pass
@@ -71,7 +71,7 @@ try:
     _shared_state_available = True
 except ImportError:
     try:
-        from shared_state import SharedStateManager  # type: ignore[no-redef]
+        from praxis.shared_state import SharedStateManager  # type: ignore[no-redef]
         _shared_state_available = True
     except ImportError:
         pass
@@ -82,7 +82,7 @@ try:
     _journey_available = True
 except ImportError:
     try:
-        from journey import JourneyOracle  # type: ignore[no-redef]
+        from praxis.journey import JourneyOracle  # type: ignore[no-redef]
         _journey_available = True
     except ImportError:
         pass

@@ -23,10 +23,10 @@ try:
     from .profile import UserProfile, load_profile
     from .learning import compute_tool_quality, load_learned_signals
 except Exception:
-    from tools import Tool
-    from data import TOOLS
-    from profile import UserProfile, load_profile
-    from learning import compute_tool_quality, load_learned_signals
+    from praxis.tools import Tool
+    from praxis.data import TOOLS
+    from praxis.profile import UserProfile, load_profile
+    from praxis.learning import compute_tool_quality, load_learned_signals
 
 _BASE = Path(__file__).resolve().parent
 _BENCHMARKS_PATH = _BASE / "benchmarks.json"

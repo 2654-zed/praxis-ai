@@ -15,8 +15,8 @@ try:
     from .tools import Tool
     from .profile import UserProfile
 except Exception:
-    from tools import Tool
-    from profile import UserProfile
+    from praxis.tools import Tool
+    from praxis.profile import UserProfile
 
 # The vendor intelligence layer — optional but deeply integrated when present
 try:
@@ -24,7 +24,7 @@ try:
     _PHILOSOPHY_AVAILABLE = True
 except Exception:
     try:
-        from philosophy import assess_transparency, assess_freedom, detect_masks
+        from praxis.philosophy import assess_transparency, assess_freedom, detect_masks
         _PHILOSOPHY_AVAILABLE = True
     except Exception:
         _PHILOSOPHY_AVAILABLE = False
@@ -35,7 +35,7 @@ try:
     _SOVEREIGNTY_AVAILABLE = True
 except Exception:
     try:
-        from sovereignty import assess_sovereignty, get_trust_badge
+        from praxis.sovereignty import assess_sovereignty, get_trust_badge
         _SOVEREIGNTY_AVAILABLE = True
     except Exception:
         _SOVEREIGNTY_AVAILABLE = False
@@ -45,7 +45,7 @@ try:
     _NUTRITION_AVAILABLE = True
 except Exception:
     try:
-        from nutrition import generate_nutrition_label
+        from praxis.nutrition import generate_nutrition_label
         _NUTRITION_AVAILABLE = True
     except Exception:
         _NUTRITION_AVAILABLE = False
@@ -56,7 +56,7 @@ try:
     _TRUST_BADGES_AVAILABLE = True
 except Exception:
     try:
-        from trust_badges import calculate_all_badges as _calc_all_badges
+        from praxis.trust_badges import calculate_all_badges as _calc_all_badges
         _TRUST_BADGES_AVAILABLE = True
     except Exception:
         _TRUST_BADGES_AVAILABLE = False

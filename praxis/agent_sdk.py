@@ -50,9 +50,9 @@ try:
     from .interpreter import interpret
     from .data import TOOLS
 except ImportError:
-    from engine import find_tools
-    from interpreter import interpret
-    from data import TOOLS
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
+    from praxis.data import TOOLS
 
 try:
     from .workflow_engine import generate_plan, execute_plan, WorkflowPlan
@@ -361,9 +361,9 @@ try:
     _ECOSYSTEM_AVAILABLE = True
 except ImportError:
     try:
-        from model_router import route_query
-        from ecosystem import run_collaboration
-        from shared_state import get_shared_state_manager
+        from praxis.model_router import route_query
+        from praxis.ecosystem import run_collaboration
+        from praxis.shared_state import get_shared_state_manager
         _ECOSYSTEM_AVAILABLE = True
     except ImportError:
         _ECOSYSTEM_AVAILABLE = False

@@ -1256,7 +1256,7 @@ def assess_trust_badge_risk(tool) -> Dict:
         from . import trust_badges
     except ImportError:
         try:
-            import trust_badges
+            import praxis.trust_badges
         except ImportError:
             base["badge_summary"] = {}
             return base

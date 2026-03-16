@@ -61,7 +61,7 @@ try:
         UPDATE_RECENCY_WINDOW_DAYS, SCRAPER_FALLBACK_ENABLED,
     )
 except ImportError:
-    from pipeline_constants import (  # type: ignore[no-redef]
+    from praxis.pipeline_constants import (  # type: ignore[no-redef]
         DIRECTORIES, TRIPLE_MATCH_MIN, DUAL_MATCH_MIN,
         TIER_1_MIN_SURVIVAL, TIER_1_MIN_SMB, TIER_1_CONFIDENCE_AUTO,
         TIER_2_MIN_SURVIVAL, TIER_2_PROMOTION_SURVIVAL,

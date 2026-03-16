@@ -226,7 +226,7 @@ def _build_intent_synonyms():
         from .intelligence import _SYNONYM_MAP, _REVERSE_SYNONYMS
     except ImportError:
         try:
-            from intelligence import _SYNONYM_MAP, _REVERSE_SYNONYMS
+            from praxis.intelligence import _SYNONYM_MAP, _REVERSE_SYNONYMS
         except ImportError:
             return
     for canonical in _WORKFLOW_TEMPLATES:

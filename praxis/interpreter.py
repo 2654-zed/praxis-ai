@@ -42,7 +42,7 @@ try:
     _INTEL_AVAILABLE = True
 except Exception:
     try:
-        from intelligence import (
+        from praxis.intelligence import (
             expand_synonyms, correct_typos, parse_multi_intent,
             extract_negatives, _REVERSE_SYNONYMS,
         )

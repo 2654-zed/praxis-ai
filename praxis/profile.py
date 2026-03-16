@@ -215,7 +215,7 @@ def hydrate_profile(
         pii_masker = PIIMasker()
     except Exception:
         try:
-            from guardrails import PIIMasker  # type: ignore
+            from praxis.guardrails import PIIMasker  # type: ignore
             pii_masker = PIIMasker()
         except Exception:
             pass

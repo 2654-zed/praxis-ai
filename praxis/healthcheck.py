@@ -24,18 +24,18 @@ try:
     from .engine import find_tools
     from .interpreter import interpret
 except Exception:
-    from tools import Tool
-    from data import TOOLS
-    from learning import compute_tool_quality, load_learned_signals
-    from engine import find_tools
-    from interpreter import interpret
+    from praxis.tools import Tool
+    from praxis.data import TOOLS
+    from praxis.learning import compute_tool_quality, load_learned_signals
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
 
 try:
     from .philosophy import assess_freedom, assess_transparency
     _PHIL = True
 except Exception:
     try:
-        from philosophy import assess_freedom, assess_transparency
+        from praxis.philosophy import assess_freedom, assess_transparency
         _PHIL = True
     except Exception:
         _PHIL = False

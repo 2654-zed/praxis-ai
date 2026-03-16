@@ -41,7 +41,7 @@ try:
     _COALA = True
 except ImportError:
     try:
-        from coala_architecture import (
+        from praxis.coala_architecture import (
             MemoryType, MemoryEntry, MemoryModule, CoALAMemorySystem,
         )
         _COALA = True
@@ -51,7 +51,7 @@ except ImportError:
 try:
     from .model_registry import ModelSpec, get_registry
 except ImportError:
-    from model_registry import ModelSpec, get_registry
+    from praxis.model_registry import ModelSpec, get_registry
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

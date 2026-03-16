@@ -898,7 +898,7 @@ def calculate_portability_badge(tool) -> dict:
         try:
             from . import philosophy
         except ImportError:
-            import philosophy
+            import praxis.philosophy
         intel_phil = philosophy.get_tool_intel(tool)
         lock_in = intel_phil.get("lock_in", "medium")
         if lock_in == "low":

@@ -7,7 +7,7 @@ try:
     from .usage import increment as increment_usage
 except Exception:
     try:
-        from usage import increment as increment_usage
+        from praxis.usage import increment as increment_usage
     except Exception:
         def increment_usage(*args, **kwargs):
             # fallback no-op if usage module isn't available
@@ -121,7 +121,7 @@ def _maybe_auto_learn(current_count: int):
             try:
                 from .learning import run_learning_cycle
             except Exception:
-                from learning import run_learning_cycle
+                from praxis.learning import run_learning_cycle
             run_learning_cycle()
             _last_learn_count = current_count
             log.info("auto-learn: triggered at %d entries (threshold=%d)", current_count, threshold)

@@ -19,8 +19,8 @@ try:
     from .tools import Tool
     from .data import TOOLS
 except Exception:
-    from tools import Tool
-    from data import TOOLS
+    from praxis.tools import Tool
+    from praxis.data import TOOLS
 
 
 # ======================================================================

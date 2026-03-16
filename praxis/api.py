@@ -497,63 +497,63 @@ try:
     )
     from .api_v2_rooms import register_room_routes as _register_room_routes
 except ImportError:
-    from data import get_all_categories, TOOLS, get_all_tools_dict
-    from api_routes_core import register_core_routes
-    from api_routes_features import register_feature_routes
-    from engine import find_tools
-    from interpreter import interpret
-    from explain import explain_tool
-    from stack import compose_stack, compare_tools
-    from profile import UserProfile, save_profile, load_profile, list_profiles
-    from learning import run_learning_cycle, compute_tool_quality
+    from praxis.data import get_all_categories, TOOLS, get_all_tools_dict
+    from praxis.api_routes_core import register_core_routes
+    from praxis.api_routes_features import register_feature_routes
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
+    from praxis.explain import explain_tool
+    from praxis.stack import compose_stack, compare_tools
+    from praxis.profile import UserProfile, save_profile, load_profile, list_profiles
+    from praxis.learning import run_learning_cycle, compute_tool_quality
     try:
-        from intelligence import get_suggestions, initialize as init_intelligence
+        from praxis.intelligence import get_suggestions, initialize as init_intelligence
     except ImportError:
         get_suggestions = None
         init_intelligence = None
     try:
-        from philosophy import generate_seeing, vendor_deep_dive
+        from praxis.philosophy import generate_seeing, vendor_deep_dive
     except ImportError:
         generate_seeing = None
         vendor_deep_dive = None
     try:
-        from ingest import export_tools_json, import_tools_json, import_tools_csv, generate_csv_template
+        from praxis.ingest import export_tools_json, import_tools_json, import_tools_csv, generate_csv_template
     except ImportError:
         export_tools_json = import_tools_json = import_tools_csv = generate_csv_template = None
     try:
-        from workflow import suggest_workflow
+        from praxis.workflow import suggest_workflow
     except ImportError:
         suggest_workflow = None
     try:
-        from healthcheck import tool_health, stack_health
+        from praxis.healthcheck import tool_health, stack_health
     except ImportError:
         tool_health = stack_health = None
     try:
-        from readiness import score_readiness
+        from praxis.readiness import score_readiness
     except ImportError:
         score_readiness = None
     try:
-        from compare_stack import compare_my_stack
+        from praxis.compare_stack import compare_my_stack
     except ImportError:
         compare_my_stack = None
     try:
-        from badges import compute_badges_for_tool, compute_all_badges, get_badges
+        from praxis.badges import compute_badges_for_tool, compute_all_badges, get_badges
     except ImportError:
         compute_badges_for_tool = compute_all_badges = get_badges = None
     try:
-        from migration import migration_plan
+        from praxis.migration import migration_plan
     except ImportError:
         migration_plan = None
     try:
-        from whatif import simulate as whatif_simulate
+        from praxis.whatif import simulate as whatif_simulate
     except ImportError:
         whatif_simulate = None
     try:
-        from playground import test_integration, stack_integration_map
+        from praxis.playground import test_integration, stack_integration_map
     except ImportError:
         test_integration = stack_integration_map = None
     try:
-        from monetise import (get_affiliate_info, enrich_recommendation_with_affiliate,
+        from praxis.monetise import (get_affiliate_info, enrich_recommendation_with_affiliate,
                               submit_benchmark, get_benchmarks,
                               subscribe_digest, unsubscribe_digest, generate_digest, subscriber_count)
     except ImportError:
@@ -561,28 +561,28 @@ except ImportError:
         submit_benchmark = get_benchmarks = None
         subscribe_digest = unsubscribe_digest = generate_digest = subscriber_count = None
     try:
-        from reason import deep_reason as _deep_reason
+        from praxis.reason import deep_reason as _deep_reason
     except ImportError:
         _deep_reason = None
     try:
-        from reason import deep_reason_v2 as _deep_reason_v2
+        from praxis.reason import deep_reason_v2 as _deep_reason_v2
     except ImportError as _dr2_err:
         log.warning("deep_reason_v2 import failed: %s", _dr2_err)
         _deep_reason_v2 = None
     try:
-        from retrieval import hybrid_search as _hybrid_search, hybrid_find_tools as _hybrid_find_tools
+        from praxis.retrieval import hybrid_search as _hybrid_search, hybrid_find_tools as _hybrid_find_tools
     except ImportError:
         _hybrid_search = _hybrid_find_tools = None
     try:
-        from graph import get_graph as _get_graph, rebuild_graph as _rebuild_graph
+        from praxis.graph import get_graph as _get_graph, rebuild_graph as _rebuild_graph
     except ImportError:
         _get_graph = _rebuild_graph = None
     try:
-        from prism import prism_search as _prism_search
+        from praxis.prism import prism_search as _prism_search
     except ImportError:
         _prism_search = None
     try:
-        from verticals import (
+        from praxis.verticals import (
             detect_verticals as _detect_verticals,
             get_vertical as _get_vertical,
             get_all_verticals as _get_all_verticals,
@@ -598,7 +598,7 @@ except ImportError:
         _extract_constraints = _classify_workflow = _recommend_stack = None
         _check_anti_patterns = _detect_compounds = _enrich_vertical = None
     try:
-        from guardrails import (
+        from praxis.guardrails import (
             validate_output as _validate_output,
             check_pii as _check_pii,
             score_safety as _score_safety,
@@ -612,7 +612,7 @@ except ImportError:
         _get_design_patterns = _recommend_guardrail = _list_handlers = None
         _build_guardrail_chain = None
     try:
-        from orchestration import (
+        from praxis.orchestration import (
             detect_architecture_needs as _detect_architecture,
             recommend_stack as _recommend_orch_stack,
             recommend_patterns as _recommend_arch_patterns,
@@ -627,7 +627,7 @@ except ImportError:
         _get_stack_layers = _get_arch_patterns = _get_perf_constraints = None
         _classify_engineering = _score_architecture = None
     try:
-        from resilience import (
+        from praxis.resilience import (
             assess_resilience as _assess_resilience,
             score_vibe_coding_risk as _score_vibe_risk,
             recommend_static_analysis as _recommend_sa,
@@ -649,7 +649,7 @@ except ImportError:
         _get_guardrail_pipeline = _get_hitl = _assess_junior = None
         _get_hallucinations = None
     try:
-        from metacognition import (
+        from praxis.metacognition import (
             assess_metacognition as _assess_metacognition,
             detect_pathologies as _detect_pathologies,
             score_structural_entropy as _score_structural_entropy,
@@ -674,7 +674,7 @@ except ImportError:
         _get_apvp = _get_systemic_risks = _assess_economics = None
         _get_goodvibe = _assess_drift = _get_racg = _get_failure_modes = None
     try:
-        from introspect import (
+        from praxis.introspect import (
             self_diagnose as _self_diagnose,
             analyze_codebase as _analyze_codebase,
             compute_structural_entropy as _real_entropy,
@@ -689,7 +689,7 @@ except ImportError:
         _real_stylometry = _detect_own_pathologies = None
         _get_test_coverage = _get_import_graph = _get_worst_functions = None
     try:
-        from awakening import (
+        from praxis.awakening import (
             assess_awakening as _assess_awakening,
             detect_leaky_abstractions as _detect_leaks,
             recommend_patterns as _recommend_conscious_patterns,
@@ -713,7 +713,7 @@ except ImportError:
         _get_triad = _get_vsd_framework = _get_leak_catalogue = None
         _get_supply_guidance = _get_paradoxes = _get_conscious_patterns = None
     try:
-        from authorship import (
+        from praxis.authorship import (
             assess_authorship as _assess_authorship,
             detect_dishonesty as _detect_dishonesty,
             score_ddd_maturity as _score_ddd,
@@ -741,7 +741,7 @@ except ImportError:
         _get_coherence_trap = _get_self_healing_pipe = _get_strangler_fig = None
         _get_circuit_breaker = _get_ddd_patterns = _get_plugin_frameworks = None
     try:
-        from enlightenment import (
+        from praxis.enlightenment import (
             assess_enlightenment as _assess_enlightenment,
             score_unity as _score_unity,
             score_alignment as _score_alignment,
@@ -773,7 +773,7 @@ except ImportError:
         _get_identity_map = _get_observer_pattern = _get_hexagonal_arch = None
         _get_state_pattern = _get_clean_arch_layers = None
     try:
-        from conduit import (
+        from praxis.conduit import (
             assess_conduit as _assess_conduit,
             score_decoupling as _score_decoupling,
             score_memory_stratification as _score_memory_strat,
@@ -809,7 +809,7 @@ except ImportError:
         _get_gwt_components = _get_coala_memory = _get_reinterpret = None
         _get_identity_protocol = _get_codes_framework = None
     try:
-        from resonance import (
+        from praxis.resonance import (
             assess_resonance as _assess_resonance_v16,
             score_temporal_substrate as _score_temporal,
             score_code_agency as _score_code_agency,
@@ -851,7 +851,7 @@ except ImportError:
         _get_res_telemetry = _get_res_telem_metric = None
         _get_res_reinterpret = _get_resonant_chamber = None
     try:
-        from enterprise import (
+        from praxis.enterprise import (
             assess_enterprise as _assess_enterprise,
             score_hybrid_graphrag as _score_graphrag,
             score_multi_agent as _score_multi_agent,
@@ -912,19 +912,19 @@ except ImportError:
         _cfg = None
     # v18 fallback imports
     try:
-        from rate_limiter import SlidingWindowLimiter as _SlidingWindowLimiter
-        from rate_limiter import create_rate_limit_middleware as _create_rl_mw
-        from telemetry import configure_telemetry as _configure_telemetry
-        from telemetry import create_telemetry_middleware as _create_telem_mw
-        from vendor_trust import VendorTrustEngine as _VendorTrustEngine
-        from vendor_trust import VendorProfile as _VendorProfile
-        from vendor_trust import annotate_recommendations as _annotate_trust
-        from hybrid_retrieval_v2 import hybrid_search_v2 as _hybrid_v2
-        from hybrid_retrieval_v2 import get_orchestrator as _get_rag_orchestrator
-        from scoring_optimized import get_optimized_tfidf as _get_opt_tfidf
-        from llm_resilience import get_llm_circuit as _get_llm_circuit
-        from llm_resilience import check_llm_health as _check_llm_health
-        from auth import get_current_user as _get_current_user
+        from praxis.rate_limiter import SlidingWindowLimiter as _SlidingWindowLimiter
+        from praxis.rate_limiter import create_rate_limit_middleware as _create_rl_mw
+        from praxis.telemetry import configure_telemetry as _configure_telemetry
+        from praxis.telemetry import create_telemetry_middleware as _create_telem_mw
+        from praxis.vendor_trust import VendorTrustEngine as _VendorTrustEngine
+        from praxis.vendor_trust import VendorProfile as _VendorProfile
+        from praxis.vendor_trust import annotate_recommendations as _annotate_trust
+        from praxis.hybrid_retrieval_v2 import hybrid_search_v2 as _hybrid_v2
+        from praxis.hybrid_retrieval_v2 import get_orchestrator as _get_rag_orchestrator
+        from praxis.scoring_optimized import get_optimized_tfidf as _get_opt_tfidf
+        from praxis.llm_resilience import get_llm_circuit as _get_llm_circuit
+        from praxis.llm_resilience import check_llm_health as _check_llm_health
+        from praxis.auth import get_current_user as _get_current_user
     except ImportError:
         _SlidingWindowLimiter = _create_rl_mw = None
         _configure_telemetry = _create_telem_mw = None
@@ -935,149 +935,149 @@ except ImportError:
 
     # v19 fallback imports
     try:
-        from connectors import get_registry as _get_connector_registry
-        from connectors import execute_connector as _execute_connector
-        from connectors import list_connectors as _list_connectors
-        from workflow_engine import decompose_request as _decompose_request
-        from workflow_engine import generate_plan as _generate_plan
-        from workflow_engine import execute_plan as _execute_plan
-        from workflow_engine import assemble_and_run as _assemble_and_run
-        from marketplace import publish_template as _publish_template
-        from marketplace import get_template as _get_mkt_template
-        from marketplace import list_templates as _list_templates
-        from marketplace import download_template as _download_template
-        from marketplace import unpublish_template as _unpublish_template
-        from marketplace import feature_template as _feature_template
-        from marketplace import add_review as _add_review
-        from marketplace import get_reviews as _get_reviews
-        from marketplace import marketplace_stats as _marketplace_stats
-        from contributions import submit_tool as _submit_tool
-        from contributions import get_submission as _get_submission
-        from contributions import list_submissions as _list_submissions
-        from contributions import approve_submission as _approve_submission
-        from contributions import reject_submission as _reject_submission
-        from contributions import request_changes as _request_changes
-        from contributions import get_contributor as _get_contributor
-        from contributions import get_leaderboard as _get_leaderboard
-        from agent_sdk import create_session as _create_agent_session
-        from agent_sdk import sdk_discover as _sdk_discover
-        from agent_sdk import sdk_plan as _sdk_plan
-        from agent_sdk import sdk_execute as _sdk_execute
-        from agent_sdk import handle_tool_call as _handle_tool_call
-        from agent_sdk import get_tool_schema as _get_tool_schema
-        from agent_sdk import sdk_info as _sdk_info
-        from governance import record_audit as _record_audit
-        from governance import get_audit_log as _get_audit_log
-        from governance import record_usage as _record_usage
-        from governance import get_usage as _get_gov_usage
-        from governance import get_cost_summary as _get_cost_summary
-        from governance import assess_compliance as _assess_gov_compliance
-        from governance import create_policy as _create_policy
-        from governance import list_policies as _list_policies
-        from governance import check_tool_allowed as _check_tool_allowed
-        from governance import governance_dashboard as _governance_dashboard
+        from praxis.connectors import get_registry as _get_connector_registry
+        from praxis.connectors import execute_connector as _execute_connector
+        from praxis.connectors import list_connectors as _list_connectors
+        from praxis.workflow_engine import decompose_request as _decompose_request
+        from praxis.workflow_engine import generate_plan as _generate_plan
+        from praxis.workflow_engine import execute_plan as _execute_plan
+        from praxis.workflow_engine import assemble_and_run as _assemble_and_run
+        from praxis.marketplace import publish_template as _publish_template
+        from praxis.marketplace import get_template as _get_mkt_template
+        from praxis.marketplace import list_templates as _list_templates
+        from praxis.marketplace import download_template as _download_template
+        from praxis.marketplace import unpublish_template as _unpublish_template
+        from praxis.marketplace import feature_template as _feature_template
+        from praxis.marketplace import add_review as _add_review
+        from praxis.marketplace import get_reviews as _get_reviews
+        from praxis.marketplace import marketplace_stats as _marketplace_stats
+        from praxis.contributions import submit_tool as _submit_tool
+        from praxis.contributions import get_submission as _get_submission
+        from praxis.contributions import list_submissions as _list_submissions
+        from praxis.contributions import approve_submission as _approve_submission
+        from praxis.contributions import reject_submission as _reject_submission
+        from praxis.contributions import request_changes as _request_changes
+        from praxis.contributions import get_contributor as _get_contributor
+        from praxis.contributions import get_leaderboard as _get_leaderboard
+        from praxis.agent_sdk import create_session as _create_agent_session
+        from praxis.agent_sdk import sdk_discover as _sdk_discover
+        from praxis.agent_sdk import sdk_plan as _sdk_plan
+        from praxis.agent_sdk import sdk_execute as _sdk_execute
+        from praxis.agent_sdk import handle_tool_call as _handle_tool_call
+        from praxis.agent_sdk import get_tool_schema as _get_tool_schema
+        from praxis.agent_sdk import sdk_info as _sdk_info
+        from praxis.governance import record_audit as _record_audit
+        from praxis.governance import get_audit_log as _get_audit_log
+        from praxis.governance import record_usage as _record_usage
+        from praxis.governance import get_usage as _get_gov_usage
+        from praxis.governance import get_cost_summary as _get_cost_summary
+        from praxis.governance import assess_compliance as _assess_gov_compliance
+        from praxis.governance import create_policy as _create_policy
+        from praxis.governance import list_policies as _list_policies
+        from praxis.governance import check_tool_allowed as _check_tool_allowed
+        from praxis.governance import governance_dashboard as _governance_dashboard
         # ── v20 fallback imports ──
-        from persistence_facade import get_connection as _get_db_connection
-        from persistence_facade import get_write_queue as _get_write_queue
-        from persistence_facade import pool_stats as _pool_stats
-        from persistence_facade import upgrade_to_wal as _upgrade_to_wal
-        from persistence_facade import diagnose as _db_diagnose
-        from ast_security import safe_parse as _safe_parse
-        from ast_security import scan_praxis_source as _scan_praxis_source
-        from ast_security import is_safe_for_introspection as _is_safe_for_introspection
-        from memory_profiler import memory_summary as _memory_summary
-        from memory_profiler import gc_diagnostics as _gc_diagnostics
-        from memory_profiler import BoundedList as _BoundedList
-        from memory_profiler import BoundedDict as _BoundedDict
-        from architecture import architecture_report as _architecture_report
-        from architecture import check_layer_violations as _check_layer_violations
-        from architecture import dependency_graph as _dependency_graph
-        from architecture import detect_cycles as _detect_cycles
-        from architecture import module_metrics as _module_metrics
-        from architecture import check_entrypoint_hygiene as _check_entrypoint_hygiene
-        from red_team import run_red_team as _run_red_team
-        from red_team import red_team_summary as _red_team_summary
-        from red_team import generate_payloads as _generate_payloads
-        from red_team import test_guardrail as _test_guardrail
-        from stress import classify_routes as _classify_routes
-        from stress import schemathesis_config as _schemathesis_config
-        from stress import generate_stress_report as _generate_stress_report
+        from praxis.persistence_facade import get_connection as _get_db_connection
+        from praxis.persistence_facade import get_write_queue as _get_write_queue
+        from praxis.persistence_facade import pool_stats as _pool_stats
+        from praxis.persistence_facade import upgrade_to_wal as _upgrade_to_wal
+        from praxis.persistence_facade import diagnose as _db_diagnose
+        from praxis.ast_security import safe_parse as _safe_parse
+        from praxis.ast_security import scan_praxis_source as _scan_praxis_source
+        from praxis.ast_security import is_safe_for_introspection as _is_safe_for_introspection
+        from praxis.memory_profiler import memory_summary as _memory_summary
+        from praxis.memory_profiler import gc_diagnostics as _gc_diagnostics
+        from praxis.memory_profiler import BoundedList as _BoundedList
+        from praxis.memory_profiler import BoundedDict as _BoundedDict
+        from praxis.architecture import architecture_report as _architecture_report
+        from praxis.architecture import check_layer_violations as _check_layer_violations
+        from praxis.architecture import dependency_graph as _dependency_graph
+        from praxis.architecture import detect_cycles as _detect_cycles
+        from praxis.architecture import module_metrics as _module_metrics
+        from praxis.architecture import check_entrypoint_hygiene as _check_entrypoint_hygiene
+        from praxis.red_team import run_red_team as _run_red_team
+        from praxis.red_team import red_team_summary as _red_team_summary
+        from praxis.red_team import generate_payloads as _generate_payloads
+        from praxis.red_team import test_guardrail as _test_guardrail
+        from praxis.stress import classify_routes as _classify_routes
+        from praxis.stress import schemathesis_config as _schemathesis_config
+        from praxis.stress import generate_stress_report as _generate_stress_report
         # ── v21 fallback imports ──
-        from cognitive import cognitive_summary as _cognitive_summary
-        from cognitive import get_workspace as _get_cognitive_workspace
-        from cognitive import compute_phi as _compute_phi
-        from cognitive import compute_structural_entropy as _compute_cog_entropy
-        from cognitive import entropy_reduction_plan as _entropy_reduction_plan
-        from observability import observability_report as _observability_report
-        from observability import get_collector as _get_trace_collector
-        from observability import parse_chain_of_thought as _parse_cot
-        from observability import record_telemetry as _record_telemetry
-        from observability import telemetry_summary as _telemetry_summary
-        from knowledge_graph import knowledge_graph_summary as _kg_summary
-        from knowledge_graph import build_graph_from_text as _build_kg
-        from knowledge_graph import get_graph as _get_kg
-        from knowledge_graph import extract_entities as _extract_entities_v21
-        from knowledge_graph import extract_relationships as _extract_relationships
-        from compliance import compliance_posture as _compliance_posture
-        from compliance import regulatory_map as _regulatory_map_v21
-        from compliance import get_audit_trail as _get_audit_trail_v21
-        from compliance import audit_log as _audit_log_v21
-        from compliance import mask_pii as _mask_pii
-        from compliance import detect_pii as _detect_pii
-        from ai_economics import economics_dashboard as _economics_dashboard
-        from ai_economics import token_cost as _token_cost
-        from ai_economics import calculate_roi as _calculate_roi
-        from ai_economics import get_ledger as _get_ledger
-        from ai_economics import MODEL_PRICING as _MODEL_PRICING
-        from vendor_risk import vendor_risk_dashboard as _vendor_risk_dashboard
-        from vendor_risk import get_registry as _get_vendor_registry
-        from vendor_risk import compute_risk_score as _compute_vendor_risk
+        from praxis.cognitive import cognitive_summary as _cognitive_summary
+        from praxis.cognitive import get_workspace as _get_cognitive_workspace
+        from praxis.cognitive import compute_phi as _compute_phi
+        from praxis.cognitive import compute_structural_entropy as _compute_cog_entropy
+        from praxis.cognitive import entropy_reduction_plan as _entropy_reduction_plan
+        from praxis.observability import observability_report as _observability_report
+        from praxis.observability import get_collector as _get_trace_collector
+        from praxis.observability import parse_chain_of_thought as _parse_cot
+        from praxis.observability import record_telemetry as _record_telemetry
+        from praxis.observability import telemetry_summary as _telemetry_summary
+        from praxis.knowledge_graph import knowledge_graph_summary as _kg_summary
+        from praxis.knowledge_graph import build_graph_from_text as _build_kg
+        from praxis.knowledge_graph import get_graph as _get_kg
+        from praxis.knowledge_graph import extract_entities as _extract_entities_v21
+        from praxis.knowledge_graph import extract_relationships as _extract_relationships
+        from praxis.compliance import compliance_posture as _compliance_posture
+        from praxis.compliance import regulatory_map as _regulatory_map_v21
+        from praxis.compliance import get_audit_trail as _get_audit_trail_v21
+        from praxis.compliance import audit_log as _audit_log_v21
+        from praxis.compliance import mask_pii as _mask_pii
+        from praxis.compliance import detect_pii as _detect_pii
+        from praxis.ai_economics import economics_dashboard as _economics_dashboard
+        from praxis.ai_economics import token_cost as _token_cost
+        from praxis.ai_economics import calculate_roi as _calculate_roi
+        from praxis.ai_economics import get_ledger as _get_ledger
+        from praxis.ai_economics import MODEL_PRICING as _MODEL_PRICING
+        from praxis.vendor_risk import vendor_risk_dashboard as _vendor_risk_dashboard
+        from praxis.vendor_risk import get_registry as _get_vendor_registry
+        from praxis.vendor_risk import compute_risk_score as _compute_vendor_risk
         # ── v22 fallback imports ──
-        from reasoning_router import router_summary as _router_summary
-        from reasoning_router import assess_complexity as _assess_complexity
-        from reasoning_router import route_task as _route_task
-        from reasoning_router import decompose_task as _decompose_task_v22
-        from reasoning_router import analyze_reasoning_trace as _analyze_reasoning_trace
-        from reasoning_router import get_puzzle_environments as _get_puzzle_environments
-        from reasoning_router import get_model_tiers as _get_model_tiers
-        from dsrp_ontology import dsrp_summary as _dsrp_summary
-        from dsrp_ontology import build_dsrp_matrix as _build_dsrp_matrix
-        from dsrp_ontology import structural_cognition as _structural_cognition
-        from dsrp_ontology import love_reality_loop as _love_reality_loop
-        from dsrp_ontology import auto_perspectives as _auto_perspectives
-        from codes_resonance import codes_summary as _codes_summary
-        from codes_resonance import assess_chirality as _assess_chirality
-        from codes_resonance import compute_resonance as _compute_resonance
-        from codes_resonance import analyze_network as _analyze_network_v22
-        from codes_resonance import evaluate_seven_p as _evaluate_seven_p
-        from codes_resonance import assess_autopoiesis as _assess_autopoiesis
-        from codes_resonance import compute_coherence_gradient as _compute_coherence_gradient
-        from coala_architecture import coala_summary as _coala_summary
-        from coala_architecture import CoALAMemorySystem as _CoALAMemorySystem
-        from coala_architecture import DecisionCycle as _DecisionCycle
-        from coala_architecture import GlobalWorkspace as _GlobalWorkspace
-        from coala_architecture import compute_phi as _compute_phi_v22
-        from repe_transparency import repe_summary as _repe_summary
-        from repe_transparency import analyze_hidden_states as _analyze_hidden_states
-        from repe_transparency import generate_control_plan as _generate_control_plan
-        from repe_transparency import compute_neural_signature as _compute_neural_signature
-        from mesias_governance import mesias_summary as _mesias_summary
-        from mesias_governance import evaluate_ethics as _evaluate_ethics
-        from mesias_governance import assess_risk as _assess_risk_v22
-        from mesias_governance import analyze_vsd as _analyze_vsd
-        from mesias_governance import measure_efficiency as _measure_efficiency
-        from mesias_governance import GovernanceWorkspace as _GovernanceWorkspace
-        from anti_patterns import anti_patterns_summary as _anti_patterns_summary
-        from anti_patterns import detect_trap as _detect_trap
-        from anti_patterns import scan_all_traps as _scan_all_traps
-        from anti_patterns import assess_vibe_coding as _assess_vibe_coding
-        from anti_patterns import scan_for_shadow_ai as _scan_for_shadow_ai
-        from runtime_protection import runtime_protection_summary as _runtime_protection_summary
-        from runtime_protection import scan_input as _scan_input
-        from runtime_protection import scan_and_respond as _scan_and_respond
-        from runtime_protection import validate_headers as _validate_headers
-        from runtime_protection import detect_anomaly as _detect_anomaly
-        from runtime_protection import check_compliance as _check_compliance_v22
+        from praxis.reasoning_router import router_summary as _router_summary
+        from praxis.reasoning_router import assess_complexity as _assess_complexity
+        from praxis.reasoning_router import route_task as _route_task
+        from praxis.reasoning_router import decompose_task as _decompose_task_v22
+        from praxis.reasoning_router import analyze_reasoning_trace as _analyze_reasoning_trace
+        from praxis.reasoning_router import get_puzzle_environments as _get_puzzle_environments
+        from praxis.reasoning_router import get_model_tiers as _get_model_tiers
+        from praxis.dsrp_ontology import dsrp_summary as _dsrp_summary
+        from praxis.dsrp_ontology import build_dsrp_matrix as _build_dsrp_matrix
+        from praxis.dsrp_ontology import structural_cognition as _structural_cognition
+        from praxis.dsrp_ontology import love_reality_loop as _love_reality_loop
+        from praxis.dsrp_ontology import auto_perspectives as _auto_perspectives
+        from praxis.codes_resonance import codes_summary as _codes_summary
+        from praxis.codes_resonance import assess_chirality as _assess_chirality
+        from praxis.codes_resonance import compute_resonance as _compute_resonance
+        from praxis.codes_resonance import analyze_network as _analyze_network_v22
+        from praxis.codes_resonance import evaluate_seven_p as _evaluate_seven_p
+        from praxis.codes_resonance import assess_autopoiesis as _assess_autopoiesis
+        from praxis.codes_resonance import compute_coherence_gradient as _compute_coherence_gradient
+        from praxis.coala_architecture import coala_summary as _coala_summary
+        from praxis.coala_architecture import CoALAMemorySystem as _CoALAMemorySystem
+        from praxis.coala_architecture import DecisionCycle as _DecisionCycle
+        from praxis.coala_architecture import GlobalWorkspace as _GlobalWorkspace
+        from praxis.coala_architecture import compute_phi as _compute_phi_v22
+        from praxis.repe_transparency import repe_summary as _repe_summary
+        from praxis.repe_transparency import analyze_hidden_states as _analyze_hidden_states
+        from praxis.repe_transparency import generate_control_plan as _generate_control_plan
+        from praxis.repe_transparency import compute_neural_signature as _compute_neural_signature
+        from praxis.mesias_governance import mesias_summary as _mesias_summary
+        from praxis.mesias_governance import evaluate_ethics as _evaluate_ethics
+        from praxis.mesias_governance import assess_risk as _assess_risk_v22
+        from praxis.mesias_governance import analyze_vsd as _analyze_vsd
+        from praxis.mesias_governance import measure_efficiency as _measure_efficiency
+        from praxis.mesias_governance import GovernanceWorkspace as _GovernanceWorkspace
+        from praxis.anti_patterns import anti_patterns_summary as _anti_patterns_summary
+        from praxis.anti_patterns import detect_trap as _detect_trap
+        from praxis.anti_patterns import scan_all_traps as _scan_all_traps
+        from praxis.anti_patterns import assess_vibe_coding as _assess_vibe_coding
+        from praxis.anti_patterns import scan_for_shadow_ai as _scan_for_shadow_ai
+        from praxis.runtime_protection import runtime_protection_summary as _runtime_protection_summary
+        from praxis.runtime_protection import scan_input as _scan_input
+        from praxis.runtime_protection import scan_and_respond as _scan_and_respond
+        from praxis.runtime_protection import validate_headers as _validate_headers
+        from praxis.runtime_protection import detect_anomaly as _detect_anomaly
+        from praxis.runtime_protection import check_compliance as _check_compliance_v22
     except ImportError:
         _get_connector_registry = _execute_connector = _list_connectors = None
         _decompose_request = _generate_plan = _execute_plan = _assemble_and_run = None
@@ -1129,7 +1129,7 @@ except ImportError:
         _runtime_protection_summary = _scan_input = _scan_and_respond = None
         _validate_headers = _detect_anomaly = _check_compliance_v22 = None
     try:
-        from api_v2_rooms import register_room_routes as _register_room_routes
+        from praxis.api_v2_rooms import register_room_routes as _register_room_routes
     except ImportError:
         _register_room_routes = None
 
@@ -1653,7 +1653,7 @@ def create_app():
         mount_public_api(app)
     except Exception:
         try:
-            from public_api import mount_public_api
+            from praxis.public_api import mount_public_api
             mount_public_api(app)
         except Exception:
             pass
@@ -4632,7 +4632,7 @@ def create_app():
         from .scheduler import get_scheduler, setup_default_tasks
     except ImportError:
         try:
-            from scheduler import get_scheduler, setup_default_tasks  # type: ignore[no-redef]
+            from praxis.scheduler import get_scheduler, setup_default_tasks  # type: ignore[no-redef]
         except ImportError:
             get_scheduler = setup_default_tasks = None  # type: ignore
 
@@ -4770,7 +4770,7 @@ def create_app():
         _PIPELINE_OK = True
     except ImportError:
         try:
-            from ingestion_engine import (  # type: ignore[no-redef]
+            from praxis.ingestion_engine import (  # type: ignore[no-redef]
                 run_daily_pipeline as _run_pipeline,
                 get_review_queue as _get_review_queue,
                 approve_tool as _approve_tool,
@@ -4838,7 +4838,7 @@ def create_app():
         _FB_OK = True
     except ImportError:
         try:
-            from feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats  # type: ignore[no-redef]
+            from praxis.feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats  # type: ignore[no-redef]
             _FB_OK = True
         except ImportError:
             _FB_OK = False
@@ -4916,11 +4916,11 @@ def create_app():
             try:
                 from .feedback_db import get_dashboard_data as _fb_dash
             except ImportError:
-                from feedback_db import get_dashboard_data as _fb_dash  # type: ignore[no-redef]
+                from praxis.feedback_db import get_dashboard_data as _fb_dash  # type: ignore[no-redef]
             try:
                 from .feedback_dashboard import render_dashboard as _fb_render
             except ImportError:
-                from feedback_dashboard import render_dashboard as _fb_render  # type: ignore[no-redef]
+                from praxis.feedback_dashboard import render_dashboard as _fb_render  # type: ignore[no-redef]
             data = _fb_dash()
             return HTMLResponse(content=_fb_render(data))
 

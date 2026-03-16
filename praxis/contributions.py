@@ -236,7 +236,7 @@ def validate_submission(sub: ToolSubmission) -> List[str]:
         from .data import TOOLS
     except ImportError:
         try:
-            from data import TOOLS
+            from praxis.data import TOOLS
         except ImportError:
             TOOLS = []
     existing_names = {t.name.lower() for t in TOOLS}

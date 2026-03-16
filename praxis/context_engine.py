@@ -41,7 +41,7 @@ try:
     from .interpreter import interpret, _KNOWN_TOOLS
 except Exception:
     try:
-        from interpreter import interpret, _KNOWN_TOOLS  # type: ignore[no-redef]
+        from praxis.interpreter import interpret, _KNOWN_TOOLS  # type: ignore[no-redef]
     except Exception:
         interpret = None  # type: ignore[assignment]
         _KNOWN_TOOLS = set()
@@ -50,7 +50,7 @@ try:
     from .verticals import detect_verticals, extract_constraints, recommend_vertical_stack
 except Exception:
     try:
-        from verticals import detect_verticals, extract_constraints, recommend_vertical_stack  # type: ignore[no-redef]
+        from praxis.verticals import detect_verticals, extract_constraints, recommend_vertical_stack  # type: ignore[no-redef]
     except Exception:
         detect_verticals = None  # type: ignore[assignment]
         extract_constraints = None  # type: ignore[assignment]
@@ -60,7 +60,7 @@ try:
     from .intelligence import expand_synonyms, TFIDFIndex
 except Exception:
     try:
-        from intelligence import expand_synonyms, TFIDFIndex  # type: ignore[no-redef]
+        from praxis.intelligence import expand_synonyms, TFIDFIndex  # type: ignore[no-redef]
     except Exception:
         expand_synonyms = None  # type: ignore[assignment]
         TFIDFIndex = None  # type: ignore[assignment]
@@ -69,7 +69,7 @@ try:
     from .profile import load_profile, UserProfile
 except Exception:
     try:
-        from profile import load_profile, UserProfile  # type: ignore[no-redef]
+        from praxis.profile import load_profile, UserProfile  # type: ignore[no-redef]
     except Exception:
         load_profile = None  # type: ignore[assignment]
         UserProfile = None  # type: ignore[assignment]

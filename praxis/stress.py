@@ -297,7 +297,7 @@ def classify_routes(app=None) -> List[RouteClassification]:
             app = create_app()
         except ImportError:
             try:
-                from api import create_app
+                from praxis.api import create_app
                 app = create_app()
             except ImportError:
                 return []

@@ -27,18 +27,18 @@ try:
     from .engine import find_tools
     from .interpreter import interpret
 except Exception:
-    from tools import Tool
-    from data import TOOLS
-    from profile import UserProfile, load_profile
-    from engine import find_tools
-    from interpreter import interpret
+    from praxis.tools import Tool
+    from praxis.data import TOOLS
+    from praxis.profile import UserProfile, load_profile
+    from praxis.engine import find_tools
+    from praxis.interpreter import interpret
 
 try:
     from .philosophy import assess_freedom, get_tool_intel
     _PHIL = True
 except Exception:
     try:
-        from philosophy import assess_freedom, get_tool_intel
+        from praxis.philosophy import assess_freedom, get_tool_intel
         _PHIL = True
     except Exception:
         _PHIL = False

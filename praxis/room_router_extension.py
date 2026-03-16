@@ -27,7 +27,7 @@ try:
         ModelElimination,
     )
 except ImportError:
-    from model_router import (  # type: ignore[no-redef]
+    from praxis.model_router import (  # type: ignore[no-redef]
         route_query,
         RoutingDecision,
         RoutingStrategy,
@@ -38,7 +38,7 @@ except ImportError:
 try:
     from .model_registry import ModelCapability, PrivacyLevel
 except ImportError:
-    from model_registry import ModelCapability, PrivacyLevel  # type: ignore[no-redef]
+    from praxis.model_registry import ModelCapability, PrivacyLevel  # type: ignore[no-redef]
 
 try:
     from . import room_store

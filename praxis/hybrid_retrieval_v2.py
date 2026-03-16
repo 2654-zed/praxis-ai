@@ -45,7 +45,7 @@ try:
     _RETRIEVAL_OK = True
 except Exception:
     try:
-        from retrieval import (
+        from praxis.retrieval import (
             hybrid_search as _legacy_hybrid,
             sparse_rank as _sparse_rank,
             dense_rank as _dense_rank,
@@ -62,7 +62,7 @@ try:
     _GRAPH_OK = True
 except Exception:
     try:
-        from graph import ToolGraph
+        from praxis.graph import ToolGraph
         _GRAPH_OK = True
     except Exception:
         _GRAPH_OK = False
@@ -72,7 +72,7 @@ try:
     from .data import TOOLS
 except Exception:
     try:
-        from data import TOOLS
+        from praxis.data import TOOLS
     except Exception:
         TOOLS = []
 

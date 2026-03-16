@@ -367,7 +367,7 @@ def assess_compliance(
         from .data import TOOLS
     except ImportError:
         try:
-            from data import TOOLS
+            from praxis.data import TOOLS
         except ImportError:
             TOOLS = []
 
@@ -471,7 +471,7 @@ def check_tool_allowed(tool_name: str, team: str = "default") -> Dict[str, Any]:
                 from .data import TOOLS
             except ImportError:
                 try:
-                    from data import TOOLS
+                    from praxis.data import TOOLS
                 except ImportError:
                     TOOLS = []
             for t in TOOLS:

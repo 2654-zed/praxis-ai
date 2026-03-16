@@ -200,7 +200,7 @@ def _get_guardrail_chain():
         return run_chain
     except ImportError:
         try:
-            from guardrails import build_chain, run_chain
+            from praxis.guardrails import build_chain, run_chain
             return run_chain
         except ImportError:
             return None

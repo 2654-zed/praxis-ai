@@ -23,10 +23,10 @@ try:
     from .learning import compute_tool_quality, load_learned_signals
     from .feedback import _load_feedback
 except Exception:
-    from tools import Tool
-    from data import TOOLS
-    from learning import compute_tool_quality, load_learned_signals
-    from feedback import _load_feedback
+    from praxis.tools import Tool
+    from praxis.data import TOOLS
+    from praxis.learning import compute_tool_quality, load_learned_signals
+    from praxis.feedback import _load_feedback
 
 
 # ======================================================================

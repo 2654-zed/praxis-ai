@@ -179,14 +179,14 @@ def register_core_routes(app, deps):
         try:
             from .smart_suggest import smart_suggest
         except ImportError:
-            from smart_suggest import smart_suggest
+            from praxis.smart_suggest import smart_suggest
         if q and len(q.strip()) >= 2:
             return smart_suggest(q, TOOLS, limit=8)
         # Show-on-focus: return pre-populated suggestions for empty query
         try:
             from .smart_suggest import focus_suggestions
         except ImportError:
-            from smart_suggest import focus_suggestions
+            from praxis.smart_suggest import focus_suggestions
         return focus_suggestions(TOOLS)
 
     @app.post("/suggest/click")
@@ -198,7 +198,7 @@ def register_core_routes(app, deps):
         try:
             from .smart_suggest import record_suggestion_click
         except ImportError:
-            from smart_suggest import record_suggestion_click
+            from praxis.smart_suggest import record_suggestion_click
         record_suggestion_click(text)
         return {"status": "recorded", "text": text}
 
@@ -311,7 +311,7 @@ def register_core_routes(app, deps):
         try:
             from .feedback import record_feedback
         except Exception:
-            from feedback import record_feedback
+            from praxis.feedback import record_feedback
 
         try:
             record_feedback(
@@ -330,7 +330,7 @@ def register_core_routes(app, deps):
         try:
             from .feedback import summary
         except Exception:
-            from feedback import summary
+            from praxis.feedback import summary
         return summary()
 
     @app.post("/learn", dependencies=_admin_guard or [])
@@ -396,7 +396,7 @@ def register_core_routes(app, deps):
         try:
             from .verification import score_tool, score_all_tools, tier_distribution, tuesday_test, generate_rfp
         except ImportError:
-            from verification import score_tool, score_all_tools, tier_distribution, tuesday_test, generate_rfp
+            from praxis.verification import score_tool, score_all_tools, tier_distribution, tuesday_test, generate_rfp
         return score_tool, score_all_tools, tier_distribution, tuesday_test, generate_rfp
 
     @app.get("/tools/resilience")
@@ -593,7 +593,7 @@ def register_core_routes(app, deps):
             from . import differential
             return differential
         except ImportError:
-            import differential
+            import praxis.differential
             return differential
 
     def _import_explain_diff():
@@ -601,7 +601,7 @@ def register_core_routes(app, deps):
             from .explain import explain_elimination, explain_survival, assemble_presentation
             return explain_elimination, explain_survival, assemble_presentation
         except ImportError:
-            from explain import explain_elimination, explain_survival, assemble_presentation
+            from praxis.explain import explain_elimination, explain_survival, assemble_presentation
             return explain_elimination, explain_survival, assemble_presentation
 
     def _import_profile_matrix():
@@ -609,7 +609,7 @@ def register_core_routes(app, deps):
             from .profile import build_constraint_matrix
             return build_constraint_matrix
         except ImportError:
-            from profile import build_constraint_matrix
+            from praxis.profile import build_constraint_matrix
             return build_constraint_matrix
 
     def _import_learning_overrides():
@@ -617,7 +617,7 @@ def register_core_routes(app, deps):
             from .learning import compute_override_rate, get_elimination_efficacy
             return compute_override_rate, get_elimination_efficacy
         except ImportError:
-            from learning import compute_override_rate, get_elimination_efficacy
+            from praxis.learning import compute_override_rate, get_elimination_efficacy
             return compute_override_rate, get_elimination_efficacy
 
     def _import_interpreter_structured():
@@ -625,7 +625,7 @@ def register_core_routes(app, deps):
             from .interpreter import extract_structured_intents
             return extract_structured_intents
         except ImportError:
-            from interpreter import extract_structured_intents
+            from praxis.interpreter import extract_structured_intents
             return extract_structured_intents
 
     @app.post("/differential")

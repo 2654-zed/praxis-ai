@@ -34,7 +34,7 @@ try:
     _LF_AVAILABLE = True
 except ImportError:
     try:
-        from lf_monitor import ToolReservoir as _ToolReservoir
+        from praxis.lf_monitor import ToolReservoir as _ToolReservoir
         _LF_AVAILABLE = True
     except ImportError:
         pass

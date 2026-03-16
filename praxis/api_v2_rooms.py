@@ -164,7 +164,7 @@ def register_room_routes(app, deps):
         from .room_orchestrator import execute_in_room
     except ImportError:
         try:
-            from room_orchestrator import execute_in_room  # type: ignore[no-redef]
+            from praxis.room_orchestrator import execute_in_room  # type: ignore[no-redef]
         except ImportError:
             execute_in_room = None  # type: ignore[assignment]
 
@@ -231,7 +231,7 @@ def register_room_routes(app, deps):
         )
     except ImportError:
         try:
-            from room_router_extension import (  # type: ignore[no-redef]
+            from praxis.room_router_extension import (  # type: ignore[no-redef]
                 add_room_elimination,
                 remove_room_elimination,
             )

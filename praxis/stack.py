@@ -22,11 +22,11 @@ try:
     from .data import TOOLS
     from .explain import explain_stack
 except Exception:
-    from tools import Tool
-    from profile import UserProfile
-    from engine import find_tools, score_tool
-    from data import TOOLS
-    from explain import explain_stack
+    from praxis.tools import Tool
+    from praxis.profile import UserProfile
+    from praxis.engine import find_tools, score_tool
+    from praxis.data import TOOLS
+    from praxis.explain import explain_stack
 
 try:
     from . import config as _cfg
@@ -315,7 +315,7 @@ def compare_tools(tool_name_a: str, tool_name_b: str, profile: Optional[UserProf
     try:
         from .explain import explain_tool
     except Exception:
-        from explain import explain_tool
+        from praxis.explain import explain_tool
 
     expl_a = explain_tool(tool_a, {"keywords": [], "raw": ""}, profile)
     expl_b = explain_tool(tool_b, {"keywords": [], "raw": ""}, profile)

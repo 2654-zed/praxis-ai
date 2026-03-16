@@ -47,12 +47,12 @@ log = logging.getLogger("praxis.llm_provider")
 try:
     from .model_registry import ModelProvider, ModelSpec, get_registry
 except ImportError:
-    from model_registry import ModelProvider, ModelSpec, get_registry
+    from praxis.model_registry import ModelProvider, ModelSpec, get_registry
 
 try:
     from .ai_economics import token_cost, MODEL_PRICING
 except ImportError:
-    from ai_economics import token_cost, MODEL_PRICING
+    from praxis.ai_economics import token_cost, MODEL_PRICING
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
