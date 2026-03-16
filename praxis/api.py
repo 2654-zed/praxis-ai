@@ -1591,6 +1591,12 @@ def create_app():
             if home_dist.exists() and (home_dist / "assets").exists():
                 app.mount("/home-assets", StaticFiles(directory=str(home_dist.resolve())), name="home-assets")
 
+            # Tools SPA
+            tools_dist = (frontend_dir / "tools" / "dist").resolve()
+            _tools_react = str((tools_dist / "index.html").resolve()) if tools_dist.exists() else None
+            if tools_dist.exists() and (tools_dist / "assets").exists():
+                app.mount("/tools-assets", StaticFiles(directory=str(tools_dist.resolve())), name="tools-assets")
+
             app.mount("/static", StaticFiles(directory=str(frontend_dir.resolve())), name="static")
 
             @app.get("/")
@@ -1599,6 +1605,14 @@ def create_app():
                 if _os_idx.path.isfile(_react_index):
                     return FileResponse(_react_index, media_type="text/html")
                 return FileResponse(_static_index, media_type="text/html")
+
+            @app.get("/tools-app", tags=["Product"])
+            async def tools_app():
+                """Tools catalog — React SPA."""
+                import os as _os_ta
+                if _tools_react and _os_ta.path.isfile(_tools_react):
+                    return FileResponse(_tools_react, media_type="text/html")
+                return FileResponse(str((frontend_dir / "tools.html").resolve()), media_type="text/html")
 
             @app.get("/journey", tags=["Product"])
             def journey_wizard():

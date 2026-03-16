@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --accent: #6366f1;
+    --bg: #0a0a0f;
+    --text: #f0f0f5;
+    --text-sec: rgba(255,255,255,0.55);
+    --text-dim: rgba(255,255,255,0.35);
+    --border: rgba(255,255,255,0.08);
+    --glass: rgba(255,255,255,0.03);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; margin: 0; padding: 0; }
+  #root { min-height: 100vh; }
+}
+::selection { background: rgba(99,102,241,0.3); color: white; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
