@@ -4860,25 +4860,25 @@ def create_app():
             other = 'other'
 
         class _SearchFBReq(BaseModel):
-            session_id: str
-            query_text: str
+            session_id: str = Field(max_length=100)
+            query_text: str = Field(max_length=2000)
             constraints: Optional[list] = None
             survivors: Optional[list] = None
             eliminated_count: Optional[int] = None
             rating: Optional[_RatingEnum] = None
-            comment: Optional[str] = None
+            comment: Optional[str] = Field(None, max_length=1000)
 
         class _ToolFBReq(BaseModel):
-            session_id: str
-            tool_name: str
-            current_tier: str
-            suggested_tier: Optional[str] = None
+            session_id: str = Field(max_length=100)
+            tool_name: str = Field(max_length=200)
+            current_tier: str = Field(max_length=50)
+            suggested_tier: Optional[str] = Field(None, max_length=50)
             flag_type: Optional[_FlagEnum] = None
-            reason: Optional[str] = None
+            reason: Optional[str] = Field(None, max_length=1000)
 
         class _EventReq(BaseModel):
-            session_id: str
-            event_type: str
+            session_id: str = Field(max_length=100)
+            event_type: str = Field(max_length=100)
             payload: Optional[dict] = None
 
         @app.post("/feedback/search")
@@ -4909,6 +4909,20 @@ def create_app():
         @app.get("/feedback/stats")
         def feedback_stats_ep():
             return _fb_stats()
+
+        @app.get("/feedback/dashboard")
+        def feedback_dashboard():
+            from fastapi.responses import HTMLResponse
+            try:
+                from .feedback_db import get_dashboard_data as _fb_dash
+            except ImportError:
+                from feedback_db import get_dashboard_data as _fb_dash  # type: ignore[no-redef]
+            try:
+                from .feedback_dashboard import render_dashboard as _fb_render
+            except ImportError:
+                from feedback_dashboard import render_dashboard as _fb_render  # type: ignore[no-redef]
+            data = _fb_dash()
+            return HTMLResponse(content=_fb_render(data))
 
     return app
 

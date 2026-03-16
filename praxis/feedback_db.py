@@ -160,3 +160,37 @@ def get_stats() -> Dict[str, Any]:
         }
     finally:
         conn.close()
+
+
+def get_dashboard_data() -> Dict[str, Any]:
+    """Return all data needed for the admin dashboard."""
+    stats = get_stats()
+    conn = _get_connection()
+    try:
+        recent_searches = conn.execute(
+            "SELECT * FROM search_feedback ORDER BY id DESC LIMIT 20"
+        ).fetchall()
+
+        recent_flags = conn.execute(
+            "SELECT * FROM tool_feedback ORDER BY id DESC LIMIT 10"
+        ).fetchall()
+
+        flag_details = conn.execute(
+            "SELECT tool_name, flag_type, reason, COUNT(*) as count "
+            "FROM tool_feedback GROUP BY tool_name, flag_type ORDER BY count DESC"
+        ).fetchall()
+
+        event_counts = conn.execute(
+            "SELECT event_type, COUNT(*) as count "
+            "FROM events GROUP BY event_type ORDER BY count DESC"
+        ).fetchall()
+
+        return {
+            "stats": stats,
+            "recent_searches": [dict(r) for r in recent_searches],
+            "recent_flags": [dict(r) for r in recent_flags],
+            "flag_details": [dict(r) for r in flag_details],
+            "event_counts": [dict(r) for r in event_counts],
+        }
+    finally:
+        conn.close()

@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
+import ToolFlag from './ToolFlag';
 
 function getLogoDomain(url) {
   try { return new URL(url).hostname.replace(/^www\./, ''); }
   catch { return ''; }
 }
 
-export default function ToolCard({ tool, index, isTopPick }) {
+export default function ToolCard({ tool, index, isTopPick, sessionId }) {
   const name = tool.name || 'Unknown';
   const pct = tool._pct || 50;
   const desc = tool.description || '';
@@ -64,6 +65,11 @@ export default function ToolCard({ tool, index, isTopPick }) {
           </div>
           {url && <a href={url} target="_blank" rel="noreferrer" className="text-[12px] text-white/30 hover:text-[#6366f1] transition-colors shrink-0 no-underline">Visit site →</a>}
         </div>
+        {sessionId && (
+          <div className="flex justify-end mt-1.5">
+            <ToolFlag sessionId={sessionId} toolName={name} currentTier={skill || 'Unknown'} />
+          </div>
+        )}
       </div>
     </motion.div>
   );

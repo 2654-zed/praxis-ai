@@ -125,7 +125,7 @@ export default function App() {
 
           {hasResults && (
             <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <InlineResults results={results} onReset={handleReset} />
+              <InlineResults results={results} onReset={handleReset} sessionId={sessionId} />
               <SearchFeedback
                 sessionId={sessionId}
                 queryText={lastQuery}

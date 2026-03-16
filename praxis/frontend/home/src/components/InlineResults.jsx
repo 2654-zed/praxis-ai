@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import ToolCard from './ToolCard';
 
-export default function InlineResults({ results, onReset }) {
+export default function InlineResults({ results, onReset, sessionId }) {
   if (!results) return null;
   const { tools, totalTools, eliminatedCount } = results;
   const showCount = Math.min(8, tools.length);
@@ -22,7 +22,7 @@ export default function InlineResults({ results, onReset }) {
       {/* Cards */}
       <AnimatePresence>
         {tools.slice(0, showCount).map((tool, i) => (
-          <ToolCard key={tool.name || i} tool={tool} index={i} isTopPick={i === 0} />
+          <ToolCard key={tool.name || i} tool={tool} index={i} isTopPick={i === 0} sessionId={sessionId} />
         ))}
       </AnimatePresence>
 
