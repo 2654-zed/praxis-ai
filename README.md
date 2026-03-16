@@ -13,15 +13,15 @@ Praxis is a backend orchestration engine that plans, evaluates, and eliminates A
 <!-- AUTO:STATS:START -->
 | Metric | Value |
 |--------|-------|
-| **Python modules** | 116 files, ~64,100 lines |
+| **Python modules** | 117 files, ~64,300 lines |
 | **Tool catalog** | 253 curated AI tools with rich metadata |
-| **API endpoints** | 373 REST routes via FastAPI |
+| **API endpoints** | 377 REST routes via FastAPI |
 | **Test coverage** | 719 tests across 16 test files, all passing |
 | **Frontend** | 30 HTML + 4 JS files (~14,700 lines), Liquid Glass UI |
 | **Versions** | 17 major iterations (v1 → v17) |
-| **Total LOC** | ~78,700 (Python + Frontend) |
+| **Total LOC** | ~79,000 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-03-16 00:33 UTC |
+| **Last auto-update** | 2026-03-16 02:22 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -2088,6 +2088,8 @@ Praxis applies clinical differential diagnosis to AI tool selection: generate a 
 
 <!-- AUTO:GIT:START -->
 ```
+ddff2e7 Add SQLite-backed feedback collection (3 tables, 4 endpoints)
+88d05a6 docs(auto): update README stats [skip ci]
 a9d0926 Add React Tools SPA at /tools-app with glass design system
 2dd223d docs(auto): update README stats [skip ci]
 28b930e Restyle entire homepage to match Magic Bento glass design language
@@ -2106,8 +2108,6 @@ cd1e21d Add paginated MagicBento: 3 pages x 6 cards with auto-rotate
 3931c4d docs(auto): update README stats [skip ci]
 4beaa63 Convert MagicBento to clickable task shortcuts that trigger search
 735fdef docs(auto): update README stats [skip ci]
-97da5f6 Restyle MagicBento cards: centered icon+title, 90px height
-7dbbd3d docs(auto): update README stats [skip ci]
 ```
 <!-- AUTO:GIT:END -->
 
@@ -2139,9 +2139,9 @@ An **elimination-first AI tool curation engine** that evolved into a **cognitive
 ### Current State
 <!-- AUTO:STATE:START -->
 - **253 tools**, zero duplicates, clean tag casing
-- **373 API routes**, all functional
+- **377 API routes**, all functional
 - **719 tests passing**
-- **116 Python modules**, ~64,100 lines
+- **117 Python modules**, ~64,300 lines
 - **34 frontend files**, ~14,700 lines
 - All critical bugs fixed (alias collision, caveats reset, dead code)
 - Server runs on port 8000 via `uvicorn praxis.api:app --port 8000`
