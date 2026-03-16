@@ -21,7 +21,7 @@ Praxis is a backend orchestration engine that plans, evaluates, and eliminates A
 | **Versions** | 17 major iterations (v1 → v17) |
 | **Total LOC** | ~79,000 (Python + Frontend) |
 | **Zero external ML deps** | All NLP, scoring, graph, and retrieval are zero-dependency |
-| **Last auto-update** | 2026-03-16 02:22 UTC |
+| **Last auto-update** | 2026-03-16 03:31 UTC |
 <!-- AUTO:STATS:END -->
 
 ---
@@ -2088,6 +2088,8 @@ Praxis applies clinical differential diagnosis to AI tool selection: generate a 
 
 <!-- AUTO:GIT:START -->
 ```
+688f5a2 Add feedback UI: SearchFeedback, ToolFlag, event tracking
+a1f99be docs(auto): update README stats [skip ci]
 ddff2e7 Add SQLite-backed feedback collection (3 tables, 4 endpoints)
 88d05a6 docs(auto): update README stats [skip ci]
 a9d0926 Add React Tools SPA at /tools-app with glass design system
@@ -2106,8 +2108,6 @@ abedcb5 Add React Bits LogoLoop as TrustedTools section below HowItWorks
 8d58ccd docs(auto): update README stats [skip ci]
 cd1e21d Add paginated MagicBento: 3 pages x 6 cards with auto-rotate
 3931c4d docs(auto): update README stats [skip ci]
-4beaa63 Convert MagicBento to clickable task shortcuts that trigger search
-735fdef docs(auto): update README stats [skip ci]
 ```
 <!-- AUTO:GIT:END -->
 
