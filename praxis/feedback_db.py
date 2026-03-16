@@ -1,0 +1,162 @@
+# ────────────────────────────────────────────────────────────────────
+# feedback_db.py — SQLite-backed structured feedback collection
+# ────────────────────────────────────────────────────────────────────
+"""
+Collects three types of feedback:
+  1. Search feedback — thumbs up/down on elimination results
+  2. Tool feedback — flag incorrect tier, score, or badge
+  3. Events — implicit behavioral signals (clicks, scroll, etc.)
+
+Database: praxis/data/feedback.db (auto-created on first access)
+"""
+
+import json
+import os
+import sqlite3
+from typing import Any, Dict, List, Optional
+
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "feedback.db")
+
+_SCHEMA = """
+CREATE TABLE IF NOT EXISTS search_feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    session_id TEXT NOT NULL,
+    query_text TEXT NOT NULL,
+    constraints TEXT,
+    survivors TEXT,
+    eliminated_count INTEGER,
+    rating TEXT CHECK(rating IN ('up', 'down')),
+    comment TEXT
+);
+
+CREATE TABLE IF NOT EXISTS tool_feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    session_id TEXT NOT NULL,
+    tool_name TEXT NOT NULL,
+    current_tier TEXT NOT NULL,
+    suggested_tier TEXT,
+    flag_type TEXT CHECK(flag_type IN ('wrong_tier', 'wrong_score', 'outdated_info', 'missing_badge', 'other')),
+    reason TEXT
+);
+
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    session_id TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    payload TEXT
+);
+"""
+
+
+def _get_connection() -> sqlite3.Connection:
+    """Open a connection. Caller must close it."""
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db() -> None:
+    """Create tables if they don't exist."""
+    conn = _get_connection()
+    try:
+        conn.executescript(_SCHEMA)
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def record_search_feedback(
+    session_id: str,
+    query_text: str,
+    constraints: Optional[str] = None,
+    survivors: Optional[str] = None,
+    eliminated_count: Optional[int] = None,
+    rating: Optional[str] = None,
+    comment: Optional[str] = None,
+) -> int:
+    """Insert a search feedback record. Returns the row ID."""
+    conn = _get_connection()
+    try:
+        cur = conn.execute(
+            "INSERT INTO search_feedback (session_id, query_text, constraints, survivors, eliminated_count, rating, comment) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (session_id, query_text, constraints, survivors, eliminated_count, rating, comment),
+        )
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        conn.close()
+
+
+def record_tool_feedback(
+    session_id: str,
+    tool_name: str,
+    current_tier: str,
+    suggested_tier: Optional[str] = None,
+    flag_type: Optional[str] = None,
+    reason: Optional[str] = None,
+) -> int:
+    """Insert a tool feedback record. Returns the row ID."""
+    conn = _get_connection()
+    try:
+        cur = conn.execute(
+            "INSERT INTO tool_feedback (session_id, tool_name, current_tier, suggested_tier, flag_type, reason) VALUES (?, ?, ?, ?, ?, ?)",
+            (session_id, tool_name, current_tier, suggested_tier, flag_type, reason),
+        )
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        conn.close()
+
+
+def record_event(
+    session_id: str,
+    event_type: str,
+    payload: Optional[str] = None,
+) -> int:
+    """Insert a behavioral event. Returns the row ID."""
+    conn = _get_connection()
+    try:
+        cur = conn.execute(
+            "INSERT INTO events (session_id, event_type, payload) VALUES (?, ?, ?)",
+            (session_id, event_type, payload),
+        )
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        conn.close()
+
+
+def get_stats() -> Dict[str, Any]:
+    """Return aggregate feedback stats."""
+    conn = _get_connection()
+    try:
+        total_search = conn.execute("SELECT COUNT(*) FROM search_feedback").fetchone()[0]
+        thumbs_up = conn.execute("SELECT COUNT(*) FROM search_feedback WHERE rating='up'").fetchone()[0]
+        thumbs_down = conn.execute("SELECT COUNT(*) FROM search_feedback WHERE rating='down'").fetchone()[0]
+        total_tool = conn.execute("SELECT COUNT(*) FROM tool_feedback").fetchone()[0]
+        total_events = conn.execute("SELECT COUNT(*) FROM events").fetchone()[0]
+
+        most_flagged = conn.execute(
+            "SELECT tool_name, COUNT(*) as flag_count FROM tool_feedback GROUP BY tool_name ORDER BY flag_count DESC LIMIT 10"
+        ).fetchall()
+
+        oldest = conn.execute(
+            "SELECT MIN(timestamp) FROM (SELECT timestamp FROM search_feedback UNION ALL SELECT timestamp FROM tool_feedback UNION ALL SELECT timestamp FROM events)"
+        ).fetchone()[0]
+
+        return {
+            "total_search_feedback": total_search,
+            "thumbs_up": thumbs_up,
+            "thumbs_down": thumbs_down,
+            "thumbs_down_rate": round(thumbs_down / max(total_search, 1), 3),
+            "total_tool_flags": total_tool,
+            "most_flagged_tools": [{"tool_name": r[0], "flag_count": r[1]} for r in most_flagged],
+            "total_events": total_events,
+            "feedback_since": oldest,
+        }
+    finally:
+        conn.close()

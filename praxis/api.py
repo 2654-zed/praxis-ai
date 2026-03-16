@@ -4832,6 +4832,84 @@ def create_app():
             except Exception as exc:
                 raise _HTTPException(status_code=400, detail=str(exc))
 
+    # ── Structured Feedback Collection ──────────────────────────────
+    try:
+        from .feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats
+        _FB_OK = True
+    except ImportError:
+        try:
+            from feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats  # type: ignore[no-redef]
+            _FB_OK = True
+        except ImportError:
+            _FB_OK = False
+
+    if _FB_OK:
+        _fb_init()
+
+        from enum import Enum as _Enum
+
+        class _RatingEnum(str, _Enum):
+            up = 'up'
+            down = 'down'
+
+        class _FlagEnum(str, _Enum):
+            wrong_tier = 'wrong_tier'
+            wrong_score = 'wrong_score'
+            outdated_info = 'outdated_info'
+            missing_badge = 'missing_badge'
+            other = 'other'
+
+        class _SearchFBReq(BaseModel):
+            session_id: str
+            query_text: str
+            constraints: Optional[list] = None
+            survivors: Optional[list] = None
+            eliminated_count: Optional[int] = None
+            rating: Optional[_RatingEnum] = None
+            comment: Optional[str] = None
+
+        class _ToolFBReq(BaseModel):
+            session_id: str
+            tool_name: str
+            current_tier: str
+            suggested_tier: Optional[str] = None
+            flag_type: Optional[_FlagEnum] = None
+            reason: Optional[str] = None
+
+        class _EventReq(BaseModel):
+            session_id: str
+            event_type: str
+            payload: Optional[dict] = None
+
+        @app.post("/feedback/search")
+        def submit_search_feedback(req: _SearchFBReq):
+            import json as _j
+            row_id = _fb_search(
+                req.session_id, req.query_text,
+                _j.dumps(req.constraints) if req.constraints else None,
+                _j.dumps(req.survivors) if req.survivors else None,
+                req.eliminated_count, req.rating, req.comment,
+            )
+            return {"id": row_id, "status": "recorded"}
+
+        @app.post("/feedback/tool")
+        def submit_tool_feedback(req: _ToolFBReq):
+            row_id = _fb_tool(
+                req.session_id, req.tool_name, req.current_tier,
+                req.suggested_tier, req.flag_type, req.reason,
+            )
+            return {"id": row_id, "status": "recorded"}
+
+        @app.post("/feedback/event")
+        def submit_event(req: _EventReq):
+            import json as _j
+            _fb_event(req.session_id, req.event_type, _j.dumps(req.payload) if req.payload else None)
+            return {"status": "recorded"}
+
+        @app.get("/feedback/stats")
+        def feedback_stats_ep():
+            return _fb_stats()
+
     return app
 
 
