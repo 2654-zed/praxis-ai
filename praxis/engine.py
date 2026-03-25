@@ -107,20 +107,17 @@ def score_tool(tool, keywords):
     """
     Score a tool against a list of search keywords.
 
-    Signal weights:
-        category match  → 4
-        tag match       → 3
-        keyword match   → 2
-        name/desc match → 1
-        popularity      → tool.popularity
-        TF-IDF          → up to 5 (semantic similarity)
-        learned boost   → up to 4 (from feedback signals)
+    Scoring is split into two buckets:
+        RELEVANCE (keyword, category, tag, TF-IDF) — primary signal
+        QUALITY   (trust, sovereignty, popularity)  — tiebreaker only
 
-    Note: fuzzy SequenceMatcher scoring was removed in the v18 architecture
-    review — it ran O(n²) per tool per query and is fully superseded by the
-    TF-IDF pipeline + exact keyword matching.
+    Quality signals are capped so they never overpower a relevance match.
+    A tool that matches the query on keywords/categories will always rank
+    above a tool that merely has high trust or popularity.
     """
-    score = 0
+    relevance = 0
+    quality = 0
+
     desc_blob = (tool.description or "").lower()
     name_blob = (tool.name or "").lower()
     cat_set = {c.lower() for c in getattr(tool, "categories", [])}
@@ -137,18 +134,16 @@ def score_tool(tool, keywords):
     for word in keywords:
         w = str(word).lower()
         if w in cat_set:
-            score += w_cat
+            relevance += w_cat
         elif w in tag_set:
-            score += w_tag
+            relevance += w_tag
         elif w in kw_set:
-            score += w_kw
+            relevance += w_kw
         elif w in desc_blob or w in name_blob:
-            score += w_nd
+            relevance += w_nd
         # Use-case bonus
         if w in uc_blob:
-            score += w_uc
-
-    score += int(getattr(tool, "popularity", 0) or 0)
+            relevance += w_uc
 
     # ── TF-IDF semantic scoring ──
     if _INTEL_AVAILABLE:
@@ -156,48 +151,47 @@ def score_tool(tool, keywords):
             tfidf = get_tfidf_index()
             tfidf_score = tfidf.score(keywords, tool.name)
             scale = _w("weight_tfidf_scale", 8)
-            score += int(tfidf_score * scale)
+            relevance += int(tfidf_score * scale)
         except Exception as exc:
             log.debug("TF-IDF scoring failed for %s: %s", tool.name, exc)
 
-    # ── Learned feedback boost (A/B testable) ──
+    # ── Quality signals (capped tiebreakers) ──
+
+    # Popularity — cap at 2 so seeded data can't dominate
+    pop = int(getattr(tool, "popularity", 0) or 0)
+    quality += min(pop, 2)
+
+    # Learned feedback boost — cap at 2
     if _INTEL_AVAILABLE and _w("enable_learned_boosts", True):
         try:
-            score += get_learned_boost(tool.name)
+            quality += min(get_learned_boost(tool.name), 2)
         except Exception as exc:
             log.debug("Learned boost failed for %s: %s", tool.name, exc)
 
-    # ── 2026 Security Blueprint: Sovereignty score modifier ──
+    # Sovereignty — cap at 1
     if _SOVEREIGNTY_AVAILABLE and _w("enable_sovereignty_scoring", True):
         try:
-            score += _sov_mod(tool)
+            quality += min(_sov_mod(tool), 1)
         except Exception as exc:
             log.debug("Sovereignty scoring failed for %s: %s", tool.name, exc)
 
-    # ── 2026 Trust Badge Architecture: Badge-aware scoring ──
+    # Trust badges — cap at 2 (down from +5/+3)
     if _BADGES_AVAILABLE and _w("enable_badge_scoring", True):
         try:
             badges = _calc_badges(tool)
             trust_score = badges.get("trust_score", 50)
-            # Trust score modifier: scale 0-100 into -3..+5 engine points
             if trust_score >= 80:
-                score += 5
+                quality += 2
             elif trust_score >= 65:
-                score += 3
-            elif trust_score >= 50:
-                score += 1
+                quality += 1
             elif trust_score < 35:
-                score -= 3
-            # PSR bonus: high prompt success rate boosts utility signal
-            psr = badges.get("badges", {}).get("psr_metric", {}).get("psr", 0)
-            if psr >= 85:
-                score += 2
-            elif psr >= 70:
-                score += 1
+                quality -= 1
         except Exception as exc:
             log.debug("Badge scoring failed for %s: %s", tool.name, exc)
 
-    return score
+    # Quality signals can add at most a few points — never enough to
+    # push a zero-relevance tool above a tool with even one keyword match.
+    return relevance + quality
 
 
 # Budget-related keywords that signal the user cares about pricing

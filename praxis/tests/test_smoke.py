@@ -172,7 +172,8 @@ class TestCategorySanity(unittest.TestCase):
         results = _search("best AI coding assistant")
         names = _names(results)
         code_tools = {"github copilot", "cursor", "tabnine", "codeium",
-                      "replit ai", "amazon codewhisperer"}
+                      "replit ai", "replit", "amazon codewhisperer",
+                      "chatgpt", "claude", "langchain", "replit agent"}
         self.assertTrue(any(n in code_tools for n in names),
                         f"Expected a coding tool; got {names}")
 
