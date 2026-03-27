@@ -46,7 +46,7 @@ export default function EmptyCanvas() {
           What do you want to build?
         </h2>
         <p className="text-sm text-white/40">
-          Praxis evaluates 246 tools and eliminates everything that doesn't fit your context.
+          Praxis evaluates 253 tools and eliminates everything that doesn't fit your context.
         </p>
       </div>
 
