@@ -1,19 +1,12 @@
-import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useRef, forwardRef, useImperativeHandle } from 'react';
 
-const MODES = [
-  { id: 'find', label: 'Find', placeholder: 'Find the right AI tool...', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5"/><path d="M10.5 10.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg> },
-  { id: 'compare', label: 'Compare', placeholder: 'Compare vendors side-by-side...', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="5" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="3" width="5" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg> },
-  { id: 'analyze', label: 'Analyze', placeholder: 'Analyze your current stack...', icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="9" width="3" height="5" rx="0.5" stroke="currentColor" strokeWidth="1.5"/><rect x="6.5" y="5" width="3" height="9" rx="0.5" stroke="currentColor" strokeWidth="1.5"/><rect x="11" y="2" width="3" height="12" rx="0.5" stroke="currentColor" strokeWidth="1.5"/></svg> },
-];
+const SEARCH_ICON = <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5"/><path d="M10.5 10.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>;
 
 const CommandBar = forwardRef(function CommandBar({ onSubmit, value, onChange }, ref) {
-  const [mode, setMode] = useState('find');
   const inputRef = useRef(null);
-  const activeMode = MODES.find(m => m.id === mode);
 
   useImperativeHandle(ref, () => ({
     focus: () => inputRef.current?.focus(),
-    setMode: (m) => setMode(m),
   }));
 
   const handleSubmit = () => {
@@ -32,19 +25,9 @@ const CommandBar = forwardRef(function CommandBar({ onSubmit, value, onChange },
           transition: 'all 0.3s ease',
         }}
       >
-        {/* Mode toggles */}
-        <div className="flex items-center shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.06)', paddingRight: '8px', marginRight: '8px' }}>
-          {MODES.map(m => (
-            <button
-              key={m.id}
-              onClick={() => setMode(m.id)}
-              title={m.label}
-              className="w-8 h-8 flex items-center justify-center transition-all"
-              style={{ background: mode === m.id ? '#6366f1' : 'transparent', color: mode === m.id ? 'white' : 'rgba(255,255,255,0.35)', borderRadius: '8px' }}
-            >
-              {m.icon}
-            </button>
-          ))}
+        {/* Search icon */}
+        <div className="shrink-0 flex items-center justify-center w-8 h-8" style={{ color: 'rgba(255,255,255,0.35)', marginRight: '4px' }}>
+          {SEARCH_ICON}
         </div>
 
         {/* Input */}
@@ -54,7 +37,7 @@ const CommandBar = forwardRef(function CommandBar({ onSubmit, value, onChange },
           value={value || ''}
           onChange={e => onChange?.(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
-          placeholder={activeMode.placeholder}
+          placeholder="Find the right AI tool..."
           className="flex-1 bg-transparent outline-none"
           style={{ height: '38px', fontSize: '15px', padding: '6px 8px', caretColor: '#6366f1', color: '#f0f0f5' }}
         />

@@ -87,7 +87,7 @@ BADGE_CATEGORIES = {
         "color_name": "slate",
         "description": "Infrastructure tier classification mapping to Uptime Institute standards (Tiers I-IV).",
         "type": "dynamic",
-        "update_frequency": "continuous",
+        "update_frequency": "on_evaluation",
     },
     "portability_score": {
         "label": "Exit Portability",
@@ -96,16 +96,16 @@ BADGE_CATEGORIES = {
         "color_name": "purple",
         "description": "Scored 1-10 based on EU Data Act and UK DUAA export, deletion, and termination mandates.",
         "type": "dynamic",
-        "update_frequency": "monthly",
+        "update_frequency": "on_evaluation",
     },
     "psr_metric": {
         "label": "Real-World Utility",
         "icon": "🎯",
         "color": "#14B8A6",           # Teal
         "color_name": "teal",
-        "description": "Prompt Success Rate and Output Quality Score from verified real-user telemetry.",
+        "description": "Prompt Success Rate and Output Quality Score based on tool capability assessment.",
         "type": "dynamic",
-        "update_frequency": "daily",
+        "update_frequency": "on_evaluation",
     },
     "risk_flag": {
         "label": "Elimination Flag",
@@ -114,7 +114,7 @@ BADGE_CATEGORIES = {
         "color_name": "crimson",
         "description": "Critical deficiencies, EU AI Act violations, proprietary black-box models, or punitive exit costs.",
         "type": "dynamic",
-        "update_frequency": "continuous",
+        "update_frequency": "on_evaluation",
     },
 }
 

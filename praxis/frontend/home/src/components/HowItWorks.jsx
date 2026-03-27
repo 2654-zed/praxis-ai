@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 
 const STEPS = [
-  { num: '1', title: 'You describe what you need', desc: 'Task type, budget, compliance requirements, skill level. Tell us what matters to your business.' },
-  { num: '2', title: 'We eliminate what doesn\'t fit', desc: '253 tools checked against your budget, compliance, trust scores, and skill level. Most don\'t survive.' },
-  { num: '3', title: 'You keep the survivors', desc: 'Ranked by fit, with reasons for every elimination and every recommendation. Full transparency.' },
+  { num: '1', title: 'You describe what you need', desc: 'Tell us what you\'re building, what industry you\'re in, and what constraints matter.' },
+  { num: '2', title: 'We eliminate what doesn\'t fit', desc: '253 tools scored across 9 trust dimensions. Tools that don\'t match your needs are removed.' },
+  { num: '3', title: 'You keep the survivors', desc: 'Ranked by fit. Use Diagnosis for full elimination reasons, or search for quick results.' },
 ];
 
 export default function HowItWorks() {

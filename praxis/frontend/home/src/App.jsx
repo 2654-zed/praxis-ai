@@ -52,7 +52,6 @@ export default function App() {
   }, [reset]);
 
   const handleCompare = useCallback(() => {
-    commandBarRef.current?.setMode('compare');
     commandBarRef.current?.focus();
   }, []);
 
@@ -107,7 +106,7 @@ export default function App() {
               <LiveSummary task={null} constraints={activeConstraints} query={query} onSubmit={() => handleSubmit(query)} />
               <PathCards onCompare={handleCompare} />
               <div className="text-center mt-6 mb-8" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.03em' }}>
-                253 tools <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> 11 trust signals <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> elimination-first methodology
+                253 tools <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> 9 trust dimensions <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> elimination-first methodology
               </div>
             </motion.div>
           )}
