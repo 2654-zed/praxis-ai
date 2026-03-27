@@ -147,6 +147,35 @@ function showResults(data) {
     </div>
   `;
 
+  // Elimination Funnel
+  if (data.funnel && data.funnel.steps && data.funnel.steps.length > 0) {
+    var f = data.funnel;
+    var totalTools = f.total_tools || 253;
+    html += '<div style="margin-bottom:2rem;padding:1.5rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;">';
+    html += '<h3 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.35);margin-bottom:1rem;">How we got here</h3>';
+
+    f.steps.forEach(function(step) {
+      var pct = Math.max(15, Math.round((step.after / totalTools) * 100));
+      var elimText = step.eliminated > 0
+        ? '<span style="color:rgba(239,68,68,0.7);">\u2212' + step.eliminated + '</span>'
+        : '<span style="color:rgba(255,255,255,0.25);">none eliminated</span>';
+      html += '<div style="display:flex;align-items:center;margin-bottom:0.4rem;gap:0.75rem;">';
+      html += '<div style="height:26px;width:' + pct + '%;min-width:60px;background:linear-gradient(90deg,rgba(99,102,241,0.15),rgba(99,102,241,0.05));border-radius:4px;display:flex;align-items:center;padding:0 0.75rem;transition:width 0.5s ease;">';
+      html += '<span style="font-size:0.78rem;color:rgba(255,255,255,0.6);white-space:nowrap;">' + step.after + ' tools</span>';
+      html += '</div>';
+      html += '<span style="font-size:0.78rem;color:rgba(255,255,255,0.4);white-space:nowrap;">' + step.name + ' \u2014 ' + elimText + '</span>';
+      html += '</div>';
+    });
+
+    var finalCount = f.final_count || (f.steps.length > 0 ? f.steps[f.steps.length - 1].after : 0);
+    var totalElim = totalTools - finalCount;
+    html += '<div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,0.06);font-size:0.82rem;color:rgba(255,255,255,0.5);">';
+    html += 'Started with <strong style="color:rgba(255,255,255,0.7);">' + totalTools + '</strong> tools. ';
+    html += 'Your constraints eliminated <strong style="color:rgba(255,255,255,0.7);">' + totalElim + '</strong>. ';
+    html += 'These <strong style="color:#6366f1;">' + finalCount + '</strong> survived.';
+    html += '</div></div>';
+  }
+
   // Narrative
   if (data.narrative) {
     html += `<p class="stack-intro">${data.narrative}</p>`;

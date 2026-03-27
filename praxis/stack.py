@@ -59,11 +59,11 @@ def compose_stack(
     if _cfg:
         stack_size = _cfg.get("stack_size", stack_size)
 
-    # Step 1 — score *all* tools with profile-aware engine
-    candidates = _score_candidates(intent, profile, categories_filter)
+    # Step 1 — score *all* tools with profile-aware engine + elimination funnel
+    candidates, funnel = _score_candidates(intent, profile, categories_filter)
 
     if not candidates:
-        return {"stack": [], "explanation": {}, "alternatives": []}
+        return {"stack": [], "explanation": {}, "alternatives": [], "funnel": funnel}
 
     # Step 2 — select the primary tool (highest score)
     stack = []
@@ -99,10 +99,21 @@ def compose_stack(
         if tool.name not in used_names
     ][:5]
 
+    # Record final selection in funnel
+    funnel["steps"].append({
+        "name": "Final Selection",
+        "description": f"Top {len(stack)} tools by fit",
+        "before": funnel["steps"][-1]["after"] if funnel["steps"] else len(candidates),
+        "after": len(stack),
+        "eliminated": (funnel["steps"][-1]["after"] if funnel["steps"] else len(candidates)) - len(stack),
+    })
+    funnel["final_count"] = len(stack)
+
     return {
         "stack": stack,
         "explanation": explanation,
         "alternatives": alternatives,
+        "funnel": funnel,
     }
 
 
@@ -114,9 +125,15 @@ def _score_candidates(
     intent: dict,
     profile: Optional[UserProfile],
     categories_filter: list,
-) -> List[tuple]:
-    """Return a list of (score, Tool) tuples, sorted descending."""
-    from difflib import SequenceMatcher
+) -> tuple:
+    """Return (scored_list, funnel_data).
+
+    scored_list: list of (score, Tool) tuples, sorted descending.
+    funnel_data: dict tracking how many tools survived each elimination step.
+    """
+
+    total = len(TOOLS)
+    funnel = {"total_tools": total, "steps": []}
 
     # Build keywords the same way engine.find_tools does
     if isinstance(intent, dict):
@@ -135,40 +152,77 @@ def _score_candidates(
     else:
         categories_filter = None
 
+    # ── PHASE 1: Hard elimination filters ──
+
+    pool = list(TOOLS)
+
+    # Category filter
+    if categories_filter:
+        before = len(pool)
+        pool = [t for t in pool if any(fc in [c.lower() for c in t.categories] for fc in categories_filter)]
+        funnel["steps"].append({
+            "name": "Category Filter",
+            "description": f"Matching {', '.join(categories_filter)}",
+            "before": before, "after": len(pool),
+            "eliminated": before - len(pool),
+        })
+
+    # Compliance gate
+    if profile and profile.constraints:
+        required = [c.upper() for c in profile.constraints if c.upper() in ("HIPAA", "SOC2", "GDPR", "FEDRAMP")]
+        if required:
+            before = len(pool)
+            pool = [t for t in pool if all(
+                req in [c.upper() for c in t.compliance] for req in required
+            )]
+            funnel["steps"].append({
+                "name": "Compliance",
+                "description": f"Requires {', '.join(required)}",
+                "before": before, "after": len(pool),
+                "eliminated": before - len(pool),
+            })
+
+    # Budget hard-filter (THE FIX — budget is a constraint, not a preference)
+    if profile and profile.budget and profile.budget != "high":
+        before = len(pool)
+        budget_label = {"free": "Free only", "low": "Under $50/mo", "medium": "Under $500/mo"}.get(profile.budget, profile.budget)
+        pool = [t for t in pool if t.fits_budget(profile.budget)]
+
+        # Edge case: if budget eliminated everything, fall back to cheapest tools
+        if not pool and before > 0:
+            # Sort original pool by cost, take cheapest
+            def _tool_cost(t):
+                p = t.pricing or {}
+                if p.get("free_tier"):
+                    return 0
+                return float(p.get("starter") or p.get("pro") or 9999)
+            from operator import itemgetter
+            all_with_cost = [(t, _tool_cost(t)) for t in TOOLS]
+            all_with_cost.sort(key=lambda x: x[1])
+            pool = [t for t, _ in all_with_cost[:10]]
+            budget_label += " (relaxed — showing lowest cost)"
+
+        funnel["steps"].append({
+            "name": "Budget",
+            "description": budget_label,
+            "before": before, "after": len(pool),
+            "eliminated": before - len(pool),
+        })
+
+    # ── PHASE 2: Score survivors ──
+
     scored = []
-    for tool in TOOLS:
-        # Category filter
-        if categories_filter:
-            tool_cats = [c.lower() for c in tool.categories]
-            if not any(fc in tool_cats for fc in categories_filter):
-                continue
-
-        # Profile-based hard filters
-        if profile:
-            # Compliance gate
-            skip = False
-            for constraint in profile.constraints:
-                if constraint.upper() in ("HIPAA", "SOC2", "GDPR", "FEDRAMP"):
-                    if constraint.upper() not in [c.upper() for c in tool.compliance]:
-                        skip = True
-                        break
-            if skip:
-                continue
-
+    for tool in pool:
         sc = score_tool(tool, keywords)
 
-        # Profile bonuses
+        # Soft profile bonuses (skill, integrations — NOT budget, that's now a hard filter)
         if profile:
-            if tool.fits_budget(profile.budget):
-                sc += 2
             if tool.fits_skill(profile.skill_level):
                 sc += 2
-            # Bonus for integrating with existing tools
             for et in profile.existing_tools:
                 if tool.integrates_with(et):
                     sc += 3
                     break
-            # Slight penalty if user already uses this tool (they want *new* recs)
             if profile.already_uses(tool.name):
                 sc -= 2
 
@@ -176,7 +230,16 @@ def _score_candidates(
             scored.append((sc, tool))
 
     scored.sort(key=lambda x: x[0], reverse=True)
-    return scored
+
+    # Record scoring step in funnel
+    funnel["steps"].append({
+        "name": "Relevance Scoring",
+        "description": "Ranked by keyword, category, and profile fit",
+        "before": len(pool), "after": len(scored),
+        "eliminated": len(pool) - len(scored),
+    })
+
+    return scored, funnel
 
 
 def _pick_best(

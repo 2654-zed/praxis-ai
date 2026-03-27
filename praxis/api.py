@@ -1275,6 +1275,7 @@ class StackResponse(BaseModel):
     total_monthly_cost: Optional[str] = None
     stack_fit_score: Optional[int] = None
     alternatives: Optional[List[ToolDetail]] = None
+    funnel: Optional[dict] = None
 
 
 class CompareRequest(BaseModel):

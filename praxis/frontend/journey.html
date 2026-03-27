@@ -370,28 +370,52 @@
           <p>Tell us your primary task so we can recommend the right tools.</p>
           <div class="options" id="step1-options">
             <div class="option" data-value="writing">
-              <div class="option-title">✍️ Writing</div>
-              <div class="option-desc">Content & copy</div>
+              <div class="option-title">✍️ Content</div>
+              <div class="option-desc">Writing & copy</div>
+            </div>
+            <div class="option" data-value="coding">
+              <div class="option-title">💻 Development</div>
+              <div class="option-desc">Code & apps</div>
+            </div>
+            <div class="option" data-value="data">
+              <div class="option-title">📊 Data</div>
+              <div class="option-desc">Analytics & BI</div>
             </div>
             <div class="option" data-value="design">
               <div class="option-title">🎨 Design</div>
-              <div class="option-desc">Visuals & branding</div>
-            </div>
-            <div class="option" data-value="coding">
-              <div class="option-title">💻 Coding</div>
-              <div class="option-desc">Development</div>
+              <div class="option-desc">Visuals & creative</div>
             </div>
             <div class="option" data-value="marketing">
-              <div class="option-title">📊 Marketing</div>
-              <div class="option-desc">Growth & analytics</div>
+              <div class="option-title">📣 Marketing</div>
+              <div class="option-desc">SEO & growth</div>
+            </div>
+            <div class="option" data-value="support">
+              <div class="option-title">🎧 Support</div>
+              <div class="option-desc">Helpdesk & chat</div>
+            </div>
+            <div class="option" data-value="sales">
+              <div class="option-title">🤝 Sales</div>
+              <div class="option-desc">CRM & outreach</div>
             </div>
             <div class="option" data-value="automation">
-              <div class="option-title">⚙️ Automation</div>
-              <div class="option-desc">Workflows</div>
+              <div class="option-title">⚙️ Operations</div>
+              <div class="option-desc">Workflow & ops</div>
+            </div>
+            <div class="option" data-value="recruiting">
+              <div class="option-title">👥 HR</div>
+              <div class="option-desc">Hiring & people</div>
             </div>
             <div class="option" data-value="research">
               <div class="option-title">🔍 Research</div>
-              <div class="option-desc">Analysis & data</div>
+              <div class="option-desc">Knowledge & analysis</div>
+            </div>
+            <div class="option" data-value="communication">
+              <div class="option-title">💬 Communication</div>
+              <div class="option-desc">Meetings & chat</div>
+            </div>
+            <div class="option" data-value="security">
+              <div class="option-title">🔒 Security</div>
+              <div class="option-desc">Compliance & infosec</div>
             </div>
           </div>
           <div class="card-footer">
@@ -404,31 +428,22 @@
         <div class="step" data-step="2">
           <h2>What's your industry?</h2>
           <p>This helps us pick tools that fit your context.</p>
-          <div class="options" id="step2-options">
-            <div class="option" data-value="startup">
-              <div class="option-title">🚀 Startup</div>
-              <div class="option-desc">Early stage</div>
-            </div>
-            <div class="option" data-value="saas">
-              <div class="option-title">☁️ SaaS</div>
-              <div class="option-desc">Software</div>
-            </div>
-            <div class="option" data-value="e-commerce">
-              <div class="option-title">🛍️ E-commerce</div>
-              <div class="option-desc">Retail</div>
-            </div>
-            <div class="option" data-value="agency">
-              <div class="option-title">🎯 Agency</div>
-              <div class="option-desc">Services</div>
-            </div>
-            <div class="option" data-value="enterprise">
-              <div class="option-title">🏢 Enterprise</div>
-              <div class="option-desc">Large org</div>
-            </div>
-            <div class="option" data-value="education">
-              <div class="option-title">🎓 Education</div>
-              <div class="option-desc">Learning</div>
-            </div>
+          <div class="options" id="step2-options" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+            <div class="option" data-value="startup"><div class="option-title">🚀 Startup</div><div class="option-desc">Early stage</div></div>
+            <div class="option" data-value="saas"><div class="option-title">☁️ SaaS</div><div class="option-desc">Software</div></div>
+            <div class="option" data-value="ecommerce"><div class="option-title">🛍️ E-commerce</div><div class="option-desc">Retail</div></div>
+            <div class="option" data-value="agency"><div class="option-title">🎯 Agency</div><div class="option-desc">Consulting</div></div>
+            <div class="option" data-value="enterprise"><div class="option-title">🏢 Enterprise</div><div class="option-desc">Large org</div></div>
+            <div class="option" data-value="education"><div class="option-title">🎓 Education</div><div class="option-desc">Learning</div></div>
+            <div class="option" data-value="healthcare"><div class="option-title">🏥 Healthcare</div><div class="option-desc">Medical</div></div>
+            <div class="option" data-value="finance"><div class="option-title">🏦 Finance</div><div class="option-desc">Banking</div></div>
+            <div class="option" data-value="legal"><div class="option-title">⚖️ Legal</div><div class="option-desc">Law</div></div>
+            <div class="option" data-value="realestate"><div class="option-title">🏠 Real Estate</div><div class="option-desc">Property</div></div>
+            <div class="option" data-value="media"><div class="option-title">🎬 Media</div><div class="option-desc">Entertainment</div></div>
+            <div class="option" data-value="nonprofit"><div class="option-title">💚 Nonprofit</div><div class="option-desc">NGO / Govt</div></div>
+            <div class="option" data-value="manufacturing"><div class="option-title">🏭 Manufacturing</div><div class="option-desc">Industrial</div></div>
+            <div class="option" data-value="freelance"><div class="option-title">🧑‍💻 Freelance</div><div class="option-desc">Solo</div></div>
+            <div class="option" data-value="other"><div class="option-title">🔵 Other</div><div class="option-desc">Not listed</div></div>
           </div>
           <div class="card-footer">
             <button class="btn btn-secondary" onclick="prevStep()">← Back</button>

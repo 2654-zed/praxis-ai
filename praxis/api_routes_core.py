@@ -273,6 +273,7 @@ def register_core_routes(app, deps):
             total_monthly_cost=explanation.get("total_monthly_cost"),
             stack_fit_score=explanation.get("stack_fit_score"),
             alternatives=alts,
+            funnel=result.get("funnel"),
         )
 
     @app.post("/compare")
