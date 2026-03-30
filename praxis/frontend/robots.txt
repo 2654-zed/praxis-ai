@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /feedback/
+Disallow: /admin/
+Disallow: /pipeline/
+Disallow: /governance/
+Disallow: /v21/
+Disallow: /v22/
+
+Sitemap: https://praxis-ai.me/sitemap.xml

@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS events (
     event_type TEXT NOT NULL,
     payload TEXT
 );
+
+CREATE TABLE IF NOT EXISTS page_views (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    path TEXT NOT NULL,
+    referrer TEXT,
+    user_agent TEXT
+);
 """
 
 
@@ -157,6 +165,54 @@ def get_stats() -> Dict[str, Any]:
             "most_flagged_tools": [{"tool_name": r[0], "flag_count": r[1]} for r in most_flagged],
             "total_events": total_events,
             "feedback_since": oldest,
+        }
+    finally:
+        conn.close()
+
+
+def record_page_view(path: str, referrer: Optional[str] = None, user_agent: Optional[str] = None) -> None:
+    """Record a page view. Called from middleware — must never block or raise."""
+    try:
+        conn = _get_connection()
+        try:
+            conn.execute(
+                "INSERT INTO page_views (path, referrer, user_agent) VALUES (?, ?, ?)",
+                (path, referrer, user_agent),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+    except Exception:
+        pass  # never break a request for analytics
+
+
+def get_page_view_stats() -> Dict[str, Any]:
+    """Return page view analytics."""
+    conn = _get_connection()
+    try:
+        total = conn.execute("SELECT COUNT(*) FROM page_views").fetchone()[0]
+        today = conn.execute(
+            "SELECT COUNT(*) FROM page_views WHERE timestamp >= date('now')"
+        ).fetchone()[0]
+        by_page = conn.execute(
+            "SELECT path, COUNT(*) as views FROM page_views "
+            "GROUP BY path ORDER BY views DESC LIMIT 20"
+        ).fetchall()
+        by_referrer = conn.execute(
+            "SELECT referrer, COUNT(*) as views FROM page_views "
+            "WHERE referrer IS NOT NULL AND referrer != '' "
+            "GROUP BY referrer ORDER BY views DESC LIMIT 10"
+        ).fetchall()
+        by_day = conn.execute(
+            "SELECT date(timestamp) as day, COUNT(*) as views FROM page_views "
+            "GROUP BY day ORDER BY day DESC LIMIT 14"
+        ).fetchall()
+        return {
+            "total_views": total,
+            "views_today": today,
+            "by_page": [{"path": r[0], "views": r[1]} for r in by_page],
+            "by_referrer": [{"referrer": r[0], "views": r[1]} for r in by_referrer],
+            "by_day": [{"day": r[0], "views": r[1]} for r in by_day],
         }
     finally:
         conn.close()

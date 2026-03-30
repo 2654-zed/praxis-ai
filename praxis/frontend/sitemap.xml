@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://praxis-ai.me/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/tools.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/differential.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/journey</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/tuesday-test.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/rfp.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/stack-advisor.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/trust_badges.html</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/manifesto.html</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/pricing.html</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/static/partners.html</loc><priority>0.5</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://praxis-ai.me/room</loc><priority>0.6</priority><changefreq>weekly</changefreq></url>
+</urlset>

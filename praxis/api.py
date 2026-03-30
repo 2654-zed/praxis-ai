@@ -1600,6 +1600,14 @@ def create_app():
 
             app.mount("/static", StaticFiles(directory=str(frontend_dir.resolve())), name="static")
 
+            @app.get("/robots.txt", include_in_schema=False)
+            def robots_txt():
+                return FileResponse(frontend_dir / "robots.txt", media_type="text/plain")
+
+            @app.get("/sitemap.xml", include_in_schema=False)
+            def sitemap_xml():
+                return FileResponse(frontend_dir / "sitemap.xml", media_type="application/xml")
+
             @app.get("/")
             async def index():
                 import os as _os_idx
@@ -4835,11 +4843,11 @@ def create_app():
 
     # ── Structured Feedback Collection ──────────────────────────────
     try:
-        from .feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats
+        from .feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats, record_page_view as _fb_pv, get_page_view_stats as _fb_pv_stats
         _FB_OK = True
     except ImportError:
         try:
-            from praxis.feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats  # type: ignore[no-redef]
+            from praxis.feedback_db import init_db as _fb_init, record_search_feedback as _fb_search, record_tool_feedback as _fb_tool, record_event as _fb_event, get_stats as _fb_stats, record_page_view as _fb_pv, get_page_view_stats as _fb_pv_stats  # type: ignore[no-redef]
             _FB_OK = True
         except ImportError:
             _FB_OK = False
@@ -4924,6 +4932,36 @@ def create_app():
                 from praxis.feedback_dashboard import render_dashboard as _fb_render  # type: ignore[no-redef]
             data = _fb_dash()
             return HTMLResponse(content=_fb_render(data))
+
+        @app.get("/feedback/analytics")
+        def feedback_analytics():
+            return _fb_pv_stats()
+
+        # ── Page view tracking middleware ──
+        # Records every HTML page load (not API calls, not static assets)
+        _PAGE_PATHS = {"/", "/journey", "/room", "/tools-app", "/advisor"}
+        _STATIC_PAGES = {".html"}
+
+        from starlette.middleware.base import BaseHTTPMiddleware as _PVMiddleware
+        from starlette.requests import Request as _PVRequest
+
+        class _PageViewMiddleware(_PVMiddleware):
+            async def dispatch(self, request: _PVRequest, call_next):
+                response = await call_next(request)
+                try:
+                    path = request.url.path
+                    is_page = path in _PAGE_PATHS or (
+                        path.startswith("/static/") and any(path.endswith(ext) for ext in _STATIC_PAGES)
+                    )
+                    if is_page and response.status_code == 200:
+                        ref = request.headers.get("referer", "")
+                        ua = (request.headers.get("user-agent", ""))[:200]
+                        _fb_pv(path, ref or None, ua or None)
+                except Exception:
+                    pass
+                return response
+
+        app.add_middleware(_PageViewMiddleware)
 
     return app
 

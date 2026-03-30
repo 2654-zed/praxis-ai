@@ -405,6 +405,13 @@ def find_tools(user_input, top_n: int = 5, categories_filter: list = None, profi
             except Exception:
                 pass
 
+    # ── Relevance floor: drop tools scoring less than 40% of the top score ──
+    # Prevents filler tools (Hugging Face, LangChain, Stripe) from appearing
+    # when fewer than top_n tools are genuinely relevant.
+    if scored and top_score > 0:
+        min_score = max(1, int(top_score * 0.4))
+        scored = [(s, t) for s, t in scored if s >= min_score]
+
     # ── Diversity re-ranking ──
     if _INTEL_AVAILABLE and len(scored) > top_n:
         try:
