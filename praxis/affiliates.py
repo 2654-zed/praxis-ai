@@ -16,6 +16,11 @@ PARTNERS = {
         "label": "Try Semrush free for 7 days",
         "disclosure": "Partner link — Praxis earns a commission on signups",
     },
+    "ActiveCampaign": {
+        "url": "https://try.activecampaign.com/2vs7wpd32lzg",
+        "label": "Try ActiveCampaign free for 14 days",
+        "disclosure": "Partner link — Praxis earns a commission on signups",
+    },
 }
 
 

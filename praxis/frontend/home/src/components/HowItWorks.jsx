@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 const STEPS = [
   { num: '1', title: 'You describe what you need', desc: 'Tell us what you\'re building, what industry you\'re in, and what constraints matter.' },
-  { num: '2', title: 'We eliminate what doesn\'t fit', desc: '253 tools scored across 9 trust dimensions. Tools that don\'t match your needs are removed.' },
+  { num: '2', title: 'We eliminate what doesn\'t fit', desc: 'Every tool scored across 9 trust dimensions. Tools that don\'t match your needs are removed.' },
   { num: '3', title: 'You keep the survivors', desc: 'Ranked by fit. Use Diagnosis for full elimination reasons, or search for quick results.' },
 ];
 

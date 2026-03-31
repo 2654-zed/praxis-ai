@@ -262,7 +262,7 @@ export default function CommandBar({ compact = false, onNavigateRoom }) {
 
       {/* Subtitle */}
       <p className="text-[12px] text-white/15 mt-4">
-        Praxis will evaluate 253 tools, eliminate the unfit, and explain why.
+        Praxis will evaluate 254 tools, eliminate the unfit, and explain why.
       </p>
     </div>
   );

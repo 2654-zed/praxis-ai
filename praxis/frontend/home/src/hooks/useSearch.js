@@ -20,7 +20,7 @@ export default function useSearch() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const tools = Array.isArray(data) ? data : (data.results || []);
-      const totalTools = data.total_tools || data.tools_considered || 253;
+      const totalTools = data.total_tools || data.tools_considered || 254;
 
       // Normalize scores
       const maxScore = tools.length ? Math.max(...tools.map(t => t.fit_score || t.score || t.confidence || 0)) : 1;

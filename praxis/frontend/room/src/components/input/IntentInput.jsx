@@ -346,7 +346,7 @@ export default function IntentInput() {
 
     dispatch({ type: 'START_ELIMINATION' });
     activity(dispatch, 'system', `Understanding: "${userText}"`);
-    activity(dispatch, 'elimination', 'Scanning 253 tools\u2026');
+    activity(dispatch, 'elimination', 'Scanning 254 tools\u2026');
 
     const controller = new AbortController();
     const timeoutWarning = setTimeout(() => {

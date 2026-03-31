@@ -126,7 +126,7 @@ export default function HeroSearch() {
 
       {/* Subtitle */}
       <p className="text-xs text-white/20 mt-6 text-center max-w-[360px]">
-        Praxis will evaluate 253 tools, eliminate the unfit, and explain why.
+        Praxis will evaluate 254 tools, eliminate the unfit, and explain why.
       </p>
     </div>
   );

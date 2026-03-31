@@ -14,6 +14,7 @@ import HowItWorks from './components/HowItWorks';
 import TrustedTools from './components/TrustedTools';
 import Footer from './components/Footer';
 import useSearch from './hooks/useSearch';
+import useToolCount from './hooks/useToolCount';
 import { generateSessionId, trackEvent } from './utils/feedback';
 
 const CONSTRAINT_LABELS = {
@@ -24,6 +25,7 @@ const CONSTRAINT_LABELS = {
 
 export default function App() {
   const { results, loading, error, lastQuery, search, reset } = useSearch();
+  const toolCount = useToolCount();
   const [query, setQuery] = useState('');
   const [activeConstraints, setActiveConstraints] = useState(new Set());
   const commandBarRef = useRef(null);
@@ -103,10 +105,10 @@ export default function App() {
                 </div>
               </div>
               <ConstraintPills active={activeConstraints} onToggle={toggleConstraint} />
-              <LiveSummary task={null} constraints={activeConstraints} query={query} onSubmit={() => handleSubmit(query)} />
+              <LiveSummary task={null} constraints={activeConstraints} query={query} onSubmit={() => handleSubmit(query)} toolCount={toolCount} />
               <PathCards onCompare={handleCompare} />
               <div className="text-center mt-6 mb-8" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.03em' }}>
-                253 tools <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> 9 trust dimensions <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> elimination-first methodology
+                {toolCount} tools <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> 9 trust dimensions <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span> elimination-first methodology
               </div>
             </motion.div>
           )}
@@ -118,7 +120,7 @@ export default function App() {
                 animate={{ scale: [0.8, 1.2, 0.8], opacity: [0.3, 1, 0.3] }}
                 transition={{ duration: 1.2, repeat: Infinity }}
               />
-              <span className="text-[14px] text-white/40">Evaluating 253 tools...</span>
+              <span className="text-[14px] text-white/40">Evaluating {toolCount} tools...</span>
             </motion.div>
           )}
 

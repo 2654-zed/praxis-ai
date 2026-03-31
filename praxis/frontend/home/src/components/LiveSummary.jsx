@@ -9,7 +9,7 @@ const CONSTRAINT_LABELS = {
   beginner: 'beginner-friendly', open_source: 'open source', api_access: 'API access',
 };
 
-export default function LiveSummary({ task, constraints, query, onSubmit }) {
+export default function LiveSummary({ task, constraints, query, onSubmit, toolCount = 254 }) {
   const taskLabel = task ? TASK_LABELS[task] : null;
   const constraintList = [...constraints].map(c => CONSTRAINT_LABELS[c] || c);
   const constraintStr = constraintList.length
@@ -56,7 +56,7 @@ export default function LiveSummary({ task, constraints, query, onSubmit }) {
             cursor: 'pointer',
           }}
         >
-          Evaluate 253 →
+          Evaluate {toolCount} →
         </button>
       </div>
     </div>

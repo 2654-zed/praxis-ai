@@ -56,6 +56,11 @@ def register_core_routes(app, deps):
     def categories():
         return get_all_categories()
 
+    @app.get("/tools/count")
+    def tools_count():
+        """Return the total number of tools in the catalog."""
+        return {"count": len(TOOLS)}
+
     @app.get("/tools")
     def list_tools(skip: int = 0, limit: int = 50):
         """Return paginated tool list.  Use ``?skip=0&limit=50`` to page."""

@@ -106,7 +106,7 @@ export default function App() {
       <div style={{ paddingTop: 80 }}>
         <div className="max-w-5xl mx-auto px-4" style={{ marginBottom: 32 }}>
           <h1 style={{ fontSize: '2rem', fontWeight: 700, color: '#f0f0f5', marginBottom: 6 }}>Tools</h1>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)' }}>253 AI tools scored across 6 architectural dimensions. Ranked by survival, not popularity.</p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)' }}>254 AI tools scored across 6 architectural dimensions. Ranked by survival, not popularity.</p>
         </div>
 
         <SearchFilter query={query} onQueryChange={setQuery} activeTier={activeTier} onTierChange={setActiveTier} sortBy={sortBy} onSortChange={setSortBy} counts={counts} />

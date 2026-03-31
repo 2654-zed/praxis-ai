@@ -150,7 +150,7 @@ function showResults(data) {
   // Elimination Funnel
   if (data.funnel && data.funnel.steps && data.funnel.steps.length > 0) {
     var f = data.funnel;
-    var totalTools = f.total_tools || 253;
+    var totalTools = f.total_tools || 254;
     html += '<div style="margin-bottom:2rem;padding:1.5rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;">';
     html += '<h3 style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.35);margin-bottom:1rem;">How we got here</h3>';
 

@@ -19,7 +19,7 @@ function humanize(text) {
   if (/^Result saved:/i.test(text)) return null;
   // Replace pipeline jargon
   let out = text;
-  out = out.replace(/^Finding the best tools[\u2026.]*/i, 'Scanning 253 tools\u2026');
+  out = out.replace(/^Finding the best tools[\u2026.]*/i, 'Scanning 254 tools\u2026');
   out = out.replace(/^Getting answers[\u2026.]*/i, 'Composing your recommendation\u2026');
   out = out.replace(/^Reviewed (\d+) tools\.\s*(\d+) match your needs\.$/i, '$1 tools reviewed \u2192 $2 match');
   out = out.replace(/^Recommended:/i, 'Top matches:');

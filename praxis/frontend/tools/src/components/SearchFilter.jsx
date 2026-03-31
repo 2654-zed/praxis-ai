@@ -14,7 +14,7 @@ export default function SearchFilter({ query, onQueryChange, activeTier, onTierC
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}><circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5"/><path d="M10.5 10.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
           <input
             type="text" value={query} onChange={e => onQueryChange(e.target.value)}
-            placeholder={`Search ${counts.total || 253} tools...`}
+            placeholder={`Search ${counts.total || 254} tools...`}
             style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#f0f0f5', fontSize: 14, padding: '12px 10px', caretColor: '#6366f1' }}
           />
         </div>

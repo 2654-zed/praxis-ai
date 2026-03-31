@@ -1,6 +1,6 @@
 const PATHS = [
   { title: 'Guided journey', sub: '4 questions, 2 min', href: '/journey', iconBg: 'rgba(52,211,153,0.12)', iconColor: '#34d399', icon: <path d="M3 8l4 4 6-8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/> },
-  { title: 'Browse catalog', sub: '253 tools', href: '/static/tools.html', iconBg: 'rgba(99,102,241,0.12)', iconColor: '#6366f1', icon: <><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></> },
+  { title: 'Browse catalog', sub: '250+ tools', href: '/static/tools.html', iconBg: 'rgba(99,102,241,0.12)', iconColor: '#6366f1', icon: <><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></> },
   { title: 'Compare tools', sub: 'Side by side', action: 'compare', iconBg: 'rgba(251,146,60,0.12)', iconColor: '#fb923c', icon: <><rect x="2" y="3" width="5" height="10" rx="1" stroke="currentColor" strokeWidth="1.3"/><rect x="9" y="3" width="5" height="10" rx="1" stroke="currentColor" strokeWidth="1.3"/></> },
   { title: 'ROI calculator', sub: 'The Tuesday Test', href: '/static/tuesday-test.html', iconBg: 'rgba(244,63,94,0.12)', iconColor: '#f43f5e', icon: <path d="M8 2v12M4 6l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/> },
 ];
