@@ -4069,6 +4069,22 @@ TOOLS = [
         base_model="proprietary",
         training_data_usage="opt_out",
     ),
+
+    Tool(
+        name="ActiveCampaign",
+        description="Customer experience automation platform combining email marketing, marketing automation workflows, and a sales CRM",
+        categories=["marketing", "email", "crm", "automation"],
+        url="https://www.activecampaign.com",
+        tags=["email marketing", "marketing automation", "CRM", "predictive sending"],
+        keywords=["email", "marketing", "automation", "crm", "sales", "lead scoring"],
+        pricing={"free_tier": False, "starter": 15, "pro": 49, "enterprise": 149},
+        integrations=["Shopify", "Salesforce", "WordPress", "Zapier", "Slack", "Stripe", "Google Analytics", "WooCommerce"],
+        compliance=["SOC2", "GDPR"],
+        skill_level="intermediate",
+        use_cases=["email campaigns", "lead scoring", "abandoned cart recovery", "sales pipeline management"],
+        stack_roles=["primary"],
+        languages=["no-code"],
+    ),
 ]
 
 
