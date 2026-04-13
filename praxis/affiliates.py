@@ -26,6 +26,11 @@ PARTNERS = {
         "label": "Try Dify free — open source",
         "disclosure": "Partner link — Praxis earns a commission on signups",
     },
+    "Foxit PDF Editor": {
+        "url": "https://partnerstack.foxit.com/6r0x4rvlvgqk",
+        "label": "Try Foxit PDF Editor",
+        "disclosure": "Partner link — Praxis earns a commission on signups",
+    },
 }
 
 

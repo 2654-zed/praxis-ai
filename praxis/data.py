@@ -4101,6 +4101,22 @@ TOOLS = [
         stack_roles=["primary", "infrastructure"],
         languages=["Python", "TypeScript"],
     ),
+
+    Tool(
+        name="Foxit PDF Editor",
+        description="AI-powered PDF editor with smart redaction, document summarization, eSignatures, and MCP integration for enterprise document workflows",
+        categories=["productivity", "legal", "enterprise"],
+        url="https://www.foxit.com",
+        tags=["PDF", "document editing", "eSignature", "redaction", "AI assistant"],
+        keywords=["PDF", "document", "redaction", "eSign", "contract", "compliance"],
+        pricing={"free_tier": False, "starter": 11, "pro": 14, "enterprise": "custom"},
+        integrations=["Microsoft 365", "Google Workspace", "Salesforce", "SharePoint", "Box", "HubSpot", "Jira"],
+        compliance=["SOC2", "GDPR", "HIPAA"],
+        skill_level="beginner",
+        use_cases=["PDF editing and conversion", "smart document redaction", "electronic signatures", "contract review"],
+        stack_roles=["companion"],
+        languages=["no-code"],
+    ),
 ]
 
 
