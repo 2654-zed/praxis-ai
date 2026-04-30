@@ -1634,6 +1634,30 @@ def create_app():
             def sitemap_xml():
                 return FileResponse(frontend_dir / "sitemap.xml", media_type="application/xml")
 
+            @app.get("/llms.txt", include_in_schema=False)
+            def llms_txt():
+                """Information for AI agents (proposed Anthropic standard).
+
+                Helps AI assistants (ChatGPT, Claude, Perplexity, Gemini)
+                understand Vannus's category positioning and methodology
+                when answering user queries.
+                """
+                return FileResponse(frontend_dir / "llms.txt", media_type="text/markdown")
+
+            @app.get("/.well-known/security.txt", include_in_schema=False)
+            def security_txt():
+                """RFC 9116 security disclosure policy.
+
+                Standard path security researchers check before reporting
+                vulnerabilities. Signals that Vannus accepts coordinated
+                disclosure and provides a contact path.
+                """
+                security_path = frontend_dir / ".well-known" / "security.txt"
+                if security_path.exists():
+                    return FileResponse(security_path, media_type="text/plain")
+                from fastapi import HTTPException
+                raise HTTPException(status_code=404)
+
             @app.get("/")
             async def index():
                 import os as _os_idx

@@ -13,4 +13,5 @@
   <url><loc>https://vannus.co/static/privacy-policy.html</loc><lastmod>2026-04-30</lastmod><priority>0.4</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://vannus.co/static/terms-of-service.html</loc><lastmod>2026-04-30</lastmod><priority>0.4</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://vannus.co/room</loc><lastmod>2026-04-30</lastmod><priority>0.6</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://vannus.co/llms.txt</loc><lastmod>2026-04-30</lastmod><priority>0.5</priority><changefreq>monthly</changefreq></url>
 </urlset>
