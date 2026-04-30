@@ -1,0 +1,18 @@
+# Vannus Security Policy (RFC 9116)
+# https://vannus.co/.well-known/security.txt
+
+Contact: mailto:drake@vannus.co
+Expires: 2027-04-30T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://vannus.co/.well-known/security.txt
+Policy: https://vannus.co/static/terms-of-service.html
+
+# If you discover a security vulnerability in Vannus, please report it
+# to drake@vannus.co. We commit to:
+#   - Acknowledging your report within 5 business days
+#   - Providing an initial assessment within 10 business days
+#   - Coordinating responsible disclosure timeline with you
+#
+# Please do not exploit vulnerabilities, exfiltrate data, or impact
+# service availability. We do not currently offer a paid bug bounty
+# but will publicly credit researchers who report responsibly.
