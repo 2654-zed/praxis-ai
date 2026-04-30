@@ -1655,7 +1655,7 @@ def create_app():
             def root_info():
                 """API root — service discovery."""
                 return {
-                    "service": "Praxis AI Decision Engine",
+                    "service": "Vannus AI Decision Engine",
                     "version": "2.0.0",
                     "docs": "/docs",
                     "openapi": "/openapi.json",

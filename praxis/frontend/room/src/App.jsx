@@ -85,7 +85,7 @@ function RoomShell() {
               className="relative z-30 flex items-center gap-4 px-5 py-2.5 border-b border-white/[0.06]"
               style={{ background: 'rgba(10,10,15,0.5)', backdropFilter: 'blur(30px)' }}
             >
-              <a href="/" className="text-white/30 hover:text-white/60 text-sm transition-colors">{'\u2190'} Praxis</a>
+              <a href="/" className="text-white/30 hover:text-white/60 text-sm transition-colors">{'\u2190'} Vannus</a>
               <span className="text-white/10">|</span>
               <span className="text-sm text-white/40 font-medium">Room</span>
             </div>

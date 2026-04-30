@@ -1,5 +1,5 @@
 /**
- * Praxis Journey — AI Decision Engine frontend
+ * Vannus Journey — AI Decision Engine frontend
  * Uses the /stack endpoint for composed stack recommendations
  * and /profile for persisting user profiles.
  */
@@ -113,7 +113,7 @@ async function finishJourney() {
       lastStackResult = { stack: tools.map((t, i) => ({ ...t, role: i === 0 ? 'primary' : 'companion' })), narrative: null };
     } catch (e2) {
       console.error('Both /stack and /search failed', e2);
-      lastStackResult = { stack: [], narrative: 'Could not reach the server. Please make sure the Praxis API is running and try again.' };
+      lastStackResult = { stack: [], narrative: 'Could not reach the server. Please make sure the Vannus API is running and try again.' };
     }
   }
 
