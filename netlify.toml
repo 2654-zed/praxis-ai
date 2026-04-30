@@ -1,0 +1,32 @@
+[build]
+  command = "bash scripts/build-netlify.sh"
+  publish = "_site"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Required env var in Netlify dashboard → Site settings → Environment variables:
+#   API_BACKEND_URL = https://your-railway-app.up.railway.app
+# The build script injects this into _redirects for API proxying.
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/home-assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/tools-assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/room-app/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

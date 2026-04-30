@@ -23,12 +23,14 @@ export default function HowItWorks() {
             transition={{ delay: i * 0.12 }}
             className="text-center"
             style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '16px',
-              padding: '32px 24px',
-              transition: 'all 0.3s ease',
+              background: 'rgba(255,255,255,0.025)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '18px',
+              padding: '36px 24px',
+              transition: 'border-color 0.3s ease, transform 0.3s ease',
             }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.2)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(0)'; }}
           >
             <div style={{ fontSize: '2rem', fontWeight: 700, color: '#6366f1', marginBottom: '12px' }}>{step.num}</div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: '#f0f0f5', marginBottom: '8px' }}>{step.title}</div>

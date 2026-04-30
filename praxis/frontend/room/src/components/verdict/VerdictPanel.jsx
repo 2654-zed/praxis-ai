@@ -110,7 +110,7 @@ export default function VerdictPanel() {
 
         {/* Section header */}
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-[10px] font-bold text-indigo-400/60 uppercase tracking-[2px]">Praxis Verdict</span>
+          <span className="text-[10px] font-bold text-indigo-400/60 uppercase tracking-[2px]">Vannus Verdict</span>
         </div>
 
         {/* Pipeline progress (inline) */}
