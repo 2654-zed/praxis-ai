@@ -32,7 +32,8 @@ praxis/data/feedback.db
 # Node
 node_modules/
 
-# Build artifacts (none — frontend dist/ committed for Railway)
+# Netlify build output
+_site/
 
 # Screenshots (test artifacts)
 *.png

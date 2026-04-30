@@ -1,5 +1,5 @@
 """
-Praxis API â€” AI Decision Engine
+Vannus API â€” AI Decision Engine
 
 Endpoints:
     GET  /                  â†’ serve frontend (journey.html)
@@ -1366,7 +1366,7 @@ def create_app():
     import os as _os
 
     app = FastAPI(
-        title="Praxis — AI Decision Engine API",
+        title="Vannus — AI Decision Engine API",
         description="Recommend AI tool stacks based on intent, profile, and feedback.",
         version="2.0.0",
     )
@@ -1641,7 +1641,7 @@ def create_app():
 
             @app.get("/room", tags=["Product"])
             def room_spa_entry():
-                """Praxis Room — persistent AI workspace."""
+                """Vannus Room — persistent AI workspace."""
                 if room_dist.exists():
                     return FileResponse(room_dist / "index.html")
                 return {"error": "Room SPA not built. Run npm run build in praxis/frontend/room/"}
@@ -1655,7 +1655,7 @@ def create_app():
             def root_info():
                 """API root — service discovery."""
                 return {
-                    "service": "Praxis AI Decision Engine",
+                    "service": "Vannus AI Decision Engine",
                     "version": "2.0.0",
                     "docs": "/docs",
                     "openapi": "/openapi.json",
@@ -1712,7 +1712,7 @@ def create_app():
         "get_current_user": _get_current_user,
     })
 
-    # v23 — Praxis Room routes
+    # v23 — Vannus Room routes
     if _register_room_routes:
         _register_room_routes(app, {
             "get_current_user": _get_current_user,
@@ -3172,7 +3172,7 @@ def create_app():
 
         @app.get("/introspect/self-diagnose")
         def introspect_diagnose_ep():
-            """Praxis looks in the mirror â€” full self-diagnosis from real AST analysis."""
+            """Vannus looks in the mirror â€” full self-diagnosis from real AST analysis."""
             return _self_diagnose()
 
         @app.get("/introspect/codebase")
@@ -3192,7 +3192,7 @@ def create_app():
 
         @app.get("/introspect/pathologies")
         def introspect_pathologies_ep():
-            """Four Horsemen detected in Praxis's own code."""
+            """Four Horsemen detected in Vannus's own code."""
             return _detect_own_pathologies()
 
         @app.get("/introspect/test-coverage")
@@ -3610,7 +3610,7 @@ def create_app():
 
         @app.get("/v19/agent/schema")
         def agent_schema_ep():
-            """OpenAI-compatible tool/function schema for all Praxis operations."""
+            """OpenAI-compatible tool/function schema for all Vannus operations."""
             return _get_tool_schema()
 
     # ── v19  Platform Evolution — Governance ─────────────────────────
@@ -3730,7 +3730,7 @@ def create_app():
 
         @app.get("/v20/security/self-scan", dependencies=_admin_guard_deps)
         def ast_self_scan_ep():
-            """Scan the entire Praxis codebase for AST vulnerabilities."""
+            """Scan the entire Vannus codebase for AST vulnerabilities."""
             return _scan_praxis_source()
 
     # ── Memory profiling ─────────────────────────────────────────────

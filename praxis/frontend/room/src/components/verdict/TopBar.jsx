@@ -38,7 +38,7 @@ export default function TopBar() {
       style={{ background: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(30px)' }}
     >
       {/* Back link */}
-      <a href="/" className="text-white/30 hover:text-white/60 text-sm shrink-0 transition-colors">{'\u2190'} Praxis</a>
+      <a href="/" className="text-white/30 hover:text-white/60 text-sm shrink-0 transition-colors">{'\u2190'} Vannus</a>
       <span className="text-white/10 shrink-0">|</span>
 
       {/* Compact command bar input */}

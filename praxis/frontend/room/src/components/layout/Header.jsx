@@ -62,12 +62,12 @@ export default function Header() {
         <a
           href="/"
           className="text-white/40 hover:text-white/70 text-sm transition-colors"
-          title="Back to Praxis"
-        >{'\u2190'} Praxis</a>
+          title="Back to Vannus"
+        >{'\u2190'} Vannus</a>
         <span className="text-white/15">|</span>
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-[#6366f1] flex items-center justify-center">
-            <span className="text-white text-xs font-bold">P</span>
+            <span className="text-white text-xs font-bold">V</span>
           </div>
           <span className="text-sm font-semibold text-white/80 tracking-tight">Room</span>
         </div>

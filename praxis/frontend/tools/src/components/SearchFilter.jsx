@@ -22,7 +22,7 @@ export default function SearchFilter({ query, onQueryChange, activeTier, onTierC
           value={sortBy} onChange={e => onSortChange(e.target.value)}
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '0 16px', color: 'rgba(255,255,255,0.5)', fontSize: 13, outline: 'none', cursor: 'pointer', appearance: 'none', minWidth: 140 }}
         >
-          <option value="rank">Praxis Rank</option>
+          <option value="rank">Vannus Rank</option>
           <option value="name_asc">Name A-Z</option>
           <option value="name_desc">Name Z-A</option>
           <option value="compliance">Most Compliant</option>
