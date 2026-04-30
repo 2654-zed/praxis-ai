@@ -4117,6 +4117,44 @@ TOOLS = [
         stack_roles=["companion"],
         languages=["no-code"],
     ),
+
+    # ----- Automation & RPA -----
+    Tool(
+        name="Turbotic",
+        description="AI-powered automation platform for enterprise RPA, process mining, and intelligent workflow orchestration",
+        categories=["automation", "rpa", "process mining", "enterprise", "workflows"],
+        url="https://turbotic.com",
+        tags=["rpa", "automation", "process mining", "enterprise"],
+        keywords=["robotic process automation", "intelligent automation", "workflow orchestration", "process discovery", "hyperautomation"],
+        pricing={"free_tier": False, "starter": "custom", "pro": "custom", "enterprise": "custom"},
+        integrations=["SAP", "Salesforce", "ServiceNow", "UiPath", "Microsoft Power Automate", "Blue Prism"],
+        compliance=["SOC2", "GDPR", "ISO 27001"],
+        skill_level="intermediate",
+        use_cases=["enterprise process automation", "process mining and discovery", "RPA orchestration", "intelligent document processing", "workflow optimization"],
+        stack_roles=["primary", "infrastructure"],
+        languages=["python", "no-code"],
+        country_of_origin="SWE",
+        last_updated="2026-04-30",
+    ),
+
+    # ----- Presentations -----
+    Tool(
+        name="Prezi",
+        description="AI-powered presentation platform with dynamic visual storytelling, zooming canvas, and real-time collaboration",
+        categories=["presentations", "design", "collaboration", "marketing"],
+        url="https://prezi.com",
+        tags=["presentations", "slides", "visual storytelling", "collaboration"],
+        keywords=["presentation software", "dynamic slides", "zooming presentations", "pitch decks", "visual communication"],
+        pricing={"free_tier": True, "starter": 7, "pro": 19, "enterprise": "custom"},
+        integrations=["Slack", "Microsoft Teams", "Zoom", "Google Meet", "Salesforce", "HubSpot"],
+        compliance=["SOC2", "GDPR"],
+        skill_level="beginner",
+        use_cases=["sales presentations", "pitch decks", "training materials", "marketing presentations", "interactive storytelling"],
+        stack_roles=["primary", "companion"],
+        languages=["no-code"],
+        country_of_origin="USA",
+        last_updated="2026-04-30",
+    ),
 ]
 
 
