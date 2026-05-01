@@ -1215,7 +1215,10 @@ def _install_openapi_text_sanitizer(app) -> None:
 # ======================================================================
 
 class SearchRequest(BaseModel):
-    query: str
+    # max_length cap is a payload-DoS mitigation (legitimate queries are
+    # rarely >100 chars; 2000 covers verbose constraint-stacked queries
+    # while preventing kilobyte-sized abuse).
+    query: str = Field(..., max_length=2000)
     filters: Optional[List[str]] = None
     top_n: Optional[int] = 5
     profile_id: Optional[str] = None
@@ -1634,6 +1637,11 @@ def create_app():
             def sitemap_xml():
                 return FileResponse(frontend_dir / "sitemap.xml", media_type="application/xml")
 
+            # Static AI/security files cached for 1 hour at the edge (Fastly)
+            # and at the client. Files are content-addressable enough that
+            # short cache is fine; long cache could delay updates.
+            _STATIC_TXT_HEADERS = {"Cache-Control": "public, max-age=3600"}
+
             @app.get("/llms.txt", include_in_schema=False)
             def llms_txt():
                 """Information for AI agents (proposed Anthropic standard).
@@ -1642,7 +1650,31 @@ def create_app():
                 understand Vannus's category positioning and methodology
                 when answering user queries.
                 """
-                return FileResponse(frontend_dir / "llms.txt", media_type="text/markdown")
+                return FileResponse(
+                    frontend_dir / "llms.txt",
+                    media_type="text/markdown",
+                    headers=_STATIC_TXT_HEADERS,
+                )
+
+            @app.get("/ai.txt", include_in_schema=False)
+            def ai_txt():
+                """Alternative AI-agent info file (some publisher associations
+                use ai.txt rather than llms.txt). Same content, different path
+                — adding both for wider compatibility.
+                """
+                ai_path = frontend_dir / "ai.txt"
+                if ai_path.exists():
+                    return FileResponse(
+                        ai_path,
+                        media_type="text/markdown",
+                        headers=_STATIC_TXT_HEADERS,
+                    )
+                # Fallback to llms.txt content if ai.txt not present
+                return FileResponse(
+                    frontend_dir / "llms.txt",
+                    media_type="text/markdown",
+                    headers=_STATIC_TXT_HEADERS,
+                )
 
             @app.get("/.well-known/security.txt", include_in_schema=False)
             def security_txt():
@@ -1654,9 +1686,25 @@ def create_app():
                 """
                 security_path = frontend_dir / ".well-known" / "security.txt"
                 if security_path.exists():
-                    return FileResponse(security_path, media_type="text/plain")
+                    return FileResponse(
+                        security_path,
+                        media_type="text/plain",
+                        headers=_STATIC_TXT_HEADERS,
+                    )
                 from fastapi import HTTPException
                 raise HTTPException(status_code=404)
+
+            @app.get("/static/pricing.html", include_in_schema=False)
+            def pricing_html_unlisted():
+                """Hidden pricing page. Adds X-Robots-Tag: noindex header
+                in addition to the meta tag so bots that only check HTTP
+                headers also skip indexing.
+                """
+                return FileResponse(
+                    frontend_dir / "pricing.html",
+                    media_type="text/html",
+                    headers={"X-Robots-Tag": "noindex, nofollow"},
+                )
 
             @app.get("/")
             async def index():

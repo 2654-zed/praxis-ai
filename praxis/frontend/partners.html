@@ -14,11 +14,40 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "AboutPage",
-    "name": "Vannus Partners and Transparency",
-    "description": "How Vannus makes money and what affiliate partnerships never touch. Full disclosure of commercial relationships.",
-    "url": "https://vannus.co/static/partners.html",
-    "isPartOf": { "@type": "WebSite", "url": "https://vannus.co" }
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        "name": "Vannus Partners and Transparency",
+        "description": "How Vannus makes money and what affiliate partnerships never touch. Full disclosure of commercial relationships.",
+        "url": "https://vannus.co/static/partners.html",
+        "isPartOf": { "@type": "WebSite", "url": "https://vannus.co" }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://vannus.co/" },
+          { "@type": "ListItem", "position": 2, "name": "Partners", "item": "https://vannus.co/static/partners.html" }
+        ]
+      },
+      {
+        "@type": "Service",
+        "@id": "https://vannus-concierge.netlify.app/#service",
+        "name": "Vannus Concierge",
+        "serviceType": "AI tool stack audit and evaluation",
+        "description": "Founder-led AI tool stack audits, gap analyses, and migration plans. Distinct paid service offering, separate from the free Vannus platform.",
+        "url": "https://vannus-concierge.netlify.app",
+        "provider": {
+          "@type": "Organization",
+          "name": "Vannus",
+          "legalName": "PRAXIS AI LLC"
+        },
+        "areaServed": "Worldwide",
+        "audience": {
+          "@type": "BusinessAudience",
+          "audienceType": "Businesses, agencies, and operators running multiple AI tools"
+        }
+      }
+    ]
   }
   </script>
   <link rel="canonical" href="https://vannus.co/static/partners.html" />
